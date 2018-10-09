@@ -14,12 +14,12 @@ For more information on the OpenST Protocol, please consult the [Whitepaper](htt
 
 ## Related Work
 
-Significant implementations of and projects related to OpenST Tokens are:
+Significant projects related to OpenST Tokens are:
 
 - [openst-contracts](https://github.com/OpenSTFoundation/openst-contracts): a framework for building token economies
 - [openst.js](https://github.com/OpenSTFoundation/openst.js): a library for deploying and interacting with a token economy
-- [mosaic-contracts](https://github.com/OpenSTFoundation/mosaic-contracts): a set of meta-blockchains on top of Ethereum to scale DApps
-- [mosaic.js](https://github.com/OpenSTFoundation/mosaic.js): a web3 interface to scale DApps on Ethereum
+- [mosaic-contracts](https://github.com/OpenSTFoundation/mosaic-contracts): a set of meta-blockchains on top of Ethereum to scale (D)Apps
+- [mosaic.js](https://github.com/OpenSTFoundation/mosaic.js): a web3 interface to scale (D)Apps on Ethereum
 
 ## Contributing
 
