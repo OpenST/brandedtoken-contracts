@@ -36,7 +36,16 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     /* Events */
 
-    event StakeRequested(/*...*/);
+    event StakeRequested(
+        uint256 _valueTokens,
+        uint256 _valueBrandedTokens,
+        address _beneficiary,
+        address _staker,
+        uint256 _gasPrice,
+        uint256 _gasLimit,
+        uint256 _nonce,
+        bytes _signature
+    );
 
     event StakeRequestAccepted(/*...*/);
 
@@ -47,7 +56,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     EIP20TokenRequiredInterface public valueToken;
 
-    mapping(address /* staker */ => uint256 /* value branded tokens */) public stakeRequests;
+    mapping(address /* staker */ => uint256 /* value tokens */) public stakeRequests;
 
     /* Constructor */
 
@@ -81,14 +90,67 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *         to mint utility branded tokens.
      *
      * @dev Function requires:
-     *          - TBD.
+     *          - _valueTokens is not zero;
+     *          - _beneficiary is not null;
+     *          - _signature is not empty;
+     *          - msg.sender does not have a stake request;
+     *          - valueToken.transferFrom returns true.
+     *
+     * @param _valueTokens Amount of value tokens to stake.
+     * @param _valueBrandedTokens Amount of value branded tokens to mint.
+     * @param _beneficiary Beneficiary for minted utility branded tokens.
+     * @param _gasPrice Gas price that msg.sender (staker) is ready to pay to complete
+     *                  the stake and mint process.
+     * @param _gasLimit Gas limit that staker is ready to pay to complete
+     *                  the stake and mint process.
+     * @param _nonce Nonce of staker address.
+     * @param _signature Signature signed by staker.
      */
     function requestStake(
+        uint256 _valueTokens,
+        uint256 _valueBrandedTokens,
+        address _beneficiary,
+        uint256 _gasPrice,
+        uint256 _gasLimit,
+        uint256 _nonce,
+        bytes _signature
     )
         external
-        // TODO: returns
     {
-        /*...*/
+        require(
+            _valueTokens != 0,
+            "ValueTokens is zero."
+        );
+        require(
+            _beneficiary != address(0),
+            "Beneficiary is null."
+        );
+        require(
+            _signature.length != 0,
+            "Signature is empty."
+        );
+        require(
+            stakeRequests[msg.sender] == 0,
+            "Staker has a stake request."
+        );
+
+        stakeRequests[msg.sender] = _valueTokens;
+
+        emit StakeRequested(
+            _valueTokens,
+            _valueBrandedTokens,
+            _beneficiary,
+            msg.sender,
+            _gasPrice,
+            _gasLimit,
+            _nonce,
+            _signature
+        );
+
+        require(
+            valueToken.transferFrom(msg.sender, address(this), _valueTokens),
+            "ValueToken.transferFrom returned false."
+        );
     }
 
     /**
