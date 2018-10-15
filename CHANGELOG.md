@@ -1,5 +1,7 @@
 ## 0.0.0
 
+- Contracts: complete stake request rejected event  ([#31](https://github.com/OpenSTFoundation/openst-tokens/pull/31))
+- Contracts: add rejectStakeRequest  ([#31](https://github.com/OpenSTFoundation/openst-tokens/pull/31))
 - Contracts: complete stake requested event  ([#30](https://github.com/OpenSTFoundation/openst-tokens/pull/30))
 - Contracts: add requestStake  ([#30](https://github.com/OpenSTFoundation/openst-tokens/pull/30))
 - Contracts: add value token to constructor ([#25](https://github.com/OpenSTFoundation/openst-tokens/pull/25))

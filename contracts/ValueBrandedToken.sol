@@ -49,7 +49,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     event StakeRequestAccepted(/*...*/);
 
-    event StakeRequestRejected(/*...*/);
+    event StakeRequestRejected(
+        address _staker,
+        uint256 _valueTokens
+    );
 
 
     /* Storage */
@@ -173,17 +176,33 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Transfers value tokens to staker and deletes stake request.
+     * @notice Deletes stake request and transfers value tokens to staker.
      *
      * @dev Function requires:
-     *          - TBD.
+     *          - stake request is not 0;
+     *          - valueToken.transfer returns true.
+     *
+     * @param _staker Staker address.
      */
     function rejectStakeRequest(
+        address _staker
     )
         external
-        // TODO: returns
     {
-        /*...*/
+        require(
+            stakeRequests[_staker] != 0,
+            "Stake request is zero."
+        );
+
+        uint256 valueTokens = stakeRequests[_staker];
+        delete stakeRequests[_staker];
+
+        emit StakeRequestRejected(_staker, valueTokens);
+
+        require(
+            valueToken.transfer(_staker, valueTokens),
+            "ValueToken.transfer returned false."
+        );
     }
 
     /**
