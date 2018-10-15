@@ -29,7 +29,7 @@ contract EIP20TokenMockFail {
     /* External Functions */
 
     /**
-     * @notice Mocks failing transfer from.
+     * @notice Mocks failing transferFrom.
      *
      * @return bool False.
      */

@@ -1,5 +1,7 @@
 ## 0.0.0
 
+- Contracts: complete stake request rejected event ([#31](https://github.com/OpenSTFoundation/openst-tokens/pull/31))
+- Contracts: add rejectStakeRequest ([#31](https://github.com/OpenSTFoundation/openst-tokens/pull/31))
 - Contracts: transfer equivalent value tokens to redeemers in redeem ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
 - Contracts: require equivalence between value tokens and value branded tokens in requestStake ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
 - Contracts: complete function for converting from value tokens to value branded tokens ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
