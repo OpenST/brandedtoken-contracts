@@ -47,7 +47,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         bytes _signature
     );
 
-    event StakeRequestAccepted(/*...*/);
+    event StakeRequestAccepted(
+        address _staker,
+        uint256 _valueTokens
+    );
 
     event StakeRequestRejected(/*...*/);
 
@@ -55,8 +58,12 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     /* Storage */
 
     EIP20TokenRequiredInterface public valueToken;
+    address public gateway;
+    uint256 private supply;
 
     mapping(address /* staker */ => uint256 /* value tokens */) public stakeRequests;
+    mapping(address => uint256 /* value branded tokens */) private balances;
+    mapping(address => mapping (address => uint256 /* value branded tokens */)) private allowed;
 
     /* Constructor */
 
@@ -89,7 +96,11 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *         and emits information required to stake value branded tokens
      *         to mint utility branded tokens.
      *
-     * @dev Function requires:
+     * @dev It is expected that this contract will have a sufficient allowance to
+     *      transfer value tokens from the staker at the time this function is executed.
+     *      this function is executed.
+     *
+     *      Function requires:
      *          - _valueTokens is not zero;
      *          - _beneficiary is not null;
      *          - _signature is not empty;
@@ -154,22 +165,39 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Mints value branded tokens, approves gateway to transfer
-     *         the amount of minted value branded tokens from the staker, and
-     *         deletes stake request.
+     * @notice Mints value branded tokens for _staker, increases the supply,
+     *         sets allowance for gateway to transfer the amount of minted
+     *         value branded tokens from _staker, and deletes stake request.
      *
-     * @dev It is expected that this contract will have a sufficient allowance to
-     *      transfer value tokens from the staker at the time this function is executed.
+     * @dev Function requires:
+     *          - stake request is not 0.
      *
-     *      Function requires:
-     *          - TBD.
+     * @param _staker Staker address.
      */
     function acceptStakeRequest(
+        address _staker
     )
         external
-        // TODO: returns
     {
-        /*...*/
+        require(
+            stakeRequests[_staker] != 0,
+            "Stake request is zero."
+        );
+
+        uint256 valueTokens = stakeRequests[_staker];
+        delete stakeRequests[_staker];
+
+        emit StakeRequestAccepted(_staker, valueTokens);
+
+        uint256 valueBrandedTokens = convert(valueTokens);
+        balances[_staker] = balances[_staker].add(valueBrandedTokens);
+        supply = supply.add(valueBrandedTokens);
+
+        emit Transfer(address(0), _staker, valueBrandedTokens);
+
+        allowed[_staker][gateway] = valueBrandedTokens;
+
+        emit Approval(_staker, gateway, valueBrandedTokens);
     }
 
     /**
@@ -201,38 +229,56 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Returns the total supply of value branded tokens.
+     * @notice Returns the supply.
      *
-     * @dev Function requires:
-     *          - TBD.
+     * @return uint256 Supply.
      */
-    function totalSupply() external view returns (uint256) {
-        // TODO
+    function totalSupply()
+        external
+        view
+        returns (uint256)
+    {
+        return supply;
     }
 
     /**
-     * @notice Returns the value branded tokens balance of _owner.
+     * @notice Returns the balance of _owner.
      *
-     * @dev Function requires:
-     *          - TBD.
+     * @param _owner Owner of tokens.
+     *
+     * @return uint256 Balance of _owner.
      */
-    function balanceOf(address) external view returns (uint256) {
-        // TODO
+    function balanceOf(
+        address _owner
+    )
+        public
+        view
+        returns (uint256)
+    {
+        return balances[_owner];
     }
 
     /**
-     * @notice Returns the amount of value branded tokens _spender is approved
-     *         to transfer from _owner.
+     * @notice Returns the amount _spender is allowed to transfer from _owner.
      *
-     * @dev Function requires:
-     *          - TBD.
+     * @param _owner Owner of tokens.
+     * @param _spender Spender with allowance.
+     *
+     * @return uint256 Allowance of _spender.
      */
-    function allowance(address, address) external view returns (uint256) {
-        // TODO
+    function allowance(
+        address _owner,
+        address _spender
+    )
+        public
+        view
+        returns (uint256)
+    {
+        return allowed[_owner][_spender];
     }
 
     /**
-     * @notice Transfers _amount of value branded tokens to _to.
+     * @notice Transfers _amount to _to.
      *
      * @dev Function requires:
      *          - TBD.
@@ -242,7 +288,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Transfers _amount of value branded tokens from _from to _to.
+     * @notice Transfers _amount from _from to _to.
      *
      * @dev Function requires:
      *          - TBD.
@@ -252,13 +298,34 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Sets an _amount of value branded tokens _spender is approved
-     *         to _transfer.
+     * @notice Sets an _amount _spender is approved
+     *         to transfer.
      *
      * @dev Function requires:
      *          - TBD.
      */
     function approve(address, uint256) public returns (bool) {
         // TODO
+    }
+
+
+    /* Public Functions */
+
+    /**
+     * @notice Returns the converted amount of a given amount.
+     *
+     * @param _amount Amount to convert.
+     *
+     * @return uint256 Converted amount.
+     */
+    function convert(
+        uint256 _amount
+    )
+        public
+        pure
+        returns (uint256)
+    {
+        // TODO: properly convert
+        return _amount;
     }
 }
