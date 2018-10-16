@@ -1,5 +1,6 @@
 ## 0.0.0
 
+- Contracts: add redeem ([#33](https://github.com/OpenSTFoundation/openst-tokens/pull/33))
 - Contracts: require gateway to be set to accept a stake request ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
 - Contracts: add transferor added event ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
 - Contracts: whitelist transferors and limit transfers to transferors ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
