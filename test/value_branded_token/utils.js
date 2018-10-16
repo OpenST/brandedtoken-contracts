@@ -26,3 +26,37 @@ module.exports.createValueBrandedToken = async () => {
 
     return valueBrandedToken;
 };
+
+/**
+ * Creates a value branded token and a stake request.
+ */
+module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) => {
+    const valueBrandedToken = await this.createValueBrandedToken();
+
+    const valueTokens = 1;
+    const valueBrandedTokens = 0;
+    const beneficiary = accountProvider.get();
+    const gasPrice = 0;
+    const gasLimit = 0;
+    const nonce = 0;
+    const signature = '0x00';
+
+    const staker = accountProvider.get();
+
+    await valueBrandedToken.requestStake(
+        valueTokens,
+        valueBrandedTokens,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        signature,
+        { from: staker },
+    );
+
+    return {
+        valueBrandedToken,
+        valueTokens,
+        staker,
+    };
+};
