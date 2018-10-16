@@ -215,17 +215,37 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Transfers an amount of value tokens corresponding to the amount of redeemed value branded tokens to msg.sender.
+     * @notice Reduces msg.sender's balance and the supply by _valueBrandedTokens
+     *         and transfers an equivalent amount of value tokens to msg.sender.
      *
      * @dev Function requires:
-     *          - TBD.
+     *          - msg.sender has a balance at least equal to _valueBrandedTokens;
+     *          - valueToken.transfer returns true.
+     *
+     * @param _valueBrandedTokens Amount of value branded tokens to redeem.
+     *
+     * @return valueTokens_ Amount of value tokens transferred to redeemer.
      */
     function redeem(
+        uint256 _valueBrandedTokens
     )
         external
-        // TODO: returns
+        returns (uint256 valueTokens_)
     {
-        /*...*/
+        balances[msg.sender] = balances[msg.sender].sub(_valueBrandedTokens);
+
+        assert(supply >= _valueBrandedTokens);
+
+        supply = supply.sub(_valueBrandedTokens);
+
+        emit Transfer(msg.sender, address(0), _valueBrandedTokens);
+
+        valueTokens_ = _valueBrandedTokens; // TODO: replace with proper conversion
+
+        require(
+            valueToken.transfer(msg.sender, valueTokens_),
+            "ValueToken.transfer returned false."
+        );
     }
 
     /**

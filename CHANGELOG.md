@@ -1,5 +1,6 @@
 ## 0.0.0
 
+- Contracts: add redeem ([#33](https://github.com/OpenSTFoundation/openst-tokens/pull/33))
 - Contracts: complete EIP20 view functions ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
 - Contracts: complete stake request accepted event ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
 - Contracts: add acceptStakeRequest ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
