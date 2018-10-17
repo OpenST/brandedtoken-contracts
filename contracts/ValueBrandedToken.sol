@@ -79,7 +79,6 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     modifier onlyTransferors {
         require(
-            gateway == msg.sender ||
             canTransfer[msg.sender],
             "Msg.sender is not a transferor."
         );
@@ -257,7 +256,6 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *      the address of this contract is required to construct the Gateway.
      *
      *      Function requires:
-     *          - _gateway is not null;
      *          - gateway is not set.
      *
      * @param _gateway Gateway.
@@ -268,10 +266,6 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         external
     {
         require(
-            _gateway != address(0),
-            "Gateway is null."
-        );
-        require(
             gateway == address(0),
             "Gateway is set."
         );
@@ -279,6 +273,8 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         gateway = _gateway;
 
         emit GatewaySet(gateway);
+
+        addTransferor(_gateway);
     }
 
     /**

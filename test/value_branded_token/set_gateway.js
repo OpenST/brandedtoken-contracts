@@ -23,20 +23,6 @@ contract('ValueBrandedToken::setGateway', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Reverts if _gateway is null', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
-
-            const gateway = utils.NULL_ADDRESS;
-
-            await utils.expectRevert(
-                valueBrandedToken.setGateway(
-                    gateway,
-                ),
-                'Should revert as _gateway is null.',
-                'Gateway is null.',
-            );
-        });
-
         it('Reverts if gateway is set', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
@@ -59,7 +45,7 @@ contract('ValueBrandedToken::setGateway', async () => {
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Emits GatewaySet event', async () => {
+        it('Emits GatewaySet and TransferorAdded events', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const gateway = accountProvider.get();
@@ -74,14 +60,20 @@ contract('ValueBrandedToken::setGateway', async () => {
 
             assert.strictEqual(
                 events.length,
-                1,
-                'Only GatewaySet event should be emitted.',
+                2,
             );
 
             Event.assertEqual(events[0], {
                 name: 'GatewaySet',
                 args: {
                     _gateway: gateway,
+                },
+            });
+
+            Event.assertEqual(events[1], {
+                name: 'TransferorAdded',
+                args: {
+                    _transferor: gateway,
                 },
             });
         });
