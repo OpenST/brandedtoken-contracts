@@ -54,6 +54,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     event StakeRequestRejected(/*...*/);
 
+    event GatewaySet(
+        address _gateway
+    );
+
 
     /* Storage */
 
@@ -226,6 +230,37 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         // TODO: returns
     {
         /*...*/
+    }
+
+    /**
+     * @notice Sets gateway.
+     *
+     * @dev Gateway cannot be set in the construction of this contract because
+     *      the address of this contract is required to construct the Gateway.
+     *
+     *      Function requires:
+     *          - _gateway is not null;
+     *          - gateway is not set.
+     *
+     * @param _gateway Gateway.
+     */
+    function setGateway(
+        address _gateway
+    )
+        external
+    {
+        require(
+            _gateway != address(0),
+            "Gateway is null."
+        );
+        require(
+            gateway == address(0),
+            "Gateway is set."
+        );
+
+        gateway = _gateway;
+
+        emit GatewaySet(gateway);
     }
 
     /**
