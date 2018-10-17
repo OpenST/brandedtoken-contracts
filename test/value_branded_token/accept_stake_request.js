@@ -48,6 +48,7 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 valueBrandedToken,
                 valueTokens,
                 staker,
+                gateway,
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
             const worker = accountProvider.get();
@@ -57,7 +58,6 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 { from: worker },
             );
 
-            const gateway = await valueBrandedToken.gateway.call();
             const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
 
             const events = Event.decodeTransactionResponse(
@@ -106,9 +106,9 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 valueBrandedToken,
                 valueTokens,
                 staker,
+                gateway,
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
-            const gateway = await valueBrandedToken.gateway.call();
             const stakeRequestBefore = await valueBrandedToken.stakeRequests.call(staker);
             const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
             const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
