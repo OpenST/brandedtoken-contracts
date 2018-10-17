@@ -42,6 +42,7 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) 
     const signature = '0x00';
 
     const staker = accountProvider.get();
+    const gateway = accountProvider.get();
 
     await valueBrandedToken.requestStake(
         valueTokens,
@@ -54,9 +55,14 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) 
         { from: staker },
     );
 
+    await valueBrandedToken.setGateway(
+        gateway,
+    );
+
     return {
         valueBrandedToken,
         valueTokens,
         staker,
+        gateway,
     };
 };

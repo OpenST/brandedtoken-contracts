@@ -316,20 +316,56 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      * @notice Transfers _amount to _to.
      *
      * @dev Function requires:
-     *          - TBD.
+     *          - msg.sender has a balance at least equal to _amount.
+     *
+     * @param _to To address.
+     * @param _amount Amount to transfer.
+     *
+     * @return bool Success.
      */
-    function transfer(address, uint256) public returns (bool) {
-        // TODO
+    function transfer(
+        address _to,
+        uint256 _amount
+    )
+        public
+        returns (bool success)
+    {
+        balances[msg.sender] = balances[msg.sender].sub(_amount);
+        balances[_to] = balances[_to].add(_amount);
+
+        emit Transfer(msg.sender, _to, _amount);
+
+        return true;
     }
 
     /**
      * @notice Transfers _amount from _from to _to.
      *
      * @dev Function requires:
-     *          - TBD.
+     *          - _from has a balance at least equal to _amount;
+     *          - msg.sender has an allowance at least equal to _amount.
+     *
+     * @param _from From address.
+     * @param _to To address.
+     * @param _amount Amount to transfer.
+     *
+     * @return bool Success.
      */
-    function transferFrom(address, address, uint256) public returns (bool) {
-        // TODO
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _amount
+    )
+        public
+        returns (bool success)
+    {
+        balances[_from] = balances[_from].sub(_amount);
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_amount);
+        balances[_to] = balances[_to].add(_amount);
+
+        emit Transfer(_from, _to, _amount);
+
+        return true;
     }
 
     /**
