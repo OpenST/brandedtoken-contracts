@@ -23,6 +23,37 @@ contract('ValueBrandedToken::transfer', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
+        it('Reverts if msg.sender is not a transferor', async () => {
+            // More code than necessary to test functionality, but
+            // shows that staker cannot transfer tokens it holds
+            // unless specified as a transferor
+            const {
+                valueBrandedToken,
+                valueTokens,
+                staker,
+                gateway,
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+
+            const worker = accountProvider.get();
+
+            await valueBrandedToken.acceptStakeRequest(
+                staker,
+                { from: worker },
+            );
+
+            const amount = await valueBrandedToken.convert.call(valueTokens);
+
+            await utils.expectRevert(
+                valueBrandedToken.transfer(
+                    gateway,
+                    amount,
+                    { from: staker },
+                ),
+                'Should revert as msg.sender is not a transferor.',
+                'Msg.sender is not a transferor.',
+            );
+        });
+
         it('Reverts if balance is less than transfer amount', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 

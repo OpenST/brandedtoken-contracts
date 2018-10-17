@@ -23,6 +23,26 @@ contract('ValueBrandedToken::transferFrom', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
+        it('Reverts if msg.sender is not a transferor', async () => {
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+
+            const from = accountProvider.get();
+            const to = accountProvider.get();
+            const amount = 0;
+            const spender = accountProvider.get();
+
+            await utils.expectRevert(
+                valueBrandedToken.transferFrom(
+                    from,
+                    to,
+                    amount,
+                    { from: spender },
+                ),
+                'Should revert as msg.sender is not a transferor.',
+                'Msg.sender is not a transferor.',
+            );
+        });
+
         it('Reverts if balance is less than transfer amount', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 

@@ -58,6 +58,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         address _gateway
     );
 
+    event TransferorAdded(
+        address _transferor
+    );
+
 
     /* Storage */
 
@@ -68,6 +72,20 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     mapping(address /* staker */ => uint256 /* value tokens */) public stakeRequests;
     mapping(address => uint256 /* value branded tokens */) private balances;
     mapping(address => mapping (address => uint256 /* value branded tokens */)) private allowed;
+    mapping(address => bool) public canTransfer;
+
+
+    /* Modifiers */
+
+    modifier onlyTransferors {
+        require(
+            gateway == msg.sender ||
+            canTransfer[msg.sender],
+            "Msg.sender is not a transferor."
+        );
+        _;
+    }
+
 
     /* Constructor */
 
@@ -264,6 +282,34 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
+     * @notice Adds transferor.
+     *
+     * @dev Function requires:
+     *          - _transferor is not null;
+     *          - canTransfer[_transferor] is false;
+     *
+     * @param _transferor Transferor address to add.
+     */
+    function addTransferor(
+        address _transferor
+    )
+        public
+    {
+        require(
+            _transferor != address(0),
+            "Transferor is null."
+        );
+        require(
+            !canTransfer[_transferor],
+            "Transferor can transfer."
+        );
+
+        canTransfer[_transferor] = true;
+
+        emit TransferorAdded(_transferor);
+    }
+
+    /**
      * @notice Returns the supply.
      *
      * @return uint256 Supply.
@@ -316,6 +362,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      * @notice Transfers _amount to _to.
      *
      * @dev Function requires:
+     *          - msg.sender is a transferor
      *          - msg.sender has a balance at least equal to _amount.
      *
      * @param _to To address.
@@ -328,6 +375,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         uint256 _amount
     )
         public
+        onlyTransferors
         returns (bool success)
     {
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -341,7 +389,12 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     /**
      * @notice Transfers _amount from _from to _to.
      *
-     * @dev Function requires:
+     * @dev The intention is to limit tradeability whilst enabling transfers
+     *      that support the token economy. Thus, the account executing the transfer
+     *      is restricted and not the account from which tokens are transferred.
+     *
+     *      Function requires:
+     *          - msg.sender is a transferor
      *          - _from has a balance at least equal to _amount;
      *          - msg.sender has an allowance at least equal to _amount.
      *
@@ -357,6 +410,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         uint256 _amount
     )
         public
+        onlyTransferors
         returns (bool success)
     {
         balances[_from] = balances[_from].sub(_amount);
