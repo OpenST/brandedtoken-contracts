@@ -23,11 +23,32 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Reverts if stake request is 0', async () => {
+        it('Reverts if gateway is not set', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const nonStaker = accountProvider.get();
             const worker = accountProvider.get();
+
+            await utils.expectRevert(
+                valueBrandedToken.acceptStakeRequest(
+                    nonStaker,
+                    { from: worker },
+                ),
+                'Should revert as gateway is not set.',
+                'Gateway is not set.',
+            );
+        });
+
+        it('Reverts if stake request is 0', async () => {
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+
+            const gateway = accountProvider.get();
+            const nonStaker = accountProvider.get();
+            const worker = accountProvider.get();
+
+            await valueBrandedToken.setGateway(
+                gateway,
+            );
 
             await utils.expectRevert(
                 valueBrandedToken.acceptStakeRequest(

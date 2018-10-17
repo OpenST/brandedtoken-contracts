@@ -191,6 +191,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *         value branded tokens from _staker, and deletes stake request.
      *
      * @dev Function requires:
+     *          - gateway is set;
      *          - stake request is not 0.
      *
      * @param _staker Staker address.
@@ -200,6 +201,11 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     )
         external
     {
+        require(
+            gateway != address(0),
+            "Gateway is not set."
+        );
+
         require(
             stakeRequests[_staker] != 0,
             "Stake request is zero."
