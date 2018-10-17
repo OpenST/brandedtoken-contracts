@@ -1,5 +1,11 @@
 ## 0.0.0
 
+- Contracts: require gateway to be set to accept a stake request ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
+- Contracts: add transferor added event ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
+- Contracts: whitelist transferors and limit transfers to transferors ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
+- Contracts: complete EIP20 transfer functions ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
+- Contracts: add gateway set event ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
+- Contracts: add gateway setter ([#37](https://github.com/OpenSTFoundation/openst-tokens/pull/37))
 - Contracts: complete EIP20 view functions ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
 - Contracts: complete stake request accepted event ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
 - Contracts: add acceptStakeRequest ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
