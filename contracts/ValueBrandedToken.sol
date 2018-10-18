@@ -25,7 +25,9 @@ import "./EIP20TokenRequiredInterface.sol";
  *
  * @notice Supports staking value tokens for minting utility branded tokens
  *         where the conversion rate from value token to utility branded token
- *         is not 1:1.
+ *         is not 1:1. This contract does not require a non-1:1 conversion rate,
+ *         but it is expected that if the conversion rate is 1:1, value tokens
+ *         will be staked directly through a Gateway.
  */
 contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
@@ -68,6 +70,8 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     EIP20TokenRequiredInterface public valueToken;
     address public gateway;
     uint256 private supply;
+    uint256 public conversionRate;
+    uint8 public conversionRateDecimals;
 
     /** Maps staker address to amount of value tokens to stake. */
     mapping(address => uint256) public stakeRequests;
@@ -99,14 +103,24 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     /* Constructor */
 
     /**
-     * @dev Constructor requires:
-     *          - valueToken address is not null.
+     * @dev Conversion parameters provide the conversion rate and its scale.
+     *      For example, if 1 value token is equivalent to 3.5 utility branded
+     *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
+     *
+     *      Constructor requires:
+     *          - valueToken address is not null,
+     *          - conversionRate is not zero.
      *
      * @param _valueToken Address for tokens staked to mint utility branded tokens.
+     * @param _conversionRate Conversion rate from value tokens to utility branded
+     *        tokens.
+     * @param _conversionRateDecimals Number of digits to the right of the
+     *        decimal point in _conversionRate.
      */
     constructor(
-        EIP20TokenRequiredInterface _valueToken
-        // TODO: conversion-rate-related parameters
+        EIP20TokenRequiredInterface _valueToken,
+        uint256 _conversionRate,
+        uint8 _conversionRateDecimals
     )
         public
     {
@@ -114,8 +128,14 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
             _valueToken != address(0),
             "ValueToken is null."
         );
+        require(
+            _conversionRate != 0,
+            "ConversionRate is zero."
+        );
 
         valueToken = _valueToken;
+        conversionRate = _conversionRate;
+        conversionRateDecimals = _conversionRateDecimals;
     }
 
 
