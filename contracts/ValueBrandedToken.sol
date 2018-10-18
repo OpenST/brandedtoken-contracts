@@ -69,9 +69,19 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     address public gateway;
     uint256 private supply;
 
-    mapping(address /* staker */ => uint256 /* value tokens */) public stakeRequests;
-    mapping(address => uint256 /* value branded tokens */) private balances;
-    mapping(address => mapping (address => uint256 /* value branded tokens */)) private allowed;
+    /** Maps staker address to amount of value tokens to stake. */
+    mapping(address => uint256) public stakeRequests;
+
+    /** Maps owner address to amount of value branded tokens held. */
+    mapping(address => uint256) private balances;
+
+    /**
+     * Maps owner address to spender address to amount of spendable
+     * value branded tokens.
+     */
+    mapping(address => mapping (address => uint256)) private allowed;
+
+    /** Maps address to whether it is permitted to execute transfers. */
     mapping(address => bool) public canTransfer;
 
 
@@ -284,34 +294,6 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     }
 
     /**
-     * @notice Adds transferor.
-     *
-     * @dev Function requires:
-     *          - _transferor is not null;
-     *          - canTransfer[_transferor] is false;
-     *
-     * @param _transferor Transferor address to add.
-     */
-    function addTransferor(
-        address _transferor
-    )
-        public
-    {
-        require(
-            _transferor != address(0),
-            "Transferor is null."
-        );
-        require(
-            !canTransfer[_transferor],
-            "Transferor can transfer."
-        );
-
-        canTransfer[_transferor] = true;
-
-        emit TransferorAdded(_transferor);
-    }
-
-    /**
      * @notice Returns the supply.
      *
      * @return uint256 Supply.
@@ -334,7 +316,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     function balanceOf(
         address _owner
     )
-        public
+        external
         view
         returns (uint256)
     {
@@ -353,7 +335,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         address _owner,
         address _spender
     )
-        public
+        external
         view
         returns (uint256)
     {
@@ -376,7 +358,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         address _to,
         uint256 _amount
     )
-        public
+        external
         onlyTransferors
         returns (bool success)
     {
@@ -411,7 +393,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         address _to,
         uint256 _amount
     )
-        public
+        external
         onlyTransferors
         returns (bool success)
     {
@@ -437,6 +419,34 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
 
     /* Public Functions */
+
+    /**
+     * @notice Adds transferor.
+     *
+     * @dev Function requires:
+     *          - _transferor is not null;
+     *          - canTransfer[_transferor] is false;
+     *
+     * @param _transferor Transferor address to add.
+     */
+    function addTransferor(
+        address _transferor
+    )
+        public
+    {
+        require(
+            _transferor != address(0),
+            "Transferor is null."
+        );
+        require(
+            !canTransfer[_transferor],
+            "Transferor can transfer."
+        );
+
+        canTransfer[_transferor] = true;
+
+        emit TransferorAdded(_transferor);
+    }
 
     /**
      * @notice Returns the converted amount of a given amount.
