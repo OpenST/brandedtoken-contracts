@@ -46,8 +46,13 @@ contract('ValueBrandedToken::redeem', async () => {
 
         it('Reverts if valueToken.transfer returns false', async () => {
             const valueToken = await EIP20TokenMockPassFail.new();
+            const conversionRate = 35;
+            const conversionRateDecimals = 1;
+
             const valueBrandedToken = await ValueBrandedToken.new(
                 valueToken.address,
+                conversionRate,
+                conversionRateDecimals,
             );
 
             const valueTokens = 1;

@@ -22,15 +22,35 @@ contract('ValueBrandedToken::constructor', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
+        const conversionRateDecimals = 1;
+
         it('Reverts if valueToken is null', async () => {
             const valueToken = utils.NULL_ADDRESS;
+            const conversionRate = 35;
 
             await utils.expectRevert(
                 ValueBrandedToken.new(
                     valueToken,
+                    conversionRate,
+                    conversionRateDecimals,
                 ),
                 'Should revert as valueToken is null.',
                 'ValueToken is null.',
+            );
+        });
+
+        it('Reverts if conversionRate is zero', async () => {
+            const valueToken = accountProvider.get();
+            const conversionRate = 0;
+
+            await utils.expectRevert(
+                ValueBrandedToken.new(
+                    valueToken,
+                    conversionRate,
+                    conversionRateDecimals,
+                ),
+                'Should revert as conversionRate is zero.',
+                'ConversionRate is zero.',
             );
         });
     });
@@ -40,9 +60,13 @@ contract('ValueBrandedToken::constructor', async () => {
 
         it('Successfully sets the constructor arguments', async () => {
             const valueToken = accountProvider.get();
+            const conversionRate = 35;
+            const conversionRateDecimals = 1;
 
             const valueBrandedToken = await ValueBrandedToken.new(
                 valueToken,
+                conversionRate,
+                conversionRateDecimals,
             );
 
             assert.strictEqual(

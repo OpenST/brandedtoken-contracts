@@ -20,8 +20,13 @@ const ValueBrandedToken = artifacts.require('ValueBrandedToken');
  */
 module.exports.createValueBrandedToken = async () => {
     const valueToken = await EIP20TokenMockPass.new();
+    const conversionRate = 35;
+    const conversionRateDecimals = 1;
+
     const valueBrandedToken = await ValueBrandedToken.new(
         valueToken.address,
+        conversionRate,
+        conversionRateDecimals,
     );
 
     return valueBrandedToken;
