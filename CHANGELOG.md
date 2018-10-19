@@ -1,5 +1,9 @@
 ## 0.0.0
 
+- Contracts: transfer equivalent value tokens to redeemers in redeem ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
+- Contracts: require equivalence between value tokens and value branded tokens in requestStake ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
+- Contracts: complete function for converting from value tokens to value branded tokens ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
+- Contracts: update the constructor to take conversion rate information ([#38](https://github.com/OpenSTFoundation/openst-tokens/pull/38))
 - Contracts: add redeem ([#33](https://github.com/OpenSTFoundation/openst-tokens/pull/33))
 - Contracts: complete EIP20 view functions ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
 - Contracts: complete stake request accepted event ([#32](https://github.com/OpenSTFoundation/openst-tokens/pull/32))
