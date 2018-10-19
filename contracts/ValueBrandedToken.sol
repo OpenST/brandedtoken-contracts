@@ -73,16 +73,16 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     /**
      * @dev Conversion parameters provide the conversion rate and its scale.
-     *      For example, if 1 value token is equivalent to 3.5 utility branded
+     *      For example, if 1 value token is equivalent to 3.5 utility/value branded
      *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
      *
      *      Constructor requires:
-     *          - valueToken address is not null,
+     *          - valueToken address is not null;
      *          - conversionRate is not zero.
      *
      * @param _valueToken Address for tokens staked to mint utility branded tokens.
-     * @param _conversionRate Conversion rate from value tokens to utility branded
-     *        tokens.
+     * @param _conversionRate Conversion rate from value tokens to utility/value
+     *        branded tokens.
      * @param _conversionRateDecimals Number of digits to the right of the
      *        decimal point in _conversionRate.
      */
@@ -124,6 +124,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *          - _valueTokens is not zero;
      *          - _beneficiary is not null;
      *          - _signature is not empty;
+     *          - _valueBrandedTokens is equivalent to _valueTokens;
      *          - msg.sender does not have a stake request;
      *          - valueToken.transferFrom returns true.
      *
@@ -159,6 +160,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
         require(
             _signature.length != 0,
             "Signature is empty."
+        );
+        require(
+            _valueBrandedTokens == convert(_valueTokens),
+            "ValueBrandedTokens is not equivalent to valueTokens."
         );
         require(
             stakeRequests[msg.sender] == 0,
@@ -238,7 +243,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      * @notice Reduces msg.sender's balance and the supply by _valueBrandedTokens
      *         and transfers an equivalent amount of value tokens to msg.sender.
      *
-     * @dev Function requires:
+     * @dev Redemption presents a risk of loss up to 1 indivisible unit of valueToken. It is possible
+     *      to redeem value branded tokens for 0 value tokens--proceed with caution.
+     *
+     *      Function requires:
      *          - msg.sender has a balance at least equal to _valueBrandedTokens;
      *          - valueToken.transfer returns true.
      *
@@ -260,7 +268,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
         emit Transfer(msg.sender, address(0), _valueBrandedTokens);
 
-        valueTokens_ = _valueBrandedTokens; // TODO: replace with proper conversion
+        valueTokens_ = (_valueBrandedTokens.mul(10 ** uint256(conversionRateDecimals))).div(conversionRate);
 
         require(
             valueToken.transfer(msg.sender, valueTokens_),
@@ -352,20 +360,24 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     /* Public Functions */
 
     /**
-     * @notice Returns the converted amount of a given amount.
+     * @notice Returns the amount of value branded tokens equivalent to a
+     *         given amount of value tokens.
      *
-     * @param _amount Amount to convert.
+     * @dev Please note there may be a loss of up to 1 indivisible unit of
+     *      this token (i.e., assuming 1 value token is equivalent
+     *      to 5.99 value branded tokens, convert(1) --> 5, not 5.99).
+     *
+     * @param _valueTokens Amount to convert.
      *
      * @return uint256 Converted amount.
      */
     function convert(
-        uint256 _amount
+        uint256 _valueTokens
     )
         public
-        pure
+        view
         returns (uint256)
     {
-        // TODO: properly convert
-        return _amount;
+        return (_valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals));
     }
 }

@@ -56,7 +56,7 @@ contract('ValueBrandedToken::redeem', async () => {
             );
 
             const valueTokens = 1;
-            const valueBrandedTokens = 0;
+            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -142,22 +142,45 @@ contract('ValueBrandedToken::redeem', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Successfully reduces supply and redeemer balance and calls valueToken.transfer', async () => {
-            const {
-                valueBrandedToken,
-                valueTokens,
-                staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
+            const valueTokens = 100;
+            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const beneficiary = accountProvider.get();
+            const gasPrice = 0;
+            const gasLimit = 0;
+            const nonce = 0;
+            const signature = '0x00';
+
+            const staker = accountProvider.get();
             const worker = accountProvider.get();
+
+            await valueBrandedToken.requestStake(
+                valueTokens,
+                valueBrandedTokens,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                signature,
+                { from: staker },
+            );
 
             await valueBrandedToken.acceptStakeRequest(
                 staker,
                 { from: worker },
             );
 
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
             const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
             const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
+            const conversionRate = await valueBrandedToken.conversionRate.call();
+            const conversionRateDecimals = await valueBrandedToken.conversionRateDecimals.call();
+
+            // Redeem amount that evaluates to an integer value token amount
+            const redeemAmountWhole = conversionRate;
+
+            // Redeem amount that evaluates (absent precision limits of Solidity) to a non-integer value token amount
+            const redeemAmountPartial = redeemAmountWhole.addn(1);
 
             assert.strictEqual(
                 totalSupplyBefore.cmp(
@@ -173,36 +196,88 @@ contract('ValueBrandedToken::redeem', async () => {
                 0,
             );
 
-            const result = await valueBrandedToken.redeem.call(
-                valueBrandedTokens,
+            // Redemption amounts are not equal
+            assert.strictEqual(
+                redeemAmountWhole.cmp(
+                    redeemAmountPartial,
+                ),
+                -1,
+            );
+
+            const resultAmount1 = await valueBrandedToken.redeem.call(
+                1,
                 { from: staker },
             );
 
+            const resultAmountWhole = await valueBrandedToken.redeem.call(
+                redeemAmountWhole,
+                { from: staker },
+            );
+
+            const resultAmountPartial = await valueBrandedToken.redeem.call(
+                redeemAmountPartial,
+                { from: staker },
+            );
+
+            // Redemption can result in receiving 0 value tokens
             assert.strictEqual(
-                result.cmp(
-                    new BN(valueTokens)
+                resultAmount1.cmp(
+                    utils.zeroBN,
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                resultAmountWhole.cmp(
+                    redeemAmountWhole.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                resultAmountPartial.cmp(
+                    redeemAmountPartial.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                ),
+                0,
+            );
+
+            // Different redemption amounts can receive the same amount of value tokens--redemption can result in loss
+            assert.strictEqual(
+                resultAmountWhole.cmp(
+                    resultAmountPartial,
                 ),
                 0,
             );
 
             await valueBrandedToken.redeem(
-                valueBrandedTokens,
+                1,
                 { from: staker },
             );
 
+            await valueBrandedToken.redeem(
+                redeemAmountWhole,
+                { from: staker },
+            );
+
+            await valueBrandedToken.redeem(
+                redeemAmountPartial,
+                { from: staker },
+            );
+
+            const totalRedemption = redeemAmountWhole.add(redeemAmountPartial).addn(1);
             const totalSupplyAfter = await valueBrandedToken.totalSupply.call();
             const balanceAfter = await valueBrandedToken.balanceOf.call(staker);
 
             assert.strictEqual(
                 totalSupplyAfter.cmp(
-                    (totalSupplyBefore.sub(valueBrandedTokens)),
+                    totalSupplyBefore.sub(totalRedemption),
                 ),
                 0,
             );
 
             assert.strictEqual(
                 balanceAfter.cmp(
-                    (balanceBefore.sub(valueBrandedTokens)),
+                    balanceBefore.sub(totalRedemption),
                 ),
                 0,
             );
