@@ -159,6 +159,7 @@ contract('ValueBrandedToken::redeem', async () => {
 
             const staker = accountProvider.get();
             const worker = accountProvider.get();
+            const gateway = accountProvider.get();
 
             await valueBrandedToken.requestStake(
                 valueTokens,
@@ -169,6 +170,10 @@ contract('ValueBrandedToken::redeem', async () => {
                 nonce,
                 signature,
                 { from: staker },
+            );
+
+            await valueBrandedToken.setGateway(
+                gateway,
             );
 
             await valueBrandedToken.acceptStakeRequest(
