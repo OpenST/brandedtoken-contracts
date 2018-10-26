@@ -109,28 +109,36 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
             const gateway = await valueBrandedToken.gateway.call();
-            const stakeRequestBefore = (await valueBrandedToken.stakeRequests(staker)).toNumber();
-            const balanceBefore = (await valueBrandedToken.balanceOf(staker)).toNumber();
-            const totalSupplyBefore = (await valueBrandedToken.totalSupply()).toNumber();
-            const allowanceBefore = (await valueBrandedToken.allowance(staker, gateway)).toNumber();
+            const stakeRequestBefore = await valueBrandedToken.stakeRequests.call(staker);
+            const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
+            const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
+            const allowanceBefore = await valueBrandedToken.allowance.call(staker, gateway);
 
-            assert.isAbove(
-                stakeRequestBefore,
+            assert.strictEqual(
+                stakeRequestBefore.cmp(
+                    utils.zeroBN,
+                ),
+                1,
+            );
+
+            assert.strictEqual(
+                balanceBefore.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
 
             assert.strictEqual(
-                balanceBefore,
+                totalSupplyBefore.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
 
             assert.strictEqual(
-                totalSupplyBefore,
-                0,
-            );
-
-            assert.strictEqual(
-                allowanceBefore,
+                allowanceBefore.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
 
@@ -146,30 +154,38 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 { from: worker },
             );
 
-            const valueBrandedTokens = (await valueBrandedToken.convert.call(valueTokens)).toNumber();
-            const stakeRequestAfter = (await valueBrandedToken.stakeRequests(staker)).toNumber();
-            const balanceAfter = (await valueBrandedToken.balanceOf(staker)).toNumber();
-            const totalSupplyAfter = (await valueBrandedToken.totalSupply()).toNumber();
-            const allowanceAfter = (await valueBrandedToken.allowance(staker, gateway)).toNumber();
+            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const stakeRequestAfter = await valueBrandedToken.stakeRequests.call(staker);
+            const balanceAfter = await valueBrandedToken.balanceOf.call(staker);
+            const totalSupplyAfter = await valueBrandedToken.totalSupply.call();
+            const allowanceAfter = await valueBrandedToken.allowance.call(staker, gateway);
 
             assert.strictEqual(
-                stakeRequestAfter,
+                stakeRequestAfter.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
 
             assert.strictEqual(
-                balanceAfter,
-                (balanceBefore + valueBrandedTokens),
+                balanceAfter.cmp(
+                    (balanceBefore.add(valueBrandedTokens)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                totalSupplyAfter,
-                (totalSupplyBefore + valueBrandedTokens),
+                totalSupplyAfter.cmp(
+                    (totalSupplyBefore.add(valueBrandedTokens)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                allowanceAfter,
-                (allowanceBefore + valueBrandedTokens),
+                allowanceAfter.cmp(
+                    (allowanceBefore.add(valueBrandedTokens)),
+                ),
+                0,
             );
         });
     });
