@@ -239,10 +239,12 @@ contract('ValueBrandedToken::requestStake', async () => {
 
             const staker = accountProvider.get();
 
-            const amountBeforeRequest = (await valueBrandedToken.stakeRequests(staker)).toNumber();
+            const amountBeforeRequest = await valueBrandedToken.stakeRequests.call(staker);
 
             assert.strictEqual(
-                amountBeforeRequest,
+                amountBeforeRequest.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
 
@@ -257,16 +259,20 @@ contract('ValueBrandedToken::requestStake', async () => {
                 { from: staker },
             );
 
-            const amountAfterRequest = (await valueBrandedToken.stakeRequests(staker)).toNumber();
+            const amountAfterRequest = await valueBrandedToken.stakeRequests.call(staker)
 
-            assert.notStrictEqual(
-                amountBeforeRequest,
-                amountAfterRequest,
+            assert.strictEqual(
+                amountBeforeRequest.cmp(
+                    amountAfterRequest,
+                ),
+                -1,
             );
 
             assert.strictEqual(
-                amountAfterRequest,
-                valueTokens,
+                amountAfterRequest.cmp(
+                    new BN(valueTokens),
+                ),
+                0,
             );
         });
     });

@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const BN = require('bn.js');
 const assert = require('assert');
 const web3 = require('./web3.js');
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+const zeroBN = new BN(0);
 
 module.exports.NULL_ADDRESS = NULL_ADDRESS;
 
 module.exports.isNullAddress = address => address === NULL_ADDRESS;
+
+module.exports.zeroBN = zeroBN;
 
 /**
  * Asserts that a call or transaction reverts.
