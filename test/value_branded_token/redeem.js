@@ -150,18 +150,22 @@ contract('ValueBrandedToken::redeem', async () => {
                 { from: worker },
             );
 
-            const valueBrandedTokens = (await valueBrandedToken.convert.call(valueTokens)).toNumber();
-            const balanceBefore = (await valueBrandedToken.balanceOf(staker)).toNumber();
-            const totalSupplyBefore = (await valueBrandedToken.totalSupply()).toNumber();
+            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
+            const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
 
             assert.strictEqual(
-                totalSupplyBefore,
-                valueBrandedTokens,
+                totalSupplyBefore.cmp(
+                    valueBrandedTokens,
+                ),
+                0,
             );
 
             assert.strictEqual(
-                balanceBefore,
-                valueBrandedTokens,
+                balanceBefore.cmp(
+                    valueBrandedTokens,
+                ),
+                0,
             );
 
             const result = await valueBrandedToken.redeem.call(
@@ -170,8 +174,10 @@ contract('ValueBrandedToken::redeem', async () => {
             );
 
             assert.strictEqual(
-                result.toNumber(),
-                valueTokens
+                result.cmp(
+                    new BN(valueTokens)
+                ),
+                0,
             );
 
             await valueBrandedToken.redeem(
@@ -179,17 +185,21 @@ contract('ValueBrandedToken::redeem', async () => {
                 { from: staker },
             );
 
-            const totalSupplyAfter = (await valueBrandedToken.totalSupply()).toNumber();
-            const balanceAfter = (await valueBrandedToken.balanceOf(staker)).toNumber();
+            const totalSupplyAfter = await valueBrandedToken.totalSupply.call();
+            const balanceAfter = await valueBrandedToken.balanceOf.call(staker);
 
             assert.strictEqual(
-                totalSupplyAfter,
-                (totalSupplyBefore - valueBrandedTokens),
+                totalSupplyAfter.cmp(
+                    (totalSupplyBefore.sub(valueBrandedTokens)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                balanceAfter,
-                (balanceBefore - valueBrandedTokens),
+                balanceAfter.cmp(
+                    (balanceBefore.sub(valueBrandedTokens)),
+                ),
+                0,
             );
         });
     });
