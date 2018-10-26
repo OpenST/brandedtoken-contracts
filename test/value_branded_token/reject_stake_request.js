@@ -134,11 +134,13 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
                 staker,
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
-            const amountBeforeReject = (await valueBrandedToken.stakeRequests(staker)).toNumber();
+            const amountBeforeReject = await valueBrandedToken.stakeRequests.call(staker);
 
-            assert.isAbove(
-                amountBeforeReject,
-                0,
+            assert.strictEqual(
+                amountBeforeReject.cmp(
+                    utils.zeroBN,
+                ),
+                1,
             );
 
             assert.isOk(
@@ -153,10 +155,12 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
                 { from: worker },
             );
 
-            const amountAfterReject = (await valueBrandedToken.stakeRequests(staker)).toNumber();
+            const amountAfterReject = await valueBrandedToken.stakeRequests.call(staker);
 
             assert.strictEqual(
-                amountAfterReject,
+                amountAfterReject.cmp(
+                    utils.zeroBN,
+                ),
                 0,
             );
         });
