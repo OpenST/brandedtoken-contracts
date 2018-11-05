@@ -21,7 +21,9 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
   let valueToken,
     organization,
-    accountProvider;
+    accountProvider,
+    conversionRate = 5,
+    conversionRateDecimals = 10,;
 
   const SYMBOL = "MOCK",
     NAME = "Mock Token",
