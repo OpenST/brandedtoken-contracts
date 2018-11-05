@@ -13,7 +13,8 @@
 // limitations under the License.
 
 const assert = require('assert');
-const web3 = require('./web3.js');
+const web3 = require('web3');
+
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -93,3 +94,5 @@ module.exports.AccountProvider = class AccountProvider {
         return account;
     }
 };
+
+
