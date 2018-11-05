@@ -14,8 +14,8 @@
 
 const utils = require('../test_lib/utils'),
   UtilityBrandedToken = artifacts.require('UtilityBrandedToken'),
-  MockToken = artifacts.require('MockToken'),
-  AccountProvider =  utils.AccountProvider;;
+  EIP20TokenMock = artifacts.require('EIP20TokenMock'),
+  AccountProvider =  utils.AccountProvider;
 
 contract('UtilityBrandedToken::constructor', async (accounts) => {
 
@@ -31,7 +31,14 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
     accountProvider = new AccountProvider(accounts);
     organization = accountProvider.get();
-    valueToken = await MockToken.new({from: organization});
+    valueToken = await EIP20TokenMock.new(
+      conversionRate,
+      conversionRateDecimals,
+      SYMBOL,
+      NAME,
+      DECIMALS,
+      {from: organization}
+    );
 
   });
 
