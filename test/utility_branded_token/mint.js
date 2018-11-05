@@ -145,7 +145,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
 
   describe('Events', async () => {
 
-    it('Check Minted event', async () => {
+    it('Verify Minted event', async () => {
 
       let transactionResponse = await utilityBrandedTokenMock.mint(
         tokenHolder3,
@@ -154,6 +154,11 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
       );
 
       let events = Event.decodeTransactionResponse(transactionResponse);
+
+      assert.strictEqual(
+        events.length,
+        1
+      );
 
       Event.assertEqual(events[0],{
         name: 'Minted',

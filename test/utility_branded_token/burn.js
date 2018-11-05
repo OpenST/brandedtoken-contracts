@@ -129,7 +129,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
   describe('Events', async () => {
 
-    it('Check Burnt event', async () => {
+    it('Verify Burnt event', async () => {
 
       let coGateway = tokenHolder2;
       await utilityBrandedTokenMock.settingCoGateway(coGateway);
@@ -142,6 +142,11 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       let transactionResponse = await utilityBrandedTokenMock.burn(burnAmount, {from: coGateway});
 
       let events = Event.decodeTransactionResponse(transactionResponse);
+
+      assert.strictEqual(
+        events.length,
+        1,
+      );
 
       Event.assertEqual(events[0],{
         name: 'Burnt',

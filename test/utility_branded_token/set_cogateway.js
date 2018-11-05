@@ -166,7 +166,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
   describe('Events', async () => {
 
-    it('Check CoGatewaySet event', async () => {
+    it('Verify CoGatewaySet event', async () => {
 
       let transactionResponse = await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
@@ -174,6 +174,11 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       );
 
       let events = Event.decodeTransactionResponse(transactionResponse);
+
+      assert.strictEqual(
+        events.length,
+        1,
+      );
 
       Event.assertEqual(events[0],{
         name: 'CoGatewaySet',
