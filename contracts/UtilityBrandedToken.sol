@@ -58,7 +58,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     }
 
 
-    /** Special Function */
+    /** Special Functions */
 
     /**
      * @notice Contract constructor.

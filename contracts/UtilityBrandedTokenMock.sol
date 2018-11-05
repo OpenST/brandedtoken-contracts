@@ -4,6 +4,14 @@ import "./UtilityBrandedToken.sol";
 import "./EIP20Interface.sol";
 import "./OrganizationIsWorkerInterface.sol";
 
+/**
+ * @title UtilityBrandedTokenMock contract which implements UtilityBrandedToken.
+ *
+ * @notice UtilityBrandedToken is inheriting UtilityBrandedToken contract.
+ *
+ * @dev UtilityBrandedTokenMock facilitates testing of UtilityBrandedToken
+ *
+ */
 contract UtilityBrandedTokenMock is UtilityBrandedToken{
 
     constructor(

@@ -17,10 +17,11 @@ pragma solidity ^0.4.23;
 
 import "./EIP20Token.sol";
 
-
 /**
  * @title EIP20TokenMock
- * @notice It provides EIP20Token with mock functionality to facilitate testing payments
+ *
+ * @notice It provides EIP20Token with mock functionality to facilitate testing
+ *         payments.
  */
 contract EIP20TokenMock is EIP20Token {
 

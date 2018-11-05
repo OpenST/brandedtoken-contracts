@@ -94,5 +94,3 @@ module.exports.AccountProvider = class AccountProvider {
         return account;
     }
 };
-
-
