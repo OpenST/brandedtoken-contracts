@@ -7,7 +7,7 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface{
     /** Added of the coGateway*/
     address public coGateway;
 
-    constructor(address _coGateway){
+    constructor(address _coGateway) public{
 
         coGateway = _coGateway;
 
