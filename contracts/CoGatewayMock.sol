@@ -4,12 +4,12 @@ import "./UtilityTokenInterface.sol";
 
 contract CoGatewayMock is CoGatewayUtilityTokenInterface{
 
-    /** Added of the coGateway*/
-    address public coGateway;
+    /** Address of utilityToken */
+    address public utilityToken;
 
-    constructor(address _coGateway) public{
+    constructor(address _utilityToken) public{
 
-        coGateway = _coGateway;
+        utilityToken = _utilityToken;
 
     }
 
@@ -20,7 +20,7 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface{
      */
     function utilityToken() external returns (address)
     {
-        return coGateway;
+        return utilityToken;
     }
 
 }

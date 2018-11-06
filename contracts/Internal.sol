@@ -66,7 +66,7 @@ contract Internal is Organized {
     {
         require(
             _internalActors.length > 0,
-            "Internal actor to be added cannot be empty"
+            "Internal actors to be added cannot be empty"
         );
 
         for (uint256 i = 0; i < _internalActors.length; i++) {
