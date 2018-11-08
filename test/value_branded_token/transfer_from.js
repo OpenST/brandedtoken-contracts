@@ -71,7 +71,7 @@ contract('ValueBrandedToken::transferFrom', async () => {
 
             const worker = accountProvider.get();
             const to = accountProvider.get();
-            const amount = await valueBrandedToken.convert.call(valueTokens);
+            const amount = await valueBrandedToken.convert(valueTokens);
             const spender = accountProvider.get();
 
             await valueBrandedToken.acceptStakeRequest(
@@ -109,7 +109,7 @@ contract('ValueBrandedToken::transferFrom', async () => {
                 { from: worker },
             );
 
-            const amount = await valueBrandedToken.convert.call(valueTokens);
+            const amount = await valueBrandedToken.convert(valueTokens);
 
             // E.g., Gateway.stake
             const transactionResponse = await valueBrandedToken.transferFrom(
@@ -158,24 +158,30 @@ contract('ValueBrandedToken::transferFrom', async () => {
                 { from: worker },
             );
 
-            const amount = (await valueBrandedToken.convert.call(valueTokens)).toNumber();
-            const fromBalanceBefore = (await valueBrandedToken.balanceOf(staker)).toNumber();
-            const toBalanceBefore = (await valueBrandedToken.balanceOf(gateway)).toNumber();
-            const allowanceBefore = (await valueBrandedToken.allowance(staker, gateway)).toNumber();
+            const amount = await valueBrandedToken.convert(valueTokens);
+            const fromBalanceBefore = await valueBrandedToken.balanceOf(staker);
+            const toBalanceBefore = await valueBrandedToken.balanceOf(gateway);
+            const allowanceBefore = await valueBrandedToken.allowance(staker, gateway);
 
             assert.strictEqual(
-                fromBalanceBefore,
-                amount,
-            );
-
-            assert.strictEqual(
-                toBalanceBefore,
+                fromBalanceBefore.cmp(
+                    amount,
+                ),
                 0,
             );
 
             assert.strictEqual(
-                allowanceBefore,
-                amount,
+                toBalanceBefore.cmp(
+                    new BN(0),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                allowanceBefore.cmp(
+                    amount,
+                ),
+                0,
             );
 
             // E.g., Gateway.stake
@@ -186,23 +192,29 @@ contract('ValueBrandedToken::transferFrom', async () => {
                 { from: gateway },
             );
 
-            const fromBalanceAfter = (await valueBrandedToken.balanceOf(staker)).toNumber();
-            const toBalanceAfter = (await valueBrandedToken.balanceOf(gateway)).toNumber();
-            const allowanceAfter = (await valueBrandedToken.allowance(staker, gateway)).toNumber();
+            const fromBalanceAfter = await valueBrandedToken.balanceOf(staker);
+            const toBalanceAfter = await valueBrandedToken.balanceOf(gateway);
+            const allowanceAfter = await valueBrandedToken.allowance(staker, gateway);
 
             assert.strictEqual(
-                fromBalanceAfter,
-                (fromBalanceBefore - amount),
+                fromBalanceAfter.cmp(
+                    (fromBalanceBefore.sub(amount)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                toBalanceAfter,
-                (toBalanceBefore + amount),
+                toBalanceAfter.cmp(
+                    (toBalanceBefore.add(amount)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                allowanceAfter,
-                (allowanceBefore - amount),
+                allowanceAfter.cmp(
+                    (allowanceBefore.sub(amount)),
+                ),
+                0,
             );
         });
     });

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 
-const BN = require('bn.js');
 const utils = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder');
 const { AccountProvider } = require('../test_lib/utils.js');
@@ -88,7 +87,7 @@ contract('ValueBrandedToken::setGateway', async () => {
             const gateway = accountProvider.get();
 
             assert.strictEqual(
-                (await valueBrandedToken.gateway.call()),
+                (await valueBrandedToken.gateway()),
                 utils.NULL_ADDRESS,
             );
 
@@ -97,7 +96,7 @@ contract('ValueBrandedToken::setGateway', async () => {
             );
 
             assert.strictEqual(
-                (await valueBrandedToken.gateway.call()),
+                (await valueBrandedToken.gateway()),
                 gateway,
             );
         });

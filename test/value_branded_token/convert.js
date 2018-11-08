@@ -25,19 +25,19 @@ contract('ValueBrandedToken::convert', async () => {
 
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
-            const valueBrandedTokens0 = await valueBrandedToken.convert.call(utils.zeroBN);
+            const valueBrandedTokens0 = await valueBrandedToken.convert(new BN(0));
 
             assert.strictEqual(
                 valueBrandedTokens0.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
 
-            const conversionRate = await valueBrandedToken.conversionRate.call();
-            const conversionRateDecimals = await valueBrandedToken.conversionRateDecimals.call();
+            const conversionRate = await valueBrandedToken.conversionRate();
+            const conversionRateDecimals = await valueBrandedToken.conversionRateDecimals();
             const valueTokens1 = new BN(1);
-            const valueBrandedTokens1 = await valueBrandedToken.convert.call(valueTokens1);
+            const valueBrandedTokens1 = await valueBrandedToken.convert(valueTokens1);
 
             assert.strictEqual(
                 valueBrandedTokens1.cmp(

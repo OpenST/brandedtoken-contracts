@@ -41,7 +41,7 @@ contract('ValueBrandedToken::transfer', async () => {
                 { from: worker },
             );
 
-            const amount = await valueBrandedToken.convert.call(valueTokens);
+            const amount = await valueBrandedToken.convert(valueTokens);
 
             await utils.expectRevert(
                 valueBrandedToken.transfer(
@@ -90,7 +90,7 @@ contract('ValueBrandedToken::transfer', async () => {
                 { from: worker },
             );
 
-            const amount = await valueBrandedToken.convert.call(valueTokens);
+            const amount = await valueBrandedToken.convert(valueTokens);
 
             // E.g., Gateway.stake
             await valueBrandedToken.transferFrom(
@@ -146,7 +146,7 @@ contract('ValueBrandedToken::transfer', async () => {
                 { from: worker },
             );
 
-            const amount = (await valueBrandedToken.convert.call(valueTokens)).toNumber();
+            const amount = await valueBrandedToken.convert(valueTokens);
 
             // E.g., Gateway.stake
             await valueBrandedToken.transferFrom(
@@ -156,16 +156,20 @@ contract('ValueBrandedToken::transfer', async () => {
                 { from: gateway },
             );
 
-            const fromBalanceBefore = (await valueBrandedToken.balanceOf(gateway)).toNumber();
-            const toBalanceBefore = (await valueBrandedToken.balanceOf(staker)).toNumber();
+            const fromBalanceBefore = await valueBrandedToken.balanceOf(gateway);
+            const toBalanceBefore = await valueBrandedToken.balanceOf(staker);
 
             assert.strictEqual(
-                fromBalanceBefore,
-                amount,
+                fromBalanceBefore.cmp(
+                    amount,
+                ),
+                0,
             );
 
             assert.strictEqual(
-                toBalanceBefore,
+                toBalanceBefore.cmp(
+                    new BN(0),
+                ),
                 0,
             );
 
@@ -176,17 +180,21 @@ contract('ValueBrandedToken::transfer', async () => {
                 { from: gateway },
             );
 
-            const fromBalanceAfter = (await valueBrandedToken.balanceOf(gateway)).toNumber();
-            const toBalanceAfter = (await valueBrandedToken.balanceOf(staker)).toNumber();
+            const fromBalanceAfter = await valueBrandedToken.balanceOf(gateway);
+            const toBalanceAfter = await valueBrandedToken.balanceOf(staker);
 
             assert.strictEqual(
-                fromBalanceAfter,
-                (fromBalanceBefore - amount),
+                fromBalanceAfter.cmp(
+                    (fromBalanceBefore.sub(amount)),
+                ),
+                0,
             );
 
             assert.strictEqual(
-                toBalanceAfter,
-                (toBalanceBefore + amount),
+                toBalanceAfter.cmp(
+                    (toBalanceBefore.add(amount)),
+                ),
+                0,
             );
         });
     });

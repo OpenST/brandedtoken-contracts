@@ -79,7 +79,7 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 { from: worker },
             );
 
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
 
             const events = Event.decodeTransactionResponse(
                 transactionResponse,
@@ -130,35 +130,35 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 gateway,
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
-            const stakeRequestBefore = await valueBrandedToken.stakeRequests.call(staker);
-            const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
-            const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
-            const allowanceBefore = await valueBrandedToken.allowance.call(staker, gateway);
+            const stakeRequestBefore = await valueBrandedToken.stakeRequests(staker);
+            const balanceBefore = await valueBrandedToken.balanceOf(staker);
+            const totalSupplyBefore = await valueBrandedToken.totalSupply();
+            const allowanceBefore = await valueBrandedToken.allowance(staker, gateway);
 
             assert.strictEqual(
                 stakeRequestBefore.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 1,
             );
 
             assert.strictEqual(
                 balanceBefore.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
 
             assert.strictEqual(
                 totalSupplyBefore.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
 
             assert.strictEqual(
                 allowanceBefore.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
@@ -175,15 +175,15 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 { from: worker },
             );
 
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
-            const stakeRequestAfter = await valueBrandedToken.stakeRequests.call(staker);
-            const balanceAfter = await valueBrandedToken.balanceOf.call(staker);
-            const totalSupplyAfter = await valueBrandedToken.totalSupply.call();
-            const allowanceAfter = await valueBrandedToken.allowance.call(staker, gateway);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
+            const stakeRequestAfter = await valueBrandedToken.stakeRequests(staker);
+            const balanceAfter = await valueBrandedToken.balanceOf(staker);
+            const totalSupplyAfter = await valueBrandedToken.totalSupply();
+            const allowanceAfter = await valueBrandedToken.allowance(staker, gateway);
 
             assert.strictEqual(
                 stakeRequestAfter.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );

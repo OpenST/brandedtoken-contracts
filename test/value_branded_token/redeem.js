@@ -56,7 +56,7 @@ contract('ValueBrandedToken::redeem', async () => {
             );
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -115,7 +115,7 @@ contract('ValueBrandedToken::redeem', async () => {
                 { from: worker },
             );
 
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
 
             const transactionResponse = await valueBrandedToken.redeem(
                 valueBrandedTokens,
@@ -150,7 +150,7 @@ contract('ValueBrandedToken::redeem', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 100;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -181,10 +181,10 @@ contract('ValueBrandedToken::redeem', async () => {
                 { from: worker },
             );
 
-            const totalSupplyBefore = await valueBrandedToken.totalSupply.call();
-            const balanceBefore = await valueBrandedToken.balanceOf.call(staker);
-            const conversionRate = await valueBrandedToken.conversionRate.call();
-            const conversionRateDecimals = await valueBrandedToken.conversionRateDecimals.call();
+            const totalSupplyBefore = await valueBrandedToken.totalSupply();
+            const balanceBefore = await valueBrandedToken.balanceOf(staker);
+            const conversionRate = await valueBrandedToken.conversionRate();
+            const conversionRateDecimals = await valueBrandedToken.conversionRateDecimals();
 
             // Redeem amount that evaluates to an integer value token amount
             const redeemAmountWhole = conversionRate;
@@ -232,7 +232,7 @@ contract('ValueBrandedToken::redeem', async () => {
             // Redemption can result in receiving 0 value tokens
             assert.strictEqual(
                 resultAmount1.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
@@ -275,8 +275,8 @@ contract('ValueBrandedToken::redeem', async () => {
             );
 
             const totalRedemption = redeemAmountWhole.add(redeemAmountPartial).addn(1);
-            const totalSupplyAfter = await valueBrandedToken.totalSupply.call();
-            const balanceAfter = await valueBrandedToken.balanceOf.call(staker);
+            const totalSupplyAfter = await valueBrandedToken.totalSupply();
+            const balanceAfter = await valueBrandedToken.balanceOf(staker);
 
             assert.strictEqual(
                 totalSupplyAfter.cmp(

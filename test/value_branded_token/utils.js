@@ -39,7 +39,7 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) 
     const valueBrandedToken = await this.createValueBrandedToken();
 
     const valueTokens = 1;
-    const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+    const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
     const beneficiary = accountProvider.get();
     const gasPrice = 0;
     const gasLimit = 0;

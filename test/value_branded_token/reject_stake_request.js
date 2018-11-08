@@ -54,7 +54,7 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
             );
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -134,11 +134,11 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
                 staker,
             } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
 
-            const amountBeforeReject = await valueBrandedToken.stakeRequests.call(staker);
+            const amountBeforeReject = await valueBrandedToken.stakeRequests(staker);
 
             assert.strictEqual(
                 amountBeforeReject.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 1,
             );
@@ -155,11 +155,11 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
                 { from: worker },
             );
 
-            const amountAfterReject = await valueBrandedToken.stakeRequests.call(staker);
+            const amountAfterReject = await valueBrandedToken.stakeRequests(staker);
 
             assert.strictEqual(
                 amountAfterReject.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );

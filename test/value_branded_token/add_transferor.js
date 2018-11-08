@@ -13,7 +13,6 @@
 // limitations under the License.
 
 
-const BN = require('bn.js');
 const utils = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder');
 const { AccountProvider } = require('../test_lib/utils.js');
@@ -96,7 +95,7 @@ contract('ValueBrandedToken::addTransferor', async () => {
             const transferor = accountProvider.get();
 
             assert.isNotOk(
-                await valueBrandedToken.canTransfer.call(transferor),
+                await valueBrandedToken.canTransfer(transferor),
             );
 
             await valueBrandedToken.addTransferor(
@@ -104,7 +103,7 @@ contract('ValueBrandedToken::addTransferor', async () => {
             );
 
             assert.isOk(
-                await valueBrandedToken.canTransfer.call(transferor),
+                await valueBrandedToken.canTransfer(transferor),
             );
         });
     });

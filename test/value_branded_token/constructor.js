@@ -70,7 +70,7 @@ contract('ValueBrandedToken::constructor', async () => {
             );
 
             assert.strictEqual(
-                (await valueBrandedToken.valueToken.call()),
+                (await valueBrandedToken.valueToken()),
                 valueToken,
             );
         });

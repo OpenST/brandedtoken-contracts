@@ -36,7 +36,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 0;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const signature = '0x00';
 
@@ -60,7 +60,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = utils.NULL_ADDRESS;
             const signature = '0x00';
 
@@ -84,7 +84,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const signature = '0x';
 
@@ -132,7 +132,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const signature = '0x00';
 
@@ -177,7 +177,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             );
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const signature = '0x00';
 
@@ -207,7 +207,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -260,7 +260,7 @@ contract('ValueBrandedToken::requestStake', async () => {
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
 
             const valueTokens = 1;
-            const valueBrandedTokens = await valueBrandedToken.convert.call(valueTokens);
+            const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
             const beneficiary = accountProvider.get();
             const gasPrice = 0;
             const gasLimit = 0;
@@ -269,11 +269,11 @@ contract('ValueBrandedToken::requestStake', async () => {
 
             const staker = accountProvider.get();
 
-            const amountBeforeRequest = await valueBrandedToken.stakeRequests.call(staker);
+            const amountBeforeRequest = await valueBrandedToken.stakeRequests(staker);
 
             assert.strictEqual(
                 amountBeforeRequest.cmp(
-                    utils.zeroBN,
+                    new BN(0),
                 ),
                 0,
             );
@@ -289,7 +289,7 @@ contract('ValueBrandedToken::requestStake', async () => {
                 { from: staker },
             );
 
-            const amountAfterRequest = await valueBrandedToken.stakeRequests.call(staker)
+            const amountAfterRequest = await valueBrandedToken.stakeRequests(staker)
 
             assert.strictEqual(
                 amountBeforeRequest.cmp(
