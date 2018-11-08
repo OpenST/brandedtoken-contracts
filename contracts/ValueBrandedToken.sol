@@ -70,10 +70,22 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     /* Storage */
 
+    /** Address for value tokens staked to mint utility branded tokens. */
     EIP20TokenRequiredInterface public valueToken;
+
+    /**
+     * Address for gateway through which value branded tokens are staked
+     * to mint utility branded tokens.
+     */
     address public gateway;
+
+    /** Total token supply. */
     uint256 private supply;
+
+    /** Conversion rate from value tokens to utility/value branded tokens. */
     uint256 public conversionRate;
+
+    /** Number of digits to the right of the decimal point in conversionRate. */
     uint8 public conversionRateDecimals;
 
     /** Maps staker address to amount of value tokens to stake. */
@@ -114,11 +126,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *          - valueToken address is not null;
      *          - conversionRate is not zero.
      *
-     * @param _valueToken Address for tokens staked to mint utility branded tokens.
-     * @param _conversionRate Conversion rate from value tokens to utility/value
-     *        branded tokens.
-     * @param _conversionRateDecimals Number of digits to the right of the
-     *        decimal point in _conversionRate.
+     * @param _valueToken The value to which valueToken is set.
+     * @param _conversionRate The value to which conversionRate is set.
+     * @param _conversionRateDecimals The value to which conversionRateDecimals
+     *                                is set.
      */
     constructor(
         EIP20TokenRequiredInterface _valueToken,
@@ -146,13 +157,13 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
 
     /**
      * @notice Transfers value tokens from msg.sender to itself,
-     *         stores the amount of value branded tokens to mint if request is accepted,
-     *         and emits information required to stake value branded tokens
-     *         to mint utility branded tokens.
+     *         stores the amount of value branded tokens to mint if request
+     *         is accepted, and emits information required to
+     *         stake value branded tokens to mint utility branded tokens.
      *
      * @dev It is expected that this contract will have a sufficient allowance to
-     *      transfer value tokens from the staker at the time this function is executed.
-     *      this function is executed.
+     *      transfer value tokens from the staker at the time this function
+     *      is executed.
      *
      *      Function requires:
      *          - _valueTokens is not zero;
@@ -299,8 +310,8 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      * @notice Reduces msg.sender's balance and the supply by _valueBrandedTokens
      *         and transfers an equivalent amount of value tokens to msg.sender.
      *
-     * @dev Redemption presents a risk of loss up to 1 indivisible unit of valueToken. It is possible
-     *      to redeem value branded tokens for 0 value tokens--proceed with caution.
+     * @dev Redemption may risk loss of up to 1 indivisible unit of valueToken.
+     *      It is possible to redeem value branded tokens for 0 value tokens.
      *
      *      Function requires:
      *          - msg.sender has a balance at least equal to _valueBrandedTokens;
@@ -341,7 +352,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
      *      Function requires:
      *          - gateway is not set.
      *
-     * @param _gateway Gateway.
+     * @param _gateway The value to which gateway is set.
      */
     function setGateway(
         address _gateway
@@ -363,7 +374,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     /**
      * @notice Returns the supply.
      *
-     * @return uint256 Supply.
+     * @return uint256 Total token supply.
      */
     function totalSupply()
         external

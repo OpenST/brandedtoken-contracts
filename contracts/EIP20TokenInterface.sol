@@ -28,5 +28,5 @@ import "./EIP20TokenRequiredInterface.sol";
  *
  *  @notice Provides EIP20 token interface.
  */
-/* solium-disable-next-line no-empty-blocks */ 
+/* solium-disable-next-line no-empty-blocks */
 contract EIP20TokenInterface is EIP20TokenOptionalInterface, EIP20TokenRequiredInterface { }
