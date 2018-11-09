@@ -23,6 +23,7 @@ contract('ValueBrandedToken::constructor', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         const conversionRateDecimals = 1;
+        const organization = accountProvider.get();
 
         it('Reverts if valueToken is null', async () => {
             const valueToken = utils.NULL_ADDRESS;
@@ -33,6 +34,7 @@ contract('ValueBrandedToken::constructor', async () => {
                     valueToken,
                     conversionRate,
                     conversionRateDecimals,
+                    organization,
                 ),
                 'Should revert as valueToken is null.',
                 'ValueToken is null.',
@@ -48,6 +50,7 @@ contract('ValueBrandedToken::constructor', async () => {
                     valueToken,
                     conversionRate,
                     conversionRateDecimals,
+                    organization,
                 ),
                 'Should revert as conversionRate is zero.',
                 'ConversionRate is zero.',
@@ -57,6 +60,7 @@ contract('ValueBrandedToken::constructor', async () => {
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+        const organization = accountProvider.get();
 
         it('Successfully sets the constructor arguments', async () => {
             const valueToken = accountProvider.get();
@@ -67,11 +71,16 @@ contract('ValueBrandedToken::constructor', async () => {
                 valueToken,
                 conversionRate,
                 conversionRateDecimals,
+                organization,
             );
 
             assert.strictEqual(
                 (await valueBrandedToken.valueToken()),
                 valueToken,
+            );
+            assert.strictEqual(
+                (await valueBrandedToken.organization()),
+              organization
             );
         });
     });

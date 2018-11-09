@@ -22,8 +22,9 @@ contract('ValueBrandedToken::convert', async () => {
     contract('Returns', async (accounts) => {
         it('Returns correct conversions', async () => {
             const accountProvider = new AccountProvider(accounts);
+            const worker = accountProvider.get();
 
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueBrandedTokens0 = await valueBrandedToken.convert(new BN(0));
 

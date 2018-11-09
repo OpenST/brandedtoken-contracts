@@ -25,13 +25,14 @@ const ValueBrandedToken = artifacts.require('ValueBrandedToken');
 contract('ValueBrandedToken::redeem', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+        const worker = accountProvider.get();
 
         it('Reverts if balance is less than redeem amount', async () => {
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             const valueBrandedTokens = 1;
 
@@ -49,10 +50,15 @@ contract('ValueBrandedToken::redeem', async () => {
             const conversionRate = 35;
             const conversionRateDecimals = 1;
 
+            const worker = accountProvider.get();
+            const organizationMock = await ValueBrandedTokenUtils.organizationMock();
+            await organizationMock.setWorker(worker);
+
             const valueBrandedToken = await ValueBrandedToken.new(
                 valueToken.address,
                 conversionRate,
                 conversionRateDecimals,
+                organizationMock.address,
             );
 
             const valueTokens = 1;
@@ -64,7 +70,6 @@ contract('ValueBrandedToken::redeem', async () => {
             const signature = '0x00';
 
             const staker = accountProvider.get();
-            const worker = accountProvider.get();
             const gateway = accountProvider.get();
 
             await valueBrandedToken.requestStake(
@@ -102,13 +107,12 @@ contract('ValueBrandedToken::redeem', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits Transfer event', async () => {
+            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
-
-            const worker = accountProvider.get();
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             await valueBrandedToken.acceptStakeRequest(
                 staker,
@@ -147,7 +151,8 @@ contract('ValueBrandedToken::redeem', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Successfully reduces supply and redeemer balance and calls valueToken.transfer', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 100;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -158,7 +163,6 @@ contract('ValueBrandedToken::redeem', async () => {
             const signature = '0x00';
 
             const staker = accountProvider.get();
-            const worker = accountProvider.get();
             const gateway = accountProvider.get();
 
             await valueBrandedToken.requestStake(

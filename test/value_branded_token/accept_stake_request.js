@@ -24,10 +24,13 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if gateway is not set', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await
+              ValueBrandedTokenUtils.createValueBrandedToken(
+                worker
+              );
 
             const nonStaker = accountProvider.get();
-            const worker = accountProvider.get();
 
             await utils.expectRevert(
                 valueBrandedToken.acceptStakeRequest(
@@ -40,11 +43,14 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
         });
 
         it('Reverts if stake request is 0', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+          const worker = accountProvider.get();
+          const valueBrandedToken = await
+            ValueBrandedTokenUtils.createValueBrandedToken(
+              worker
+            );
 
             const gateway = accountProvider.get();
             const nonStaker = accountProvider.get();
-            const worker = accountProvider.get();
 
             await valueBrandedToken.setGateway(
                 gateway,
@@ -59,20 +65,38 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 'Stake request is zero.',
             );
         });
+
+        it('Reverts if worker is unregistered', async () => {
+          const worker = accountProvider.get();
+          const valueBrandedToken = await
+            ValueBrandedTokenUtils.createValueBrandedToken(
+              worker
+            );
+
+          const nonStaker = accountProvider.get();
+          const unregisteredWorker = accountProvider.get();
+          await utils.expectRevert(
+            valueBrandedToken.acceptStakeRequest(
+              nonStaker,
+              { from: unregisteredWorker },
+            ),
+            'Should revert as worker is not registered.',
+            'Only whitelisted worker is allowed to call.',
+          );
+        });
     });
 
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits StakeRequestAccepted, Transfer, and Approval events', async () => {
+            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
-
-            const worker = accountProvider.get();
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             const transactionResponse = await valueBrandedToken.acceptStakeRequest(
                 staker,
@@ -128,7 +152,7 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             const stakeRequestBefore = await valueBrandedToken.stakeRequests(staker);
             const balanceBefore = await valueBrandedToken.balanceOf(staker);

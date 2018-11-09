@@ -18,6 +18,8 @@ pragma solidity ^0.4.24;
 
 import "./SafeMath.sol";
 import "./EIP20TokenRequiredInterface.sol";
+import "./Organized.sol";
+import "./OrganizationIsWorkerInterface.sol";
 
 
 /**
@@ -29,7 +31,7 @@ import "./EIP20TokenRequiredInterface.sol";
  *         but it is expected that if the conversion rate is 1:1, value tokens
  *         will be staked directly through a Gateway.
  */
-contract ValueBrandedToken is EIP20TokenRequiredInterface {
+contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
 
     /* Usings */
 
@@ -134,8 +136,10 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     constructor(
         EIP20TokenRequiredInterface _valueToken,
         uint256 _conversionRate,
-        uint8 _conversionRateDecimals
+        uint8 _conversionRateDecimals,
+        OrganizationIsWorkerInterface _organization
     )
+        Organized(_organization)
         public
     {
         require(
@@ -248,6 +252,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     function acceptStakeRequest(
         address _staker
     )
+        onlyWorker
         external
     {
         require(
@@ -288,6 +293,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     function rejectStakeRequest(
         address _staker
     )
+        onlyWorker
         external
     {
         require(
@@ -357,6 +363,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface {
     function setGateway(
         address _gateway
     )
+        onlyWorker
         external
     {
         require(

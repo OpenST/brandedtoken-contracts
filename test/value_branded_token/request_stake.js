@@ -33,7 +33,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         const staker = accountProvider.get();
 
         it('Reverts if valueTokens is zero', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 0;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -57,7 +58,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         });
 
         it('Reverts if beneficiary is null', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -81,7 +83,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         });
 
         it('Reverts if signature is empty', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -105,7 +108,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         });
 
         it('Reverts if valueBrandedTokens is not equivalent to valueTokens', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = 0;
@@ -129,7 +133,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         });
 
         it('Reverts if staker has a stake request', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -170,10 +175,15 @@ contract('ValueBrandedToken::requestStake', async () => {
             const conversionRate = 35;
             const conversionRateDecimals = 1;
 
+            const worker = accountProvider.get();
+            const organizationMock = await ValueBrandedTokenUtils.organizationMock();
+            await organizationMock.setWorker(worker);
+
             const valueBrandedToken = await ValueBrandedToken.new(
-                valueToken.address,
-                conversionRate,
-                conversionRateDecimals,
+                    valueToken.address,
+                    conversionRate,
+                    conversionRateDecimals,
+                    organizationMock.address,
             );
 
             const valueTokens = 1;
@@ -204,7 +214,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits StakeRequested event', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -257,7 +268,8 @@ contract('ValueBrandedToken::requestStake', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Successfully stores stake request', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const valueTokens = 1;
             const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);

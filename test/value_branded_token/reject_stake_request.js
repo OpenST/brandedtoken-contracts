@@ -27,10 +27,10 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if stake request is 0', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const nonStaker = accountProvider.get();
-            const worker = accountProvider.get();
 
             await utils.expectRevert(
                 valueBrandedToken.rejectStakeRequest(
@@ -42,15 +42,34 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
             );
         });
 
+        it('Reverts if worker is not registered', async () => {
+          const worker = accountProvider.get();
+          const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
+
+          const staker = accountProvider.get();
+          const unRegisteredWorker = accountProvider.get();
+          await utils.expectRevert(
+            valueBrandedToken.rejectStakeRequest(
+              staker,
+              { from: unRegisteredWorker },
+            ),
+            'Should revert as stake request is zero.',
+            'Only whitelisted worker is allowed to call.',
+          );
+        });
+
         it('Reverts if valueToken.transfer returns false', async () => {
             const valueToken = await EIP20TokenMockPassFail.new();
             const conversionRate = 35;
             const conversionRateDecimals = 1;
-
+            const worker = accountProvider.get();
+            const organizationMock = await ValueBrandedTokenUtils.organizationMock();
+            await organizationMock.setWorker(worker);
             const valueBrandedToken = await ValueBrandedToken.new(
                 valueToken.address,
                 conversionRate,
                 conversionRateDecimals,
+                organizationMock.address,
             );
 
             const valueTokens = 1;
@@ -62,7 +81,6 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
             const signature = '0x00';
 
             const staker = accountProvider.get();
-            const worker = accountProvider.get();
 
             await valueBrandedToken.requestStake(
                 valueTokens,
@@ -88,15 +106,14 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
 
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+        const worker = accountProvider.get();
 
         it('Emits StakeRequestRejected event', async () => {
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
-
-            const worker = accountProvider.get();
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             const transactionResponse = await valueBrandedToken.rejectStakeRequest(
                 staker,
@@ -132,7 +149,7 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             const amountBeforeReject = await valueBrandedToken.stakeRequests(staker);
 

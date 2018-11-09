@@ -24,7 +24,8 @@ contract('ValueBrandedToken::transferFrom', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if msg.sender is not a transferor', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const from = accountProvider.get();
             const to = accountProvider.get();
@@ -44,7 +45,8 @@ contract('ValueBrandedToken::transferFrom', async () => {
         });
 
         it('Reverts if balance is less than transfer amount', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const from = accountProvider.get();
             const to = accountProvider.get();
@@ -63,13 +65,13 @@ contract('ValueBrandedToken::transferFrom', async () => {
         });
 
         it('Reverts if allowance is less than transfer amount', async () => {
+            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
-            const worker = accountProvider.get();
             const to = accountProvider.get();
             const amount = await valueBrandedToken.convert(valueTokens);
             const spender = accountProvider.get();
@@ -95,14 +97,13 @@ contract('ValueBrandedToken::transferFrom', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits Transfer event', async () => {
+            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
-
-            const worker = accountProvider.get();
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             await valueBrandedToken.acceptStakeRequest(
                 staker,
@@ -144,14 +145,13 @@ contract('ValueBrandedToken::transferFrom', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Successfully transfers', async () => {
+            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider);
-
-            const worker = accountProvider.get();
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
 
             await valueBrandedToken.acceptStakeRequest(
                 staker,

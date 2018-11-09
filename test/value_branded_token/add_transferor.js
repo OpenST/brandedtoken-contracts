@@ -21,9 +21,10 @@ const ValueBrandedTokenUtils = require('./utils.js');
 contract('ValueBrandedToken::addTransferor', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
-
+        const worker = accountProvider.get();
         it('Reverts if _transferor is null', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const transferor = utils.NULL_ADDRESS;
 
@@ -37,7 +38,7 @@ contract('ValueBrandedToken::addTransferor', async () => {
         });
 
         it('Reverts if _transferor can transfer', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const transferor = accountProvider.get();
 
@@ -57,9 +58,10 @@ contract('ValueBrandedToken::addTransferor', async () => {
 
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+        const worker = accountProvider.get();
 
         it('Emits TransferorAdded event', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const transferor = accountProvider.get();
 
@@ -88,9 +90,10 @@ contract('ValueBrandedToken::addTransferor', async () => {
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+        const worker = accountProvider.get();
 
         it('Successfully adds transferor', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const transferor = accountProvider.get();
 

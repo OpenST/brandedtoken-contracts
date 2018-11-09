@@ -23,7 +23,8 @@ contract('ValueBrandedToken::setGateway', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if gateway is set', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const gateway = accountProvider.get();
 
@@ -39,18 +40,37 @@ contract('ValueBrandedToken::setGateway', async () => {
                 'Gateway is set.',
             );
         });
+
+        it('Reverts if worker is unregistered', async () => {
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
+
+            const gateway = accountProvider.get();
+            const unregisteredWorker = accountProvider.get();
+
+            await utils.expectRevert(
+              valueBrandedToken.setGateway(
+                gateway,
+                {from: unregisteredWorker}
+              ),
+              'Should revert if worker is not registered.',
+              'Only whitelisted worker is allowed to call.',
+            );
+        });
     });
 
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits GatewaySet and TransferorAdded events', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const gateway = accountProvider.get();
 
             const transactionResponse = await valueBrandedToken.setGateway(
                 gateway,
+                {from: worker}
             );
 
             const events = Event.decodeTransactionResponse(
@@ -82,7 +102,8 @@ contract('ValueBrandedToken::setGateway', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Successfully sets gateway', async () => {
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(accountProvider);
+            const worker = accountProvider.get();
+            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const gateway = accountProvider.get();
 
@@ -93,6 +114,7 @@ contract('ValueBrandedToken::setGateway', async () => {
 
             await valueBrandedToken.setGateway(
                 gateway,
+                {from: worker}
             );
 
             assert.strictEqual(

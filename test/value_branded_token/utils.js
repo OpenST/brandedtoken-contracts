@@ -14,19 +14,24 @@
 
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 const ValueBrandedToken = artifacts.require('ValueBrandedToken');
-
+const OrganizationMock = artifacts.require('OrganizationMock');
+let organizationInstance;
 /**
  * Creates a value branded token.
  */
-module.exports.createValueBrandedToken = async () => {
+module.exports.createValueBrandedToken = async (worker) => {
     const valueToken = await EIP20TokenMockPass.new();
     const conversionRate = 35;
     const conversionRateDecimals = 1;
+    const organizationMock = await OrganizationMock.new();
+    organizationInstance = organizationMock;
+    await organizationMock.setWorker(worker);
 
     const valueBrandedToken = await ValueBrandedToken.new(
         valueToken.address,
         conversionRate,
         conversionRateDecimals,
+        organizationMock.address,
     );
 
     return valueBrandedToken;
@@ -35,8 +40,8 @@ module.exports.createValueBrandedToken = async () => {
 /**
  * Creates a value branded token and a stake request.
  */
-module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) => {
-    const valueBrandedToken = await this.createValueBrandedToken();
+module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider, worker) => {
+    const valueBrandedToken = await this.createValueBrandedToken(worker);
 
     const valueTokens = 1;
     const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -71,3 +76,16 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) 
         gateway,
     };
 };
+
+module.exports.organizationMock = async() => {
+
+    return (await OrganizationMock.new());
+
+}
+
+module.exports.isWorker = async(worker) => {
+
+  console.log("worker in isworker :- ",worker);
+  console.log("something something :- ",await organizationInstance.isWorker.call(worker));
+
+}
