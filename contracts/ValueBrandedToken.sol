@@ -246,6 +246,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      * @dev Function requires:
      *          - gateway is set;
      *          - stake request is not 0.
+     *      It call only be called by registered worker.
      *
      * @param _staker Staker address.
      */
@@ -287,6 +288,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      * @dev Function requires:
      *          - stake request is not 0;
      *          - valueToken.transfer returns true.
+     *      It call only be called by registered worker.
      *
      * @param _staker Staker address.
      */
@@ -354,6 +356,7 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      *
      * @dev Gateway cannot be set in the construction of this contract because
      *      the address of this contract is required to construct the Gateway.
+     *      It call only be called by registered worker.
      *
      *      Function requires:
      *          - gateway is not set.
