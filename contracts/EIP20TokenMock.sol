@@ -17,13 +17,16 @@ pragma solidity ^0.4.23;
 
 import "./EIP20Token.sol";
 
+
 /**
- * @title EIP20TokenMock
+ * @title EIP20TokenMock.
  *
  * @notice It provides EIP20Token with mock functionality to facilitate testing
  *         payments.
  */
 contract EIP20TokenMock is EIP20Token {
+
+    /* Storage */
 
     uint256 public conversionRate;
     uint8 public conversionRateDecimals;
@@ -33,10 +36,10 @@ contract EIP20TokenMock is EIP20Token {
 
     /** @dev Takes _conversionRate, _symbol, _name, _decimals
      *
-     *  @param _conversionRate conversionRate
-     *  @param _symbol symbol
-     *  @param _name name
-     *  @param _decimals decimals
+     *  @param _conversionRate ConversionRate.
+     *  @param _symbol Symbol.
+     *  @param _name Name.
+     *  @param _decimals Decimals.
      */
     constructor(
         uint256 _conversionRate,
@@ -56,9 +59,9 @@ contract EIP20TokenMock is EIP20Token {
     /** Public functions */
 
     /**
-     * @notice Returns 0 as mock total supply
+     * @notice Returns 0 as mock total supply.
      *
-     * @return bool it returns 0.
+     * @return bool It returns 0.
      */
     function totalSupply()
         public
@@ -71,10 +74,10 @@ contract EIP20TokenMock is EIP20Token {
     /**
      * @notice Takes _owner, _value; sets balance of _owner to _value
      *
-     * @param _owner owner
-     * @param _value value
+     * @param _owner Owner.
+     * @param _value Value.
      *
-     * @return bool success
+     * @return bool Success.
      */
     function setBalance(
         address _owner,
@@ -87,11 +90,11 @@ contract EIP20TokenMock is EIP20Token {
     }
 
     /**
-     * @notice Takes _conversionRate; sets conversionRate to _conversionRate
+     * @notice Takes _conversionRate; sets conversionRate to _conversionRate.
      *
-     * @param _conversionRate conversionRate
+     * @param _conversionRate ConversionRate.
      *
-     * @return bool success
+     * @return bool Success.
      */
     function setConverionRate(
         uint256 _conversionRate)

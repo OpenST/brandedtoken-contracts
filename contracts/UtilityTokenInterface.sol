@@ -23,7 +23,7 @@ pragma solidity ^0.4.23;
 // ----------------------------------------------------------------------------
 
 /**
- *  @title UtilityTokenInterface contract
+ *  @title UtilityTokenInterface contract.
  *
  *  @notice Provides the interface to utility token contract.
  */
@@ -53,10 +53,11 @@ interface UtilityTokenInterface {
         address _coGateway
     );
 
+
     /** Public Functions */
 
     /**
-     * @notice Mints the utility token
+     * @notice Mints the utility token.
      *
      * @dev Adds _amount tokens to beneficiary balance and increases the
      *      totalTokenSupply. Can be called only by CoGateway.
@@ -64,7 +65,7 @@ interface UtilityTokenInterface {
      * @param _beneficiary Address of tokens beneficiary.
      * @param _amount Amount of tokens to mint.
      *
-     * @return bool `true` if mint is successful, false otherwise.
+     * @return bool `true` If mint is successful, false otherwise.
      */
     function mint(
         address _beneficiary,
@@ -96,9 +97,9 @@ interface UtilityTokenInterface {
      * @dev This will be set with zero gas. Can be called only by whitelisted
      *      workers.
      *
-     * @param _coGatewayAddress CoGateway contract address
+     * @param _coGatewayAddress CoGateway contract address.
      *
-     * @return `true` if CoGateway address was set
+     * @return `true` If CoGateway address was set.
      */
     function setCoGateway(address _coGatewayAddress)
         external

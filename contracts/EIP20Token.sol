@@ -23,6 +23,7 @@ pragma solidity ^0.4.23;
 
 import "./EIP20Interface.sol";
 import "./SafeMath.sol";
+/** TODO: special functions */
 
 /**
  *  @title EIP20Token contract which implements EIP20Interface.
@@ -30,7 +31,10 @@ import "./SafeMath.sol";
  *  @notice Implements EIP20 token.
  */
 contract EIP20Token is EIP20Interface {
+
     using SafeMath for uint256;
+
+    /* Storage */
 
     string private tokenName;
     string private tokenSymbol;
@@ -39,6 +43,9 @@ contract EIP20Token is EIP20Interface {
 
     mapping(address => uint256) balances;
     mapping(address => mapping (address => uint256)) allowed;
+
+
+    /* Special functions */
 
     /**
      *  @notice Contract constructor.
@@ -54,6 +61,9 @@ contract EIP20Token is EIP20Interface {
         tokenDecimals    = _decimals;
         totalTokenSupply = 0;
     }
+
+
+    /* Public functions */
 
     /**
      *  @notice Public view function name.
@@ -108,14 +118,14 @@ contract EIP20Token is EIP20Interface {
         return totalTokenSupply;
     }
 
-
     /**
      *  @notice Public view function allowance.
      *
      *  @param _owner Address of the owner account.
      *  @param _spender Address of the spender account.
      *
-     *  @return uint256 Remaining allowance for the spender to spend from owner's account.
+     *  @return uint256 Remaining allowance for the spender to spend from
+     *          owner's account.
      */
     function allowance(
         address _owner,
@@ -146,12 +156,11 @@ contract EIP20Token is EIP20Interface {
         public
         returns (bool success)
     {
-        /**
-         * According to the EIP20 spec, "transfers of 0 values MUST be treated
-         * as normal transfers and fire the Transfer event".
-         * Also, should throw if not enough balance. This is taken care of by
-         * SafeMath.
-         */
+
+        // According to the EIP20 spec, "transfers of 0 values MUST be treated
+        // as normal transfers and fire the Transfer event".
+        // Also, should throw if not enough balance. This is taken care of by
+        // SafeMath.
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
 

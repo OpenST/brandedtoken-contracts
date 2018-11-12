@@ -40,15 +40,16 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
 
     /* Storage */
 
-    /** Address of the EIP20 token(VBT) in origin chain */
+    /** Address of the EIP20 token(VBT) in origin chain. */
     EIP20Interface public valueToken;
 
-    /** Address of CoGateway contract*/
+    /** Address of CoGateway contract. */
     address public coGateway;
+
 
     /* Modifiers */
 
-    /** checks that only organisation can call a particular function. */
+    /** checks that msg.sender is cogateway address. */
     modifier onlyCoGateway() {
         require(
             msg.sender == coGateway,
@@ -66,11 +67,11 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      * @dev Creates an EIP20Token contract with arguments passed in the
      *      contract constructor.
      *
-     * @param _token value chain EIP20 contract address. It acts as identifier.
+     * @param _token Value chain EIP20 contract address. It acts as identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
-     * @param _organization Name of the organization for the token.
+     * @param _organization Address of the organization.
      */
     constructor(
         EIP20Interface _token,
@@ -96,10 +97,12 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice public function transfer.
      *
-     * @param _to address to which BT needs to transfer.
-     * @param _value how many BTs needs to transfer.
+     * @dev It only allows transfer to internal actors.
      *
-     * @return success/failure status of transfer.
+     * @param _to Address to which BT needs to transfer.
+     * @param _value Number of BTs that needs to transfer.
+     *
+     * @return Success/failure status of transfer.
      */
     function transfer(
         address _to,
@@ -119,9 +122,11 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice public function transferFrom.
      *
-     * @param _from address from which BT needs to transfer.
-     * @param _to address to which BT needs to transfer.
-     * @param _value how many BTs needs to transfer.
+     * @dev It only allows transfer to internal actors.
+     *
+     * @param _from Address from which BT needs to transfer.
+     * @param _to Address to which BT needs to transfer.
+     * @param _value Number of BTs that needs to transfer.
      *
      * @return success/failure status of transferFrom.
      */
@@ -142,12 +147,14 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     }
 
     /**
-     * @notice public function approve.
+     * @notice Public function approve.
      *
-     * @param _spender address to which msg.sender is approving.
-     * @param _value how many BTs needs to approve.
+     * @dev It only allows approval to internal actors.
      *
-     * @return success/failure status of approve.
+     * @param _spender Address to which msg.sender is approving.
+     * @param _value Number of BTs to be approved.
+     *
+     * @return Success/failure status of approve.
      */
     function approve(
         address _spender,
@@ -167,8 +174,9 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice Public function mint.
      *
-     * @dev Only callable by coGateway contract. Adds _amount of utility
-     *      tokens to be claimed for a _beneficiary address.
+     * @dev Function requires:
+     *          - It is called by only CoGateway contract.
+     *          - It only mints to internal actors.
      *
      * @param _beneficiary Address of beneficiary.
      * @param _amount Amount of utility tokens to mint.
@@ -200,9 +208,9 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice Public function burn.
      *
-     * @dev Only callable by coGateway contract. Implements a burn function
-     *      to permit msg.sender to reduce its balance, which also reduces
-     *      tokenTotalSupply.
+     * @dev Function requires:
+     *          - It is called by only CoGateway contract.
+     *          - It only allows to burn BTs.
      *
      * @param _amount Amount of tokens to burn.
      *
@@ -231,11 +239,14 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice Sets the CoGateway contract address.
      *
-     * @dev This will be set with zero gas. Can be called only by Organization
+     * @dev Function requires:
+     *          - It is called by whitelisted workers.
+     *          - It checks the whether Cogateway is linked with other utility
+     *            tokens.
      *
      * @param _coGatewayAddress CoGateway contract address
      *
-     * @return `true` if CoGateway address was set
+     * @return `true` If CoGateway address was set
      */
     function setCoGateway(address _coGatewayAddress)
         public

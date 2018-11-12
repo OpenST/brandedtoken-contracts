@@ -48,7 +48,7 @@ interface OrganizationInterface {
      *
      * @param _proposedOwner Proposed owner address.
      *
-     * @return True on successful execution.
+     * @return True On successful execution.
      */
     function initiateOwnershipTransfer(address _proposedOwner)
         external
@@ -57,7 +57,7 @@ interface OrganizationInterface {
     /**
      * @notice Complete ownership transfer to proposed owner.
      *
-     * @return True on successful execution.
+     * @return True On successful execution.
      */
     function completeOwnershipTransfer() external returns (bool);
 
@@ -66,7 +66,7 @@ interface OrganizationInterface {
      *
      * @param _admin Admin address to be added.
      *
-     * @return True on successful execution.
+     * @return True On successful execution.
      */
     function setAdmin(address _admin) external returns (bool);
 
@@ -87,7 +87,7 @@ interface OrganizationInterface {
      *
      * @param _worker Worker address to be removed.
      *
-     * @return True if the worker existed else returns false.
+     * @return True If the worker existed else returns false.
      */
     function unsetWorker(address _worker) external returns (bool);
 
@@ -97,7 +97,7 @@ interface OrganizationInterface {
      *
      * @param _worker Worker address to check if whitelisted.
      *
-     * @return True if the worker is already added and expiration height is
+     * @return True If the worker is already added and expiration height is
      *         more than or equal to current block number else returns false.
      */
     function isWorker(address _worker) external view returns (bool);

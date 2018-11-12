@@ -25,6 +25,8 @@ import "./OrganizationIsWorkerInterface.sol";
  */
 contract OrganizationMock is OrganizationIsWorkerInterface{
 
+    /* Storage */
+
     /** Worker address*/
     address worker;
 
@@ -32,9 +34,8 @@ contract OrganizationMock is OrganizationIsWorkerInterface{
      * @notice Sets worker.
      *
      * @param _worker Worker address to be added.
-     *
      */
-    function setWorker(address _worker) public{
+    function setWorker(address _worker) public {
         worker = _worker;
     }
 
@@ -45,7 +46,7 @@ contract OrganizationMock is OrganizationIsWorkerInterface{
      *
      * @return True if the worker is already added.
      */
-    function isWorker(address _worker) public returns(bool){
+    function isWorker(address _worker) public returns (bool) {
         return(worker == _worker);
     }
 

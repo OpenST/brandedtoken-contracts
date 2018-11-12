@@ -21,6 +21,11 @@ pragma solidity ^0.4.23;
 //
 // ----------------------------------------------------------------------------
 
+/**
+ *  @title CoGatewayUtilityTokenInterface.
+ *
+ *  @notice It is interface for utilityToken.
+ */
 interface CoGatewayUtilityTokenInterface {
 
     /**
@@ -28,6 +33,6 @@ interface CoGatewayUtilityTokenInterface {
      *
      * @return address of utility token.
      */
-	function utilityToken() external returns (address);
+	function utilityToken() external view returns (address);
 }
 
