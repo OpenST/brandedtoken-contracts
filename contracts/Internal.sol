@@ -35,11 +35,7 @@ contract Internal is Organized {
         address _actor
     );
 
-
     /* Storage */
-
-    address public organization;
-
 
     /**
      * Variable is defined private to highlight that even derived contracts
@@ -54,18 +50,6 @@ contract Internal is Organized {
         public
         Organized(_organization)
     {}
-
-
-    /* Modifiers */
-
-    /** @dev Checks if msg.sender is the organization address or not. */
-    modifier onlyOrganization() {
-        require(
-            organization == msg.sender,
-            "Only organization can call."
-        );
-        _;
-    }
 
 
     /* External Functions */
