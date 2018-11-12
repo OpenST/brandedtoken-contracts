@@ -27,7 +27,7 @@ interface OrganizationIsWorkerInterface {
      *
      * @param _worker Worker address to check if whitelisted.
      *
-     * @return True if the worker is already added and expiration height is
+     * @return True If the worker is already added and expiration height is
      *         more than or equal to current block number else returns false.
      */
     function isWorker(address _worker) external view returns (bool);
