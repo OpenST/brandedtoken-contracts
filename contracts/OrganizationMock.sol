@@ -50,7 +50,7 @@ contract OrganizationMock is OrganizationIsWorkerInterface {
      *
      * @return True If the worker is already added.
      */
-    function isWorker(address _worker) public returns (bool) {
+    function isWorker(address _worker) external view returns (bool) {
         return(worker == _worker);
     }
 
