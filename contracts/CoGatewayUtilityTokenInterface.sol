@@ -31,7 +31,7 @@ interface CoGatewayUtilityTokenInterface {
     /**
      * @notice Get the utility token address.
      *
-     * @return address of utility token.
+     * @return Address of utility token.
      */
 	function utilityToken() external view returns (address);
 }

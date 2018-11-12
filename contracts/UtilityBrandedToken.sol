@@ -193,7 +193,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     {
         require(
             (isInternalActor[_beneficiary]),
-            "beneficiary is not an economy actor."
+            "Beneficiary is not an economy actor."
         );
 
         // mint EIP20 tokens in contract address for them to be claimed
@@ -244,9 +244,9 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      *          - It checks the whether Cogateway is linked with other utility
      *            tokens.
      *
-     * @param _coGatewayAddress CoGateway contract address
+     * @param _coGatewayAddress CoGateway contract address.
      *
-     * @return `true` If CoGateway address was set
+     * @return `true` If CoGateway address was set.
      */
     function setCoGateway(address _coGatewayAddress)
         public

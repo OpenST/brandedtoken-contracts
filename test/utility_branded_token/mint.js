@@ -99,7 +99,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
           {from: coGateway}
         ),
         'Beneficiary should be registered internal actor',
-        'beneficiary is not an economy actor.'
+        'Beneficiary is not an economy actor.'
       );
 
     });
@@ -113,7 +113,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
           {from: coGateway}
         ),
         'Beneficiary address cannot be empty',
-        'beneficiary is not an economy actor.'
+        'Beneficiary is not an economy actor.'
       );
 
     });

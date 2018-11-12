@@ -23,7 +23,7 @@ pragma solidity ^0.4.23;
 
 import "./EIP20Interface.sol";
 import "./SafeMath.sol";
-/** TODO: special functions */
+
 
 /**
  *  @title EIP20Token contract which implements EIP20Interface.

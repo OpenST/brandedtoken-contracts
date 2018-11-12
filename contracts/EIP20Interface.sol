@@ -18,9 +18,9 @@ pragma solidity ^0.4.23;
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 
 /**
- *  @title EIP20Interface
+ *  @title EIP20Interface.
  *
- *  @notice Provides EIP20 token interface
+ *  @notice Provides EIP20 token interface.
  */
 contract EIP20Interface {
 
@@ -28,6 +28,7 @@ contract EIP20Interface {
 
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
 
     /** Public functions */
 
