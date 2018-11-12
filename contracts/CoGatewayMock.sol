@@ -23,7 +23,7 @@ import "./UtilityTokenInterface.sol";
  *
  *  @notice It contains utility token address.
  */
-contract CoGatewayMock is CoGatewayUtilityTokenInterface{
+contract CoGatewayMock is CoGatewayUtilityTokenInterface {
 
 
     /* Storage */
