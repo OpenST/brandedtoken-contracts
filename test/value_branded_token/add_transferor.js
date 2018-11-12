@@ -23,7 +23,6 @@ contract('ValueBrandedToken::addTransferor', async () => {
         const accountProvider = new AccountProvider(accounts);
         const worker = accountProvider.get();
         it('Reverts if _transferor is null', async () => {
-
             const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
 
             const transferor = utils.NULL_ADDRESS;

@@ -48,7 +48,7 @@ contract OrganizationMock is OrganizationIsWorkerInterface{
      *
      * @param _worker Worker address to check if whitelisted.
      *
-     * @return True if the worker is already added.
+     * @return True If the worker is already added.
      */
     function isWorker(address _worker) public returns(bool){
         return(worker == _worker);
