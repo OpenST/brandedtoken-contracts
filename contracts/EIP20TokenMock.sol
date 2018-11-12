@@ -34,7 +34,7 @@ contract EIP20TokenMock is EIP20Token {
 
     /** Special functions */
 
-    /** @dev Takes _conversionRate, _symbol, _name, _decimals
+    /** @dev Takes _conversionRate, _symbol, _name, _decimals.
      *
      *  @param _conversionRate ConversionRate.
      *  @param _symbol Symbol.
@@ -72,7 +72,7 @@ contract EIP20TokenMock is EIP20Token {
     }
 
     /**
-     * @notice Takes _owner, _value; sets balance of _owner to _value
+     * @notice Takes _owner, _value; sets balance of _owner to _value.
      *
      * @param _owner Owner.
      * @param _value Value.

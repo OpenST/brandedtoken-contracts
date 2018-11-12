@@ -18,12 +18,12 @@ pragma solidity ^0.4.23;
 import "./OrganizationIsWorkerInterface.sol";
 
 /**
- *  @title OrganizationMock.
+ *  @title OrganizationMock contract.
  *
  *  @notice Provides mocking for Organization contract to set
  *          and verify worker.
  */
-contract OrganizationMock is OrganizationIsWorkerInterface{
+contract OrganizationMock is OrganizationIsWorkerInterface {
 
     /* Storage */
 
@@ -46,7 +46,7 @@ contract OrganizationMock is OrganizationIsWorkerInterface{
      *
      * @return True if the worker is already added.
      */
-    function isWorker(address _worker) public returns (bool) {
+    function isWorker(address _worker) external view returns (bool) {
         return(worker == _worker);
     }
 
