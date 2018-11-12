@@ -86,13 +86,15 @@ interface UtilityTokenInterface {
     function burn(
         uint256 _amount
     )
+        payable
         external
         returns (bool success);
 
     /**
      * @notice Sets the CoGateway contract address.
      *
-     * @dev This will be set with zero gas. Can be called only by Organization
+     * @dev This will be set with zero gas. Can be called only by whitelisted
+     *      workers.
      *
      * @param _coGatewayAddress CoGateway contract address
      *

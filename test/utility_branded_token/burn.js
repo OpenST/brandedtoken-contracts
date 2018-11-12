@@ -34,7 +34,6 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     owner,
     worker,
     accountProvider,
-    expirationHeight = 1000000,
     tokenHolder1Balance = 100,
     burnAmount = 6;
 
@@ -51,7 +50,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     owner = accountProvider.get();
     worker = accountProvider.get();
     organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker,expirationHeight, {from: owner});
+    await organizationMock.setWorker(worker, {from: owner});
 
     valueToken = await EIP20TokenMock.new(
       conversionRate,

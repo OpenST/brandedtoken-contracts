@@ -33,8 +33,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
     worker,
     accountProvider,
     amount = 10,
-    tokenHolder1Balance = 100,
-    expirationHeight = 1000000;
+    tokenHolder1Balance = 100;
 
 
   const SYMBOL = "MOCK",
@@ -50,7 +49,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
     owner = accountProvider.get();
     worker = accountProvider.get();
     organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker, expirationHeight, {from: owner});
+    await organizationMock.setWorker(worker, {from: owner});
 
     valueToken = await EIP20TokenMock.new(
       conversionRate,

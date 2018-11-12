@@ -15,6 +15,9 @@ pragma solidity ^0.4.23;
 // limitations under the License.
 
 
+import "./Organized.sol";
+
+
 /**
  * @notice Contract implements internal actors interfaces.
  *
@@ -23,7 +26,8 @@ pragma solidity ^0.4.23;
  *      contract construction. De-registration of internal actors (even by
  *      organization) is prohibited.
  */
-contract Internal {
+contract Internal is Organized {
+
 
     /* Events */
 
@@ -37,12 +41,20 @@ contract Internal {
 
     address public organization;
 
+
     /**
      * Variable is defined private to highlight that even derived contracts
      * are not able to modify the internal actors.
      */
     mapping (address /* internal actor */ => bool) public isInternalActor;
 
+
+    /* Special Functions */
+
+    constructor(OrganizationIsWorkerInterface _organization)
+        public
+        Organized(_organization)
+    {}
 
     /* Modifiers */
 
@@ -56,20 +68,6 @@ contract Internal {
     }
 
 
-    /* Special Functions */
-
-    constructor(address _organization)
-        public
-    {
-        require(
-            _organization != address(0),
-            "Organization address is null."
-        );
-
-        organization = _organization;
-    }
-
-
     /* External Functions */
 
     /**
@@ -80,7 +78,7 @@ contract Internal {
      */
     function registerInternalActor(address[] _internalActors)
         external
-        onlyOrganization
+        onlyWorker
     {
         for (uint256 i = 0; i < _internalActors.length; i++) {
 

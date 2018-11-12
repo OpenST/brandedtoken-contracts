@@ -33,7 +33,6 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
     worker,
     accountProvider,
     approvalAmount = 50,
-    expirationHeight = 1000000,
     tokenHolder1Balance = 100;
 
   const SYMBOL = "MOCK",
@@ -49,7 +48,7 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
     owner = accountProvider.get();
     worker = accountProvider.get();
     organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker,expirationHeight, {from: owner});
+    await organizationMock.setWorker(worker, {from: owner});
 
     valueToken = await EIP20TokenMock.new(
       conversionRate,
