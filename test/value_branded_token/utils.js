@@ -82,10 +82,3 @@ module.exports.organizationMock = async() => {
     return (await OrganizationMock.new());
 
 }
-
-module.exports.isWorker = async(worker) => {
-
-  console.log("worker in isworker :- ",worker);
-  console.log("something something :- ",await organizationInstance.isWorker.call(worker));
-
-}

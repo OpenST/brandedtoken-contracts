@@ -25,12 +25,31 @@ import "./OrganizationIsWorkerInterface.sol";
  */
 contract OrganizationMock is OrganizationIsWorkerInterface{
 
+    /* Storage */
+
+    /** Worker address */
     address worker;
 
+
+    /** Public functions */
+
+    /**
+     * @notice Sets worker.
+     *
+     * @param _worker Worker address to be added.
+     *
+     */
     function setWorker(address _worker) public{
         worker = _worker;
     }
 
+    /**
+     * @notice Checks if the worker is valid or invalid.
+     *
+     * @param _worker Worker address to check if whitelisted.
+     *
+     * @return True if the worker is already added.
+     */
     function isWorker(address _worker) public returns(bool){
         return(worker == _worker);
     }
