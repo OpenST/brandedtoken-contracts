@@ -77,6 +77,9 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider, 
     };
 };
 
+/**
+ * Creates an instance of OrganizationMock contract.
+ */
 module.exports.organizationMock = async() => {
 
     return (await OrganizationMock.new());
