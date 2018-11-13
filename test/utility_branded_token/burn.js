@@ -58,7 +58,8 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       SYMBOL,
       NAME,
       DECIMALS,
-      {from: organization});
+      {from: organization}
+    );
 
     utilityBrandedTokenMock = await UtilityBrandedTokenMock.new(
       valueToken.address,

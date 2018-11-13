@@ -14,12 +14,6 @@ pragma solidity ^0.4.23;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// ----------------------------------------------------------------------------
-// Utility chain: UtilityBrandedToken
-//
-// http://www.simpletoken.org/
-//
-// ----------------------------------------------------------------------------
 
 import "./UtilityTokenInterface.sol";
 import "./Internal.sol";
@@ -28,9 +22,10 @@ import "./CoGatewayUtilityTokenInterface.sol";
 
 
 /**
- * @title UtilityBrandedToken contract which implements UtilityToken, Internal.
+ * @title UtilityBrandedToken contract.
  *
- * @notice UtilityBrandedToken is an EIP20 token.
+ * @notice UtilityBrandedToken is an EIP20 token which implements
+ *         UtilityTokenInterface.
  *
  * @dev UtilityBrandedToken are designed to be used within a decentralised
  *      application and support:
@@ -43,13 +38,16 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /** Address of the EIP20 token(VBT) in origin chain. */
     EIP20Interface public valueToken;
 
-    /** Address of CoGateway contract. */
+    /**
+     *  Address of CoGateway contract. It ensures that minting and burning is
+     *  done from coGateway.
+     */
     address public coGateway;
 
 
     /* Modifiers */
 
-    /** checks that msg.sender is cogateway address. */
+    /** checks that msg.sender is coGateway address. */
     modifier onlyCoGateway() {
         require(
             msg.sender == coGateway,
@@ -59,7 +57,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     }
 
 
-    /** Special Functions */
+    /* Special Functions */
 
     /**
      * @notice Contract constructor.
@@ -95,7 +93,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /* Public functions */
 
     /**
-     * @notice public function transfer.
+     * @notice Public function transfer.
      *
      * @dev It only allows transfer to internal actors.
      *
@@ -120,7 +118,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     }
 
     /**
-     * @notice public function transferFrom.
+     * @notice Public function transferFrom.
      *
      * @dev It only allows transfer to internal actors.
      *
@@ -136,7 +134,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
         uint256 _value
     )
         public
-        returns (bool /* success */)
+        returns (bool)
     {
         require(
             isInternalActor[_to],
@@ -161,11 +159,11 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
         uint256 _value
     )
         public
-        returns (bool /* success */)
+        returns (bool)
     {
         require(
             isInternalActor[_spender],
-            "spender is not an internal actor."
+            "Spender is not an internal actor."
         );
 
         return super.approve(_spender, _value);
@@ -189,20 +187,20 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     )
         public
         onlyCoGateway
-        returns (bool /* success */)
+        returns (bool)
     {
         require(
             (isInternalActor[_beneficiary]),
             "Beneficiary is not an economy actor."
         );
 
-        // mint EIP20 tokens in contract address for them to be claimed
+        // Mint EIP20 tokens in contract address for them to be claimed.
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
         emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
-        return true;
 
+        return true;
     }
 
     /**
@@ -214,13 +212,13 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      *
      * @param _amount Amount of tokens to burn.
      *
-     * @return true if burn is successful, false otherwise.
+     * @return true If burn is successful, false otherwise.
      */
     function burn(uint256 _amount)
         public
         onlyCoGateway
         payable
-        returns (bool /* success */)
+        returns (bool)
     {
         // force non-payable, as only ST" handles in base tokens.
         // ST" burn is not allowed from this function. Only BT Burn can be done

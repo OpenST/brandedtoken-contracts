@@ -90,7 +90,7 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
         {from: tokenHolder1}
         ),
         'Approval to be given to should be registered internal actor',
-        'spender is not an internal actor.'
+        'Spender is not an internal actor.'
       );
 
     });

@@ -14,13 +14,6 @@ pragma solidity ^0.4.23;
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// ----------------------------------------------------------------------------
-// Auxiliary chain: UtilityTokenInterface
-//
-// http://www.simpletoken.org/
-//
-// ----------------------------------------------------------------------------
 
 /**
  *  @title UtilityTokenInterface contract.
@@ -29,9 +22,9 @@ pragma solidity ^0.4.23;
  */
 interface UtilityTokenInterface {
 
-    /** Events */
+    /* Events */
 
-    /** Minted raised when new utility tokens are minted for a beneficiary */
+    /** Minted raised when new utility tokens are minted for a beneficiary. */
     event Minted(
         address indexed _beneficiary,
         uint256 _amount,
@@ -39,7 +32,7 @@ interface UtilityTokenInterface {
         address _utilityToken
     );
 
-    /** Burnt raised when new utility tokens are burnt for an address */
+    /** Burnt raised when new utility tokens are burnt for an address. */
     event Burnt(
         address indexed _account,
         uint256 _amount,
@@ -47,14 +40,14 @@ interface UtilityTokenInterface {
         address _utilityToken
     );
 
-    /** Emitted whenever a CoGateway address is set */
+    /** Emitted whenever a CoGateway address is set. */
     event CoGatewaySet(
         address _utilityToken,
         address _coGateway
     );
 
 
-    /** Public Functions */
+    /* Public Functions */
 
     /**
      * @notice Mints the utility token.

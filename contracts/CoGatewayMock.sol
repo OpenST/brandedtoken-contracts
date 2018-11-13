@@ -34,7 +34,7 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface {
 
     /* Special functions */
 
-    constructor(address _utilityToken) public{
+    constructor(address _utilityToken) public {
 
         utilityToken = _utilityToken;
 

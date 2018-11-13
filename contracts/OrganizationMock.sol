@@ -27,8 +27,10 @@ contract OrganizationMock is OrganizationIsWorkerInterface {
 
     /* Storage */
 
-    /** Worker address*/
-    address worker;
+    address public worker;
+
+
+    /* Public function */
 
     /**
      * @notice Sets worker.
@@ -38,6 +40,9 @@ contract OrganizationMock is OrganizationIsWorkerInterface {
     function setWorker(address _worker) public {
         worker = _worker;
     }
+
+
+    /* External function */
 
     /**
      * @notice Checks if the worker is valid or invalid.

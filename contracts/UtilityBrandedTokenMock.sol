@@ -10,12 +10,12 @@ import "./OrganizationIsWorkerInterface.sol";
  *
  * @notice UtilityBrandedToken is inheriting UtilityBrandedToken contract.
  *
- * @dev UtilityBrandedTokenMock facilitates testing of UtilityBrandedToken
+ * @dev UtilityBrandedTokenMock facilitates testing of UtilityBrandedToken.
  *
  */
 contract UtilityBrandedTokenMock is UtilityBrandedToken {
 
-    /** Special Function */
+    /* Special Function */
 
     constructor(
         EIP20Interface _token,
@@ -25,13 +25,14 @@ contract UtilityBrandedTokenMock is UtilityBrandedToken {
         OrganizationIsWorkerInterface _organization
     )
         public
-        UtilityBrandedToken(_token,_symbol, _name, _decimals,_organization)
+        UtilityBrandedToken(_token, _symbol, _name, _decimals, _organization)
     {}
 
 
-    /** Public functions */
+    /* Public functions */
 
-    /** @dev Takes _owner, _value; sets balance of _owner to _value.
+    /**
+     *  @dev Takes _owner, _value; sets balance of _owner to _value.
      *
      *  @notice It sets the balance for an address.
      *
