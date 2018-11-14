@@ -194,7 +194,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
             "Beneficiary is not an economy actor."
         );
 
-        // Mint EIP20 tokens in contract address for them to be claimed.
+        // Mint EIP20 tokens in contract address.
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
