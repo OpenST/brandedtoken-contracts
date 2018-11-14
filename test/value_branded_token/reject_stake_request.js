@@ -27,8 +27,12 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if stake request is 0', async () => {
-            const worker = accountProvider.get();
-            const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
+            const {
+                valueBrandedToken,
+                worker
+            }= await ValueBrandedTokenUtils.createValueBrandedToken(
+              accountProvider
+            );
 
             const nonStaker = accountProvider.get();
 
@@ -42,29 +46,36 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
             );
         });
 
-        it('Reverts if worker is not registered', async () => {
-          const worker = accountProvider.get();
-          const valueBrandedToken = await ValueBrandedTokenUtils.createValueBrandedToken(worker);
+        it('Reverts if worker is not set', async () => {
+            const {
+                valueBrandedToken
+            } = await ValueBrandedTokenUtils.createValueBrandedToken(
+              accountProvider
+            );
 
-          const staker = accountProvider.get();
-          const unRegisteredWorker = accountProvider.get();
-          await utils.expectRevert(
-            valueBrandedToken.rejectStakeRequest(
-              staker,
-              { from: unRegisteredWorker },
-            ),
-            'Should revert as stake request is zero.',
-            'Only whitelisted worker is allowed to call.',
-          );
+            const staker = accountProvider.get();
+            const nonWorker = accountProvider.get();
+
+            await utils.expectRevert(
+              valueBrandedToken.rejectStakeRequest(
+                staker,
+                { from: nonWorker },
+              ),
+              'Should revert if worker is not registered.',
+              'Only whitelisted worker is allowed to call.',
+            );
         });
 
         it('Reverts if valueToken.transfer returns false', async () => {
             const valueToken = await EIP20TokenMockPassFail.new();
             const conversionRate = 35;
             const conversionRateDecimals = 1;
-            const worker = accountProvider.get();
-            const organizationMock = await ValueBrandedTokenUtils.organizationMock();
-            await organizationMock.setWorker(worker);
+
+            const {
+                organizationMock,
+                worker
+            } = await ValueBrandedTokenUtils.setupOrganization(accountProvider);
+
             const valueBrandedToken = await ValueBrandedToken.new(
                 valueToken.address,
                 conversionRate,
@@ -106,14 +117,16 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
 
     contract('Events', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
-        const worker = accountProvider.get();
 
         it('Emits StakeRequestRejected event', async () => {
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
+                worker,
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(
+              accountProvider
+            );
 
             const transactionResponse = await valueBrandedToken.rejectStakeRequest(
                 staker,
@@ -142,14 +155,16 @@ contract('ValueBrandedToken::rejectStakeRequest', async () => {
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
-        const worker = accountProvider.get();
 
         it('Successfully deletes the stake request and calls valueToken.transfer', async () => {
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
+                worker,
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(
+              accountProvider
+            );
 
             const amountBeforeReject = await valueBrandedToken.stakeRequests(staker);
 

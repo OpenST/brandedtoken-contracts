@@ -27,11 +27,11 @@ contract OrganizationMock is OrganizationIsWorkerInterface {
 
     /* Storage */
 
-    /** Worker address */
+    /* Worker address */
     address worker;
 
 
-    /** Public functions */
+    /* Public function */
 
     /**
      * @notice Sets worker.
@@ -43,12 +43,15 @@ contract OrganizationMock is OrganizationIsWorkerInterface {
         worker = _worker;
     }
 
+
+    /* External function */
+
     /**
      * @notice Checks if the worker is valid or invalid.
      *
      * @param _worker Worker address to check if whitelisted.
      *
-     * @return True If the worker is already added.
+     * @return True if the worker is already added.
      */
     function isWorker(address _worker) external view returns (bool) {
         return(worker == _worker);

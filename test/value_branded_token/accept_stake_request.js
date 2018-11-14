@@ -24,29 +24,27 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Reverts if gateway is not set', async () => {
-            const worker = accountProvider.get();
-            const valueBrandedToken = await
-              ValueBrandedTokenUtils.createValueBrandedToken(
-                worker
-              );
+           const { valueBrandedToken, worker } = await
+             ValueBrandedTokenUtils.createValueBrandedToken(
+               accountProvider
+             );
 
-            const nonStaker = accountProvider.get();
+           const nonStaker = accountProvider.get();
 
-            await utils.expectRevert(
-                valueBrandedToken.acceptStakeRequest(
-                    nonStaker,
-                    { from: worker },
-                ),
-                'Should revert as gateway is not set.',
-                'Gateway is not set.',
-            );
+           await utils.expectRevert(
+               valueBrandedToken.acceptStakeRequest(
+                   nonStaker,
+                   { from: worker },
+               ),
+               'Should revert as gateway is not set.',
+               'Gateway is not set.',
+           );
         });
 
         it('Reverts if stake request is 0', async () => {
-          const worker = accountProvider.get();
-          const valueBrandedToken = await
+          const { valueBrandedToken, worker } = await
             ValueBrandedTokenUtils.createValueBrandedToken(
-              worker
+              accountProvider
             );
 
             const gateway = accountProvider.get();
@@ -54,6 +52,7 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
 
             await valueBrandedToken.setGateway(
                 gateway,
+              { from: worker }
             );
 
             await utils.expectRevert(
@@ -66,19 +65,20 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
             );
         });
 
-        it('Reverts if worker is unregistered', async () => {
-          const worker = accountProvider.get();
-          const valueBrandedToken = await
+        it('Reverts if worker is not set', async () => {
+
+          const { valueBrandedToken } = await
             ValueBrandedTokenUtils.createValueBrandedToken(
-              worker
+              accountProvider
             );
 
-          const nonStaker = accountProvider.get();
-          const unregisteredWorker = accountProvider.get();
+          const staker = accountProvider.get();
+          const nonWorker = accountProvider.get();
+
           await utils.expectRevert(
             valueBrandedToken.acceptStakeRequest(
-              nonStaker,
-              { from: unregisteredWorker },
+              staker,
+              { from: nonWorker },
             ),
             'Should revert as worker is not registered.',
             'Only whitelisted worker is allowed to call.',
@@ -90,13 +90,15 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits StakeRequestAccepted, Transfer, and Approval events', async () => {
-            const worker = accountProvider.get();
             const {
                 valueBrandedToken,
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
+                worker,
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(
+              accountProvider
+            );
 
             const transactionResponse = await valueBrandedToken.acceptStakeRequest(
                 staker,
@@ -144,7 +146,6 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
-        const worker = accountProvider.get();
 
         it('Successfully deletes the stake request, mints value branded tokens, and sets allowance for gateway', async () => {
             const {
@@ -152,7 +153,10 @@ contract('ValueBrandedToken::acceptStakeRequest', async () => {
                 valueTokens,
                 staker,
                 gateway,
-            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(accountProvider, worker);
+                worker,
+            } = await ValueBrandedTokenUtils.createValueBrandedTokenAndStakeRequest(
+              accountProvider
+            );
 
             const stakeRequestBefore = await valueBrandedToken.stakeRequests(staker);
             const balanceBefore = await valueBrandedToken.balanceOf(staker);

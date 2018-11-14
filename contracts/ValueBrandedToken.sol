@@ -19,7 +19,6 @@ pragma solidity ^0.4.24;
 import "./SafeMath.sol";
 import "./EIP20TokenRequiredInterface.sol";
 import "./Organized.sol";
-import "./OrganizationIsWorkerInterface.sol";
 
 
 /**
@@ -244,9 +243,9 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      *         value branded tokens from _staker, and deletes stake request.
      *
      * @dev Function requires:
+     *          - caller is a worker;
      *          - gateway is set;
      *          - stake request is not 0.
-     *          - it call only be called by registered worker.
      *
      * @param _staker Staker address.
      */
@@ -286,9 +285,9 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      * @notice Deletes stake request and transfers value tokens to staker.
      *
      * @dev Function requires:
+     *          - caller is a worker;
      *          - stake request is not 0;
      *          - valueToken.transfer returns true.
-     *          - it call only be called by registered worker.
      *
      * @param _staker Staker address.
      */
@@ -358,7 +357,8 @@ contract ValueBrandedToken is EIP20TokenRequiredInterface, Organized {
      *      the address of this contract is required to construct the Gateway.
      *
      *      Function requires:
-     *          - gateway is not set.
+     *          - caller is a worker;
+     *          - gateway is not set;
      *          - it call only be called by registered worker.
      *
      * @param _gateway The value to which gateway is set.

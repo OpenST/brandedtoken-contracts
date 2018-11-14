@@ -15,17 +15,19 @@
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 const ValueBrandedToken = artifacts.require('ValueBrandedToken');
 const OrganizationMock = artifacts.require('OrganizationMock');
-let organizationInstance;
+
 /**
  * Creates a value branded token.
  */
-module.exports.createValueBrandedToken = async (worker) => {
+module.exports.createValueBrandedToken = async (accountProvider) => {
     const valueToken = await EIP20TokenMockPass.new();
     const conversionRate = 35;
     const conversionRateDecimals = 1;
-    const organizationMock = await OrganizationMock.new();
-    organizationInstance = organizationMock;
-    await organizationMock.setWorker(worker);
+
+    const {
+      organizationMock,
+      worker
+    } = await this.setupOrganization(accountProvider);
 
     const valueBrandedToken = await ValueBrandedToken.new(
         valueToken.address,
@@ -34,14 +36,17 @@ module.exports.createValueBrandedToken = async (worker) => {
         organizationMock.address,
     );
 
-    return valueBrandedToken;
+    return { valueBrandedToken, organizationMock, worker };
 };
 
 /**
  * Creates a value branded token and a stake request.
  */
-module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider, worker) => {
-    const valueBrandedToken = await this.createValueBrandedToken(worker);
+module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider) => {
+    const {
+      valueBrandedToken,
+      worker
+    } = await this.createValueBrandedToken(accountProvider);
 
     const valueTokens = 1;
     const valueBrandedTokens = await valueBrandedToken.convert(valueTokens);
@@ -67,6 +72,7 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider, 
 
     await valueBrandedToken.setGateway(
         gateway,
+        {from: worker}
     );
 
     return {
@@ -74,14 +80,20 @@ module.exports.createValueBrandedTokenAndStakeRequest = async (accountProvider, 
         valueTokens,
         staker,
         gateway,
+        worker,
     };
 };
 
 /**
- * Creates an instance of OrganizationMock contract.
+ * Creates an instance of OrganizationMock contract and sets worker.
  */
-module.exports.organizationMock = async() => {
+module.exports.setupOrganization = async(accountProvider) => {
 
-    return (await OrganizationMock.new());
+    const worker = accountProvider.get();
+    const organizationMock = await OrganizationMock.new();
+
+    organizationMock.setWorker(worker);
+
+    return { organizationMock, worker };
 
 }

@@ -78,6 +78,7 @@ contract('ValueBrandedToken::constructor', async () => {
                 (await valueBrandedToken.valueToken()),
                 valueToken,
             );
+
             assert.strictEqual(
                 (await valueBrandedToken.organization()),
               organization
