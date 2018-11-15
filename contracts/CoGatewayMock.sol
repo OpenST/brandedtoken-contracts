@@ -15,7 +15,6 @@ pragma solidity ^0.4.23;
 // limitations under the License.
 
 import "./CoGatewayUtilityTokenInterface.sol";
-import "./UtilityTokenInterface.sol";
 
 
 /**
@@ -46,7 +45,7 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface {
     /**
      * @notice Get the utility token address.
      *
-     * @return address of utility token.
+     * @return Address of utility token.
      */
     function utilityToken() external view returns (address)
     {

@@ -13,66 +13,39 @@
 // limitations under the License.
 
 const utils = require('../test_lib/utils'),
-  UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
-  EIP20TokenMock = artifacts.require('EIP20TokenMock'),
-  OrganizationMock = artifacts.require('OrganizationMock'),
+  UtilityBrandedTokenUtils = require('./utils'),
   CoGatewayMock = artifacts.require('CoGatewayMock'),
   AccountProvider =  utils.AccountProvider,
   { Event } = require('../test_lib/event_decoder.js');
 
 contract('UtilityBrandedToken::burn', async (accounts) => {
 
-  let valueToken,
-    organization,
-    utilityBrandedTokenMock,
-    internalActor,
-    organizationMock,
+  let internalActor,
     tokenHolder1,
     tokenHolder2,
     tokenHolder3,
-    conversionRate = 5,
-    conversionRateDecimals = 10,
-    owner,
     worker,
     accountProvider,
     tokenHolder1Balance = 100,
-    coGatewayMock;
-
-  const SYMBOL = "MOCK",
-    NAME = "Mock Token",
-    DECIMALS = "5";
+    coGatewayMock,
+    utilityBrandedTokenMock;
 
   beforeEach(async function() {
 
     accountProvider = new AccountProvider(accounts);
-    organization = accountProvider.get();
     tokenHolder1 = accountProvider.get();
     tokenHolder2 = accountProvider.get();
     tokenHolder3 =  accountProvider.get();
-    owner = accountProvider.get();
-    worker = accountProvider.get();
-    organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker, {from: owner});
 
-    valueToken = await EIP20TokenMock.new(
-      conversionRate,
-      conversionRateDecimals,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      {from: organization});
-
-    utilityBrandedTokenMock = await UtilityBrandedTokenMock.new(
-      valueToken.address,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      organizationMock.address,
-      {from: organization}
-    );
+    ({
+      utilityBrandedTokenMock,
+      worker
+    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
+      accountProvider
+    ));
 
     coGatewayMock = await CoGatewayMock.new(
-      utilityBrandedTokenMock.address
+      utilityBrandedTokenMock.address,
     );
 
 
@@ -81,7 +54,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     internalActor.push(tokenHolder3);
     await utilityBrandedTokenMock.registerInternalActor(
       internalActor,
-      {from: worker}
+      { from: worker },
     );
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
@@ -95,9 +68,10 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       let non_worker = accountProvider.get();
       await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
-        {from: non_worker}),
-        'Worker needs to be registered to set cogateway address.' ,
-        'Only whitelisted worker is allowed to call.');
+        { from: non_worker }),
+        'Worker needs to be registered to set cogateway address.',
+        'Only whitelisted worker is allowed to call.',
+      );
 
     });
 
@@ -105,16 +79,16 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
       await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
-        {from: worker}
+        { from: worker }
       );
 
       let coGatewayMock2 = await CoGatewayMock.new(
-        utilityBrandedTokenMock.address
+        utilityBrandedTokenMock.address,
       );
 
       await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
         coGatewayMock2.address,
-        {from: worker}),
+        { from: worker }),
         'Cogateway address cannot be set again.' ,
         'CoGateway address already set.');
 
@@ -122,24 +96,21 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     it('Reverts if CoGateway is linked with some other utility token.', async () => {
 
-      let utilityBrandedTokenMock2 = await UtilityBrandedTokenMock.new(
-        valueToken.address,
-        SYMBOL,
-        NAME,
-        DECIMALS,
-        organizationMock.address,
-        {from: organization}
-      );
+      let valueObject = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
+        accountProvider,
+      ); // think of different vairable name
+
+      let utilityBrandedTokenMock2 = valueObject.utilityBrandedTokenMock;
 
       let coGatewayMock2 = await CoGatewayMock.new(
-        utilityBrandedTokenMock2.address
+        utilityBrandedTokenMock2.address,
       );
 
       await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
         coGatewayMock2.address,
-        {from: worker}),
+        { from: worker }),
         'CoGateway is linked to other utility token' ,
-        'CoGateway is linked with some other utility token.'
+        'CoGateway is linked with some other utility token.',
       );
 
     });
@@ -152,12 +123,12 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
       await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
-        {from: worker}
+        { from: worker },
       );
 
       assert.equal(
         await utilityBrandedTokenMock.coGateway.call(),
-        coGatewayMock.address
+        coGatewayMock.address,
       );
 
     });
@@ -169,7 +140,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
       let transactionResponse = await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
-        {from: worker}
+        { from: worker },
       );
 
       let events = Event.decodeTransactionResponse(transactionResponse);

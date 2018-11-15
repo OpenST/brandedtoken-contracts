@@ -13,7 +13,6 @@ pragma solidity ^0.4.23;
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 import "./UtilityTokenInterface.sol";
 import "./Internal.sol";
@@ -28,8 +27,7 @@ import "./CoGatewayUtilityTokenInterface.sol";
  *         UtilityTokenInterface.
  *
  * @dev UtilityBrandedToken are designed to be used within a decentralised
- *      application and support:
- *      - minting and burning of tokens.
+ *      application and support minting and burning of tokens.
  */
 contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
 
@@ -47,7 +45,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
 
     /* Modifiers */
 
-    /** checks that msg.sender is coGateway address. */
+    /** Checks that msg.sender is coGateway address. */
     modifier onlyCoGateway() {
         require(
             msg.sender == coGateway,
@@ -65,11 +63,11 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      * @dev Creates an EIP20Token contract with arguments passed in the
      *      contract constructor.
      *
-     * @param _token Value chain EIP20 contract address. It acts as identifier.
+     * @param _token Value chain EIP20 contract address. It acts as an identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
-     * @param _organization Address of the organization.
+     * @param _organization Address of the Organization contract.
      */
     constructor(
         EIP20Interface _token,
@@ -95,7 +93,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice Public function transfer.
      *
-     * @dev It only allows transfer to internal actors.
+     * @dev Function requires that _to address is an internal actor.
      *
      * @param _to Address to which BT needs to transfer.
      * @param _value Number of BTs that needs to transfer.
@@ -107,7 +105,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
         uint256 _value
     )
         public
-        returns (bool /* success */)
+        returns (bool)
     {
         require(
             isInternalActor[_to],
@@ -120,13 +118,13 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
     /**
      * @notice Public function transferFrom.
      *
-     * @dev It only allows transfer to internal actors.
+     * @dev Function requires that _to address is an internal actor.
      *
      * @param _from Address from which BT needs to transfer.
      * @param _to Address to which BT needs to transfer.
      * @param _value Number of BTs that needs to transfer.
      *
-     * @return success/failure status of transferFrom.
+     * @return Success/failure status of transferFrom.
      */
     function transferFrom(
         address _from,
@@ -179,7 +177,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      * @param _beneficiary Address of beneficiary.
      * @param _amount Amount of utility tokens to mint.
      *
-     * @return true if mint is successful, false otherwise.
+     * @return True if mint is successful, false otherwise.
      */
     function mint(
         address _beneficiary,
@@ -194,7 +192,6 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
             "Beneficiary is not an economy actor."
         );
 
-        // Mint EIP20 tokens in contract address.
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
@@ -212,7 +209,7 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      *
      * @param _amount Amount of tokens to burn.
      *
-     * @return true If burn is successful, false otherwise.
+     * @return True if burn is successful, false otherwise.
      */
     function burn(uint256 _amount)
         public
@@ -239,17 +236,16 @@ contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
      *
      * @dev Function requires:
      *          - It is called by whitelisted workers.
-     *          - It checks the whether Cogateway is linked with other utility
+     *          - coGateway address is set only once.
+     *          - It checks whether Cogateway is linked with any other utility
      *            tokens.
      *
      * @param _coGatewayAddress CoGateway contract address.
      *
-     * @return `true` If CoGateway address was set.
      */
     function setCoGateway(address _coGatewayAddress)
         public
         onlyWorker
-        returns (bool)
     {
         require(
             coGateway == address(0),

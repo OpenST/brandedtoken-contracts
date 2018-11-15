@@ -13,67 +13,39 @@
 // limitations under the License.
 
 const utils = require('../test_lib/utils'),
-  UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
-  EIP20TokenMock = artifacts.require('EIP20TokenMock'),
-  OrganizationMock = artifacts.require('OrganizationMock'),
+  UtilityBrandedTokenUtils = require('./utils'),
   AccountProvider =  utils.AccountProvider;
 
 contract('UtilityBrandedToken::transfer', async (accounts) => {
 
-  let valueToken,
-    organization,
-    utilityBrandedTokenMock,
+  let utilityBrandedTokenMock,
     internalActor,
-    organizationMock,
     tokenHolder1,
     tokenHolder2,
-    conversionRate = 5,
-    conversionRateDecimals = 10,
-    owner,
     worker,
     accountProvider,
     amount = 10,
     tokenHolder1Balance = 100;
 
-
-  const SYMBOL = "MOCK",
-    NAME = "Mock Token",
-    DECIMALS = "5";
-
   beforeEach(async function() {
 
     accountProvider = new AccountProvider(accounts);
-    organization = accountProvider.get();
     tokenHolder1 = accountProvider.get();
     tokenHolder2 = accountProvider.get();
-    owner = accountProvider.get();
-    worker = accountProvider.get();
-    organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker, {from: owner});
 
-    valueToken = await EIP20TokenMock.new(
-      conversionRate,
-      conversionRateDecimals,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      {from: organization});
-
-    utilityBrandedTokenMock = await UtilityBrandedTokenMock.new(
-      valueToken.address,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      organizationMock.address,
-      {from: organization}
-    );
+    ({
+      utilityBrandedTokenMock,
+      worker
+    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
+      accountProvider
+    ));
 
     internalActor = [];
     internalActor.push(tokenHolder1);
 
     await utilityBrandedTokenMock.registerInternalActor(
       internalActor,
-      {from: worker}
+      { from: worker },
     );
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
@@ -87,9 +59,10 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
       await utils.expectRevert(utilityBrandedTokenMock.transfer(
         tokenHolder2,
         amount,
-        {from: tokenHolder1}),
+        { from: tokenHolder1 }),
         'To address should be registered internal actor',
-        'To address is not an internal actor.');
+        'To address is not an internal actor.',
+      );
 
     });
 
@@ -103,7 +76,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
 
       await utilityBrandedTokenMock.registerInternalActor(
         internalActor,
-        {from: worker}
+        { from: worker },
       );
 
       assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2), 0);
@@ -111,7 +84,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
       await utilityBrandedTokenMock.transfer(
         tokenHolder2,
         amount,
-        {from: tokenHolder1}
+        { from: tokenHolder1 },
       );
 
       assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2),amount);

@@ -27,6 +27,7 @@ contract EIP20Token is EIP20Interface {
 
     using SafeMath for uint256;
 
+
     /* Storage */
 
     string private tokenName;
@@ -61,7 +62,7 @@ contract EIP20Token is EIP20Interface {
     /**
      *  @notice Public view function name.
      *
-     *  @return string Name of the token.
+     *  @return Name of the token.
      */
     function name() public view returns (string) {
         return tokenName;
@@ -70,7 +71,7 @@ contract EIP20Token is EIP20Interface {
     /**
      *  @notice Public view function symbol.
      *
-     *  @return string Symbol of the token.
+     *  @return Symbol of the token.
      */
     function symbol() public view returns (string) {
         return tokenSymbol;
@@ -79,7 +80,7 @@ contract EIP20Token is EIP20Interface {
     /**
      *  @notice Public view function decimals.
      *
-     *  @return uint8 Decimal places of the token.
+     *  @return Decimal places of the token.
      */
     function decimals() public view returns (uint8) {
         return tokenDecimals;
@@ -90,7 +91,7 @@ contract EIP20Token is EIP20Interface {
      *
      *  @param _owner Address of the owner account.
      *
-     *  @return uint256 Account balance of the owner account.
+     *  @return Account balance of the owner account.
      */
     function balanceOf(address _owner) public view returns (uint256) {
         return balances[_owner];
@@ -101,7 +102,7 @@ contract EIP20Token is EIP20Interface {
      *
      *  @dev Get totalTokenSupply as view so that child cannot edit.
      *
-     *  @return uint256 Total token supply.
+     *  @return Total token supply.
      */
     function totalSupply()
         public
@@ -117,7 +118,7 @@ contract EIP20Token is EIP20Interface {
      *  @param _owner Address of the owner account.
      *  @param _spender Address of the spender account.
      *
-     *  @return uint256 Remaining allowance for the spender to spend from
+     *  @return Remaining allowance for the spender to spend from
      *          owner's account.
      */
     function allowance(
@@ -126,7 +127,7 @@ contract EIP20Token is EIP20Interface {
     )
         public
         view
-        returns (uint256 /* remaining */)
+        returns (uint256)
     {
         return allowed[_owner][_spender];
     }
@@ -140,14 +141,14 @@ contract EIP20Token is EIP20Interface {
      *  @param _to Address to which tokens are transferred.
      *  @param _value Amount of tokens to be transferred.
      *
-     *  @return bool True for a successful transfer, false otherwise.
+     *  @return success_ True for a successful transfer, false otherwise.
      */
     function transfer(
         address _to,
         uint256 _value
     )
         public
-        returns (bool success)
+        returns (bool success_)
     {
 
         // According to the EIP20 spec, "transfers of 0 values MUST be treated
@@ -174,7 +175,7 @@ contract EIP20Token is EIP20Interface {
      *  @param _to Address to which tokens are transferred.
      *  @param _value Amount of tokens transferred.
      *
-     *  @return bool True for a successful transfer, false otherwise.
+     *  @return success_ True for a successful transfer, false otherwise.
      */
     function transferFrom(
         address _from,
@@ -182,7 +183,7 @@ contract EIP20Token is EIP20Interface {
         uint256 _value
     )
         public
-        returns (bool success)
+        returns (bool success_)
     {
         balances[_from] = balances[_from].sub(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -205,14 +206,14 @@ contract EIP20Token is EIP20Interface {
      *                  address.
      *  @param _value Amount up to which spender is authorized to spend.
      *
-     *  @return bool True for a successful approval, false otherwise.
+     *  @return success_ True for a successful approval, false otherwise.
      */
     function approve(
         address _spender,
         uint256 _value
     )
         public
-        returns (bool success)
+        returns (bool success_)
     {
 
         allowed[msg.sender][_spender] = _value;

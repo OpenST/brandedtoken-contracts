@@ -58,31 +58,31 @@ interface UtilityTokenInterface {
      * @param _beneficiary Address of tokens beneficiary.
      * @param _amount Amount of tokens to mint.
      *
-     * @return bool `true` If mint is successful, false otherwise.
+     * @return success_ True if mint is successful, false otherwise.
      */
     function mint(
         address _beneficiary,
         uint256 _amount
     )
         external
-        returns (bool success);
+        returns (bool success_);
 
     /**
-     * @notice Burns the balance for the burner's address
+     * @notice Burns the balance for the burner's address.
      *
-     * @dev only burns the amount from CoGateway address, So to burn
+     * @dev Only burns the amount from CoGateway address.So to burn
      *      transfer the amount to CoGateway.
      *
      * @param _amount Amount of tokens to burn.
      *
-     * @return bool `true` if burn is successful, false otherwise.
+     * @return success_ True if burn is successful, false otherwise.
      */
     function burn(
         uint256 _amount
     )
         payable
         external
-        returns (bool success);
+        returns (bool success_);
 
     /**
      * @notice Sets the CoGateway contract address.
@@ -90,9 +90,9 @@ interface UtilityTokenInterface {
      * @dev This will be set with zero gas. Can be called only by whitelisted
      *      workers.
      *
-     * @param _coGatewayAddress CoGateway contract address.
+     * @param _coGatewayAddress coGateway contract address.
      *
-     * @return `true` If CoGateway address was set.
+     * @return True if coGateway address was set.
      */
     function setCoGateway(address _coGatewayAddress)
         external

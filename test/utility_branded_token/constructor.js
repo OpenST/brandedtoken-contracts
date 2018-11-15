@@ -39,7 +39,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
       SYMBOL,
       NAME,
       DECIMALS,
-      {from: organization}
+      { from: organization },
     );
 
   });
@@ -54,9 +54,9 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
         NAME,
         DECIMALS,
         organization,
-        {from: organization}),
+        { from: organization }),
         'Token address is null',
-        'Token address is null.'
+        'Token address is null.',
       );
 
     });
@@ -73,7 +73,8 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
             NAME,
             DECIMALS,
             organization,
-            {from: organization});
+            { from: organization },
+            );
 
       assert.equal(await utilityBrandedToken.valueToken.call(), valueToken.address);
 

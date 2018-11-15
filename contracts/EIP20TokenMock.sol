@@ -19,7 +19,7 @@ import "./EIP20Token.sol";
 
 
 /**
- * @title EIP20TokenMock.
+ * @title EIP20TokenMock contract.
  *
  * @notice It provides EIP20Token with mock functionality to facilitate testing
  *         payments.
@@ -32,9 +32,10 @@ contract EIP20TokenMock is EIP20Token {
     uint8 public conversionRateDecimals;
 
 
-    /** Special functions */
+    /* Special functions */
 
-    /** @dev Takes _conversionRate, _symbol, _name, _decimals.
+    /**
+     *  @dev Takes _conversionRate, _symbol, _name, _decimals.
      *
      *  @param _conversionRate ConversionRate.
      *  @param _symbol Symbol.
@@ -46,7 +47,8 @@ contract EIP20TokenMock is EIP20Token {
         uint8 _conversionRateDecimals,
         string _symbol,
         string _name,
-        uint8 _decimals)
+        uint8 _decimals
+    )
         /* solhint-disable-next-line visibility-modifier-order */
         EIP20Token(_symbol, _name, _decimals)
         public
@@ -56,7 +58,7 @@ contract EIP20TokenMock is EIP20Token {
     }
 
 
-    /** Public functions */
+    /* Public functions */
 
     /**
      * @notice Returns 0 as mock total supply.
@@ -66,7 +68,7 @@ contract EIP20TokenMock is EIP20Token {
     function totalSupply()
         public
         view
-        returns (uint256 /* mock total supply */)
+        returns (uint256)
     {
         return 0;
     }
@@ -81,9 +83,10 @@ contract EIP20TokenMock is EIP20Token {
      */
     function setBalance(
         address _owner,
-        uint256 _value)
+        uint256 _value
+    )
         public
-        returns (bool /* success */)
+        returns (bool)
     {
         balances[_owner] = _value;
         return true;
@@ -97,9 +100,10 @@ contract EIP20TokenMock is EIP20Token {
      * @return bool Success.
      */
     function setConverionRate(
-        uint256 _conversionRate)
+        uint256 _conversionRate
+    )
         public
-        returns (bool /* success */)
+        returns (bool)
     {
         conversionRate = _conversionRate;
         return true;

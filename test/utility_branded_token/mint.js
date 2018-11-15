@@ -13,66 +13,37 @@
 // limitations under the License.
 
 const utils = require('../test_lib/utils'),
-  UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
-  EIP20TokenMock = artifacts.require('EIP20TokenMock'),
-  OrganizationMock = artifacts.require('OrganizationMock'),
-  CoGatewayMock = artifacts.require('CoGatewayMock'),
+  UtilityBrandedTokenUtils = require('./utils'),
   AccountProvider =  utils.AccountProvider,
   { Event } = require('../test_lib/event_decoder.js');
 
 contract('UtilityBrandedToken::mint', async (accounts) => {
 
-  let valueToken,
-    organization,
-    utilityBrandedTokenMock,
+  let utilityBrandedTokenMock,
     internalActor,
-    organizationMock,
     tokenHolder1,
     tokenHolder2,
     tokenHolder3,
-    conversionRate = 5,
-    conversionRateDecimals = 10,
     amount = 10,
-    owner,
-    worker,
     accountProvider,
     tokenHolder1Balance = 100,
-    coGateway;
-
-  const SYMBOL = "MOCK",
-    NAME = "Mock Token",
-    DECIMALS = "5";
+    coGateway,
+    worker;
 
   beforeEach(async function() {
 
     accountProvider = new AccountProvider(accounts);
-    organization = accountProvider.get();
     tokenHolder1 = accountProvider.get();
     tokenHolder2 = accountProvider.get();
     tokenHolder3 =  accountProvider.get();
     coGateway = accountProvider.get();
-    owner = accountProvider.get();
-    worker = accountProvider.get();
-    organizationMock = await OrganizationMock.new({from: owner});
-    await organizationMock.setWorker(worker, {from: owner});
 
-    valueToken = await EIP20TokenMock.new(
-      conversionRate,
-      conversionRateDecimals,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      {from: organization}
-    );
-
-    utilityBrandedTokenMock = await UtilityBrandedTokenMock.new(
-      valueToken.address,
-      SYMBOL,
-      NAME,
-      DECIMALS,
-      organizationMock.address,
-      {from: organization}
-    );
+    ({
+      utilityBrandedTokenMock,
+      worker
+    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
+      accountProvider
+    ));
 
     internalActor = [];
     internalActor.push(tokenHolder1);
@@ -80,7 +51,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
 
     await utilityBrandedTokenMock.registerInternalActor(
       internalActor,
-      {from: worker}
+      { from: worker },
     );
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
@@ -96,7 +67,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
         utilityBrandedTokenMock.mint(
           tokenHolder2,
           amount,
-          {from: coGateway}
+          { from: coGateway },
         ),
         'Beneficiary should be registered internal actor',
         'Beneficiary is not an economy actor.'
@@ -110,7 +81,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
         utilityBrandedTokenMock.mint(
           '',
           amount,
-          {from: coGateway}
+          { from: coGateway },
         ),
         'Beneficiary address cannot be empty',
         'Beneficiary is not an economy actor.'
@@ -122,7 +93,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
 
   describe('Storage', async () => {
 
-    it('Validate the minting', async () => {
+    it('Validate the minting of tokens', async () => {
 
       // Before minting
       assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder3), 0);
@@ -131,7 +102,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
       await utilityBrandedTokenMock.mint(
         tokenHolder3,
         amount,
-        {from: coGateway}
+        { from: coGateway },
       );
 
       // After minting
@@ -148,14 +119,14 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
       let transactionResponse = await utilityBrandedTokenMock.mint(
         tokenHolder3,
         amount,
-        {from: coGateway}
+        { from: coGateway },
       );
 
       let events = Event.decodeTransactionResponse(transactionResponse);
 
       assert.strictEqual(
         events.length,
-        1
+        1,
       );
 
       Event.assertEqual(events[0],{
