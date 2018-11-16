@@ -39,9 +39,9 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
 
     ({
       utilityBrandedTokenMock,
-      worker
+      worker,
     } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider
+      accountProvider,
     ));
 
     internalActor = [];
@@ -95,7 +95,7 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
         tokenHolder1,
         tokenHolder2,
         amount,
-        { from: tokenHolder3 }
+        { from: tokenHolder3 },
       );
 
       assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2),amount);

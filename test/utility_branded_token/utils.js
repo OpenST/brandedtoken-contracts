@@ -29,7 +29,7 @@ module.exports.createUtilityBrandedToken = async (accountProvider) => {
 
   const {
     organizationMock,
-    worker
+    worker,
   } = await this.setupOrganization(accountProvider);
 
   const valueToken = await EIP20TokenMock.new(

@@ -63,7 +63,7 @@ contract EIP20TokenMock is EIP20Token {
     /**
      * @notice Returns 0 as mock total supply.
      *
-     * @return bool It returns 0.
+     * @return Returns 0.
      */
     function totalSupply()
         public
@@ -79,7 +79,7 @@ contract EIP20TokenMock is EIP20Token {
      * @param _owner Owner.
      * @param _value Value.
      *
-     * @return bool Success.
+     * @return True if balances of the _owner is set.
      */
     function setBalance(
         address _owner,
@@ -97,7 +97,7 @@ contract EIP20TokenMock is EIP20Token {
      *
      * @param _conversionRate ConversionRate.
      *
-     * @return bool Success.
+     * @return True if conversionRate is set.
      */
     function setConverionRate(
         uint256 _conversionRate

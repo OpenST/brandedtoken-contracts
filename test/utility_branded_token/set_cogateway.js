@@ -28,7 +28,8 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     accountProvider,
     tokenHolder1Balance = 100,
     coGatewayMock,
-    utilityBrandedTokenMock;
+    utilityBrandedTokenMock,
+    utilityBrandedTokenMock2;
 
   beforeEach(async function() {
 
@@ -39,9 +40,9 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     ({
       utilityBrandedTokenMock,
-      worker
+      worker,
     } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider
+      accountProvider,
     ));
 
     coGatewayMock = await CoGatewayMock.new(
@@ -79,7 +80,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
       await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
-        { from: worker }
+        { from: worker },
       );
 
       let coGatewayMock2 = await CoGatewayMock.new(
@@ -90,17 +91,18 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
         coGatewayMock2.address,
         { from: worker }),
         'Cogateway address cannot be set again.' ,
-        'CoGateway address already set.');
+        'CoGateway address already set.',
+      );
 
     });
 
     it('Reverts if CoGateway is linked with some other utility token.', async () => {
 
-      let valueObject = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
+      let utilityMock = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
         accountProvider,
-      ); // think of different vairable name
+      );
 
-      let utilityBrandedTokenMock2 = valueObject.utilityBrandedTokenMock;
+      utilityBrandedTokenMock2 = utilityMock.utilityBrandedTokenMock;
 
       let coGatewayMock2 = await CoGatewayMock.new(
         utilityBrandedTokenMock2.address,

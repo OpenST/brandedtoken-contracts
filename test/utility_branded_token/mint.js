@@ -40,9 +40,9 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
 
     ({
       utilityBrandedTokenMock,
-      worker
+      worker,
     } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider
+      accountProvider,
     ));
 
     internalActor = [];
@@ -55,7 +55,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     );
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
-    await utilityBrandedTokenMock.settingCoGateway(coGateway);
+    await utilityBrandedTokenMock.mockSetCoGateway(coGateway);
 
   });
 
@@ -84,7 +84,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
           { from: coGateway },
         ),
         'Beneficiary address cannot be empty',
-        'Beneficiary is not an economy actor.'
+        'Beneficiary is not an economy actor.',
       );
 
     });
@@ -136,7 +136,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
           _amount: new web3.utils.BN(amount),
           _totalSupply: new web3.utils.BN(amount),
           _utilityToken: utilityBrandedTokenMock.address
-        }
+        },
       });
 
     });

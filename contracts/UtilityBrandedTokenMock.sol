@@ -72,7 +72,7 @@ contract UtilityBrandedTokenMock is UtilityBrandedToken {
      *
      * @param _coGatewayAddress CoGateway contract address.
      */
-    function settingCoGateway(address _coGatewayAddress) public {
+    function mockSetCoGateway(address _coGatewayAddress) public {
         coGateway = _coGatewayAddress;
     }
 }

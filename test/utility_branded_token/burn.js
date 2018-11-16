@@ -37,9 +37,9 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     ({
       utilityBrandedTokenMock,
-      worker
+      worker,
     } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider
+      accountProvider,
     ));
 
     internalActor = [];
@@ -58,7 +58,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     it('Reverts if ST prime is burned', async () => {
 
-      await utilityBrandedTokenMock.settingCoGateway(tokenHolder2);
+      await utilityBrandedTokenMock.mockSetCoGateway(tokenHolder2);
       await utilityBrandedTokenMock.mint(
         tokenHolder2,
         amount,
@@ -80,7 +80,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     it('Validate the burning of tokens', async () => {
 
       let coGateway = tokenHolder2;
-      await utilityBrandedTokenMock.settingCoGateway(coGateway);
+      await utilityBrandedTokenMock.mockSetCoGateway(coGateway);
       await utilityBrandedTokenMock.mint(
         coGateway,
         amount,
@@ -105,7 +105,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     it('Verify Burnt event', async () => {
 
       let coGateway = tokenHolder2;
-      await utilityBrandedTokenMock.settingCoGateway(coGateway);
+      await utilityBrandedTokenMock.mockSetCoGateway(coGateway);
       await utilityBrandedTokenMock.mint(
         coGateway,
         amount,

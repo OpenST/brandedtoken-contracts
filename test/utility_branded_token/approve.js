@@ -35,9 +35,9 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
 
     ({
       utilityBrandedTokenMock,
-      worker
+      worker,
     } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider
+      accountProvider,
     ));
 
     internalActor = [];
@@ -81,7 +81,7 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
 
       assert.equal(await utilityBrandedTokenMock.allowance(
         tokenHolder1,
-        tokenHolder2
+        tokenHolder2,
         ),
         0,
       );
