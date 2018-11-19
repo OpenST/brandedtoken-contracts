@@ -29,7 +29,7 @@ import "./CoGatewayUtilityTokenInterface.sol";
  * @dev UtilityBrandedToken are designed to be used within a decentralised
  *      application and support minting and burning of tokens.
  */
-contract UtilityBrandedToken is EIP20Token, Internal, UtilityTokenInterface {
+contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
 
     /* Storage */
 

@@ -38,21 +38,16 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     tokenHolder3 =  accountProvider.get();
     coGateway = accountProvider.get();
 
-    ({
-      utilityBrandedTokenMock,
-      worker,
-    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider,
-    ));
-
     internalActor = [];
     internalActor.push(tokenHolder1);
     internalActor.push(tokenHolder3);
 
-    await utilityBrandedTokenMock.registerInternalActor(
-      internalActor,
-      { from: worker },
-    );
+    ({
+      utilityBrandedTokenMock,
+      worker,
+    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+      accountProvider, internalActor
+    ));
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
     await utilityBrandedTokenMock.mockSetCoGateway(coGateway);

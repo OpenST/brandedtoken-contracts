@@ -55,7 +55,7 @@ interface UtilityTokenInterface {
      * @dev Adds _amount tokens to beneficiary balance and increases the
      *      totalTokenSupply. Can be called only by CoGateway.
      *
-     * @param _beneficiary Address of tokens beneficiary.
+     * @param _beneficiary Address of beneficiary who will receive the tokens.
      * @param _amount Amount of tokens to mint.
      *
      * @return success_ True if mint is successful, false otherwise.

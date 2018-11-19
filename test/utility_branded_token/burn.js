@@ -35,20 +35,16 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     tokenHolder1 = accountProvider.get();
     tokenHolder2 =  accountProvider.get();
 
-    ({
-      utilityBrandedTokenMock,
-      worker,
-    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider,
-    ));
-
     internalActor = [];
     internalActor.push(tokenHolder1);
     internalActor.push(tokenHolder2);
-    await utilityBrandedTokenMock.registerInternalActor(
-      internalActor,
-      { from: worker },
-    );
+
+    ({
+      utilityBrandedTokenMock,
+      worker,
+    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+      accountProvider, internalActor
+    ));
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
 

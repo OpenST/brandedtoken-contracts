@@ -38,24 +38,19 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     tokenHolder2 = accountProvider.get();
     tokenHolder3 =  accountProvider.get();
 
+    internalActor = [];
+    internalActor.push(tokenHolder1);
+    internalActor.push(tokenHolder3);
+
     ({
       utilityBrandedTokenMock,
       worker,
-    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider,
+    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+      accountProvider, internalActor
     ));
 
     coGatewayMock = await CoGatewayMock.new(
       utilityBrandedTokenMock.address,
-    );
-
-
-    internalActor = [];
-    internalActor.push(tokenHolder1);
-    internalActor.push(tokenHolder3);
-    await utilityBrandedTokenMock.registerInternalActor(
-      internalActor,
-      { from: worker },
     );
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
@@ -98,8 +93,8 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     it('Reverts if CoGateway is linked with some other utility token.', async () => {
 
-      let utilityMock = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-        accountProvider,
+      let utilityMock = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+        accountProvider, internalActor
       );
 
       utilityBrandedTokenMock2 = utilityMock.utilityBrandedTokenMock;

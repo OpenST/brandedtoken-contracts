@@ -37,16 +37,16 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
     tokenHolder3 =  accountProvider.get();
     worker = accountProvider.get();
 
-    ({
-      utilityBrandedTokenMock,
-      worker,
-    } = await UtilityBrandedTokenUtils.createUtilityBrandedToken(
-      accountProvider,
-    ));
-
     internalActor = [];
     internalActor.push(tokenHolder1);
     internalActor.push(tokenHolder3);
+
+    ({
+      utilityBrandedTokenMock,
+      worker,
+    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+      accountProvider, internalActor
+    ));
 
     await utilityBrandedTokenMock.registerInternalActor(
       internalActor,

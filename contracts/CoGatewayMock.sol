@@ -28,14 +28,14 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface {
     /* Storage */
 
     /** Address of utilityToken */
-    address public utilityToken;
+    address private token;
 
 
     /* Special functions */
 
-    constructor(address _utilityToken) public {
+    constructor(address _token) public {
 
-        utilityToken = _utilityToken;
+        token = _token;
 
     }
 
@@ -47,9 +47,9 @@ contract CoGatewayMock is CoGatewayUtilityTokenInterface {
      *
      * @return Address of utility token.
      */
-    function utilityToken() external view returns (address)
+    function utilityToken() public view returns (address)
     {
-        return utilityToken;
+        return token;
     }
 
 }

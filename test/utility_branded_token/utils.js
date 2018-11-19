@@ -17,9 +17,9 @@ const UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
   OrganizationMock = artifacts.require('OrganizationMock');
 
 /**
- * Creates a value branded token.
+ * Setup UtilityBrandedToken.
  */
-module.exports.createUtilityBrandedToken = async (accountProvider) => {
+module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor) => {
   const conversionRate = 35,
     conversionRateDecimals = 1,
     SYMBOL = "MOCK",
@@ -48,6 +48,11 @@ module.exports.createUtilityBrandedToken = async (accountProvider) => {
     DECIMALS,
     organizationMock.address,
     { from: organization },
+  );
+
+  await utilityBrandedTokenMock.registerInternalActor(
+    internalActor,
+    { from: worker },
   );
 
   return { utilityBrandedTokenMock, worker };
