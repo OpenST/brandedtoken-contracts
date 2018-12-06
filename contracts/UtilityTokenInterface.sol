@@ -97,7 +97,7 @@ interface UtilityTokenInterface {
      * @param _coGateway CoGateway contract address.
      *
      */
-    function setCoGateway(address _coGatewayAddress)
+    function setCoGateway(address _coGateway)
         external
         returns (bool);
 }

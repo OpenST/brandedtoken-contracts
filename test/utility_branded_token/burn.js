@@ -49,28 +49,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
 
   });
-
-  describe('Negative Tests', async () => {
-
-    it('Reverts if ST prime is burned', async () => {
-
-      await utilityBrandedTokenMock.mockSetCoGateway(tokenHolder2);
-      await utilityBrandedTokenMock.mint(
-        tokenHolder2,
-        amount,
-        { from: tokenHolder2 },
-      );
-      await utils.expectRevert(utilityBrandedTokenMock.burn(
-        6,
-        { value:web3.utils.toWei("0.5", "ether"),from: tokenHolder2 }),
-        'Cannot burn ST prime.Only BT burn is allowed.',
-        'msg.value is not 0',
-      );
-
-    });
-
-  });
-
+  
   describe('Storage', async () => {
 
     it('Validate the burning of tokens', async () => {
@@ -119,11 +98,14 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
         events.length,
         1,
       );
+      
+      
+      console.log(JSON.stringify((events)));
 
       Event.assertEqual(events[0],{
         name: 'Burnt',
         args: {
-          _account: coGateway,
+          _beneficiary: coGateway,
           _amount: new web3.utils.BN(burnAmount),
           _totalSupply: new web3.utils.BN(amount - burnAmount),
           _utilityToken: utilityBrandedTokenMock.address
