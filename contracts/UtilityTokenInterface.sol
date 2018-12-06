@@ -34,7 +34,7 @@ interface UtilityTokenInterface {
 
     /** Burnt raised when new utility tokens are burnt for an address. */
     event Burnt(
-        address indexed _account,
+        address indexed _beneficiary,
         uint256 _amount,
         uint256 _totalSupply,
         address _utilityToken
@@ -50,15 +50,16 @@ interface UtilityTokenInterface {
     /* Public Functions */
 
     /**
-     * @notice Mints the utility token.
+     * @notice Public function mint.
      *
-     * @dev Adds _amount tokens to beneficiary balance and increases the
-     *      totalTokenSupply. Can be called only by CoGateway.
+     * @dev Function requires:
+     *          - It is called by only CoGateway contract.
+     *          - It only mints to internal actors.
      *
-     * @param _beneficiary Address of beneficiary who will receive the tokens.
-     * @param _amount Amount of tokens to mint.
+     * @param _beneficiary Address of beneficiary.
+     * @param _amount Amount of utility tokens to mint.
      *
-     * @return success_ True if mint is successful, false otherwise.
+     * @return True if mint is successful, false otherwise.
      */
     function mint(
         address _beneficiary,
@@ -68,14 +69,15 @@ interface UtilityTokenInterface {
         returns (bool success_);
 
     /**
-     * @notice Burns the balance for the burner's address.
+     * @notice Public function burn.
      *
-     * @dev Only burns the amount from CoGateway address.So to burn
-     *      transfer the amount to CoGateway.
+     * @dev Function requires:
+     *          - It is called by only CoGateway contract.
+     *          - It only allows to burn BTs.
      *
      * @param _amount Amount of tokens to burn.
      *
-     * @return success_ True if burn is successful, false otherwise.
+     * @return True if burn is successful, false otherwise.
      */
     function burn(
         uint256 _amount
@@ -87,12 +89,13 @@ interface UtilityTokenInterface {
     /**
      * @notice Sets the CoGateway contract address.
      *
-     * @dev This will be set with zero gas. Can be called only by whitelisted
-     *      workers.
+     * @dev Function requires:
+     *          - It is called by whitelisted workers.
+     *          - coGateway address is set only once.
+     *          - coGateway.utilityToken must match this contract.
      *
-     * @param _coGatewayAddress coGateway contract address.
+     * @param _coGateway CoGateway contract address.
      *
-     * @return True if coGateway address was set.
      */
     function setCoGateway(address _coGatewayAddress)
         external

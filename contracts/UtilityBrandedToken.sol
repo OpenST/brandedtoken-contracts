@@ -195,7 +195,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
-        emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
+        emit Minted(0x0, _amount, totalTokenSupply, address(this));
 
         return true;
     }
@@ -214,14 +214,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     function burn(uint256 _amount)
         public
         onlyCoGateway
-        payable
         returns (bool)
     {
-        // force non-payable, as only ST" handles in base tokens.
-        // ST" burn is not allowed from this function. Only BT Burn can be done
-        // from here.
-        require(msg.value == 0, "msg.value is not 0");
-
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         totalTokenSupply = totalTokenSupply.sub(_amount);
 
@@ -237,13 +231,12 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @dev Function requires:
      *          - It is called by whitelisted workers.
      *          - coGateway address is set only once.
-     *          - It checks whether Cogateway is linked with any other utility
-     *            tokens.
+     *          - coGateway.utilityToken must match this contract.
      *
-     * @param _coGatewayAddress CoGateway contract address.
+     * @param _coGateway CoGateway contract address.
      *
      */
-    function setCoGateway(address _coGatewayAddress)
+    function setCoGateway(address _coGateway)
         public
         onlyWorker
     {
@@ -253,12 +246,12 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         );
 
         require(
-            CoGatewayUtilityTokenInterface(_coGatewayAddress).utilityToken() ==
+            CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
             address(this),
-            "CoGateway is linked with some other utility token."
+            "CoGateway.utilityToken is not this contract."
         );
 
-        coGateway = _coGatewayAddress;
+        coGateway = _coGateway;
 
         emit CoGatewaySet(address(this), coGateway);
     }

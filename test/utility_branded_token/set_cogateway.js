@@ -71,7 +71,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     });
 
-    it('Reverts if coGateway address is already set.', async () => {
+    it('Reverts if coGateway address is already set', async () => {
 
       await utilityBrandedTokenMock.setCoGateway(
         coGatewayMock.address,
@@ -91,7 +91,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
 
     });
 
-    it('Reverts if CoGateway is linked with some other utility token.', async () => {
+    it('Reverts if CoGateway is linked to other utility token', async () => {
 
       let utilityMock = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
         accountProvider, internalActor
@@ -107,7 +107,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
         coGatewayMock2.address,
         { from: worker }),
         'CoGateway is linked to other utility token' ,
-        'CoGateway is linked with some other utility token.',
+        'CoGateway.utilityToken is not this contract.',
       );
 
     });

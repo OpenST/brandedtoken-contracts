@@ -17,7 +17,8 @@ pragma solidity ^0.4.23;
 /**
  *  @title CoGatewayUtilityTokenInterface.
  *
- *  @notice It is interface for utilityToken.
+ *  @notice This interface is used when we need to get utilityToken address
+ *			from CoGateway.
  */
 interface CoGatewayUtilityTokenInterface {
 

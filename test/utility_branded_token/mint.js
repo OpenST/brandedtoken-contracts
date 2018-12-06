@@ -20,7 +20,7 @@ const utils = require('../test_lib/utils'),
 contract('UtilityBrandedToken::mint', async (accounts) => {
 
   let utilityBrandedTokenMock,
-    internalActor,
+    internalActors,
     tokenHolder1,
     tokenHolder2,
     tokenHolder3,
@@ -38,15 +38,15 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     tokenHolder3 =  accountProvider.get();
     coGateway = accountProvider.get();
 
-    internalActor = [];
-    internalActor.push(tokenHolder1);
-    internalActor.push(tokenHolder3);
+    internalActors = [];
+    internalActors.push(tokenHolder1);
+    internalActors.push(tokenHolder3);
 
     ({
       utilityBrandedTokenMock,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
-      accountProvider, internalActor
+      accountProvider, internalActors
     ));
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);

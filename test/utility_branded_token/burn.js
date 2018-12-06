@@ -20,7 +20,7 @@ const utils = require('../test_lib/utils'),
 contract('UtilityBrandedToken::burn', async (accounts) => {
 
   let utilityBrandedTokenMock,
-    internalActor,
+    internalActors,
     tokenHolder1,
     tokenHolder2,
     amount = 10,
@@ -35,15 +35,15 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     tokenHolder1 = accountProvider.get();
     tokenHolder2 =  accountProvider.get();
 
-    internalActor = [];
-    internalActor.push(tokenHolder1);
-    internalActor.push(tokenHolder2);
+    internalActors = [];
+    internalActors.push(tokenHolder1);
+    internalActors.push(tokenHolder2);
 
     ({
       utilityBrandedTokenMock,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
-      accountProvider, internalActor
+      accountProvider, internalActors
     ));
 
     await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
