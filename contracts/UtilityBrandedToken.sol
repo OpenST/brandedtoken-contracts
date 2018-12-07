@@ -229,9 +229,9 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @notice Sets the CoGateway contract address.
      *
      * @dev Function requires:
-     *          - It is called by whitelisted workers.
-     *          - coGateway address is set only once.
-     *          - coGateway.utilityToken must match this contract.
+     *          - Caller must be a whitelisted worker.
+     *          - coGateway is required to be address(0).
+     *          - coGateway.utilityToken must be equal to this contract address.
      *
      * @param _coGateway CoGateway contract address.
      *
@@ -248,7 +248,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         require(
             CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
             address(this),
-            "CoGateway.utilityToken is not this contract."
+            "CoGateway.utilityToken is required to be UBT address"
         );
 
         coGateway = _coGateway;
