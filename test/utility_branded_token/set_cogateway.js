@@ -107,7 +107,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
         coGatewayMock2.address,
         { from: worker }),
         'CoGateway is linked to other utility token' ,
-        'CoGateway.utilityToken is not this contract.',
+        'CoGateway.utilityToken is required to be UBT address.',
       );
 
     });

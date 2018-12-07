@@ -248,7 +248,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         require(
             CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
             address(this),
-            "CoGateway.utilityToken is required to be UBT address"
+            "CoGateway.utilityToken is required to be UBT address."
         );
 
         coGateway = _coGateway;
