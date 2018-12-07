@@ -195,7 +195,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
-        emit Minted(0x0, _amount, totalTokenSupply, address(this));
+        emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
 
         return true;
     }

@@ -99,9 +99,6 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
         1,
       );
       
-      
-      console.log(JSON.stringify((events)));
-
       Event.assertEqual(events[0],{
         name: 'Burnt',
         args: {

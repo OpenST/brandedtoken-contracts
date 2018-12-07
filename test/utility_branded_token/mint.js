@@ -127,7 +127,7 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
       Event.assertEqual(events[0],{
         name: 'Minted',
         args: {
-          _beneficiary: utils.NULL_ADDRESS,
+          _beneficiary: tokenHolder3,
           _amount: new web3.utils.BN(amount),
           _totalSupply: new web3.utils.BN(amount),
           _utilityToken: utilityBrandedTokenMock.address
