@@ -63,7 +63,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @dev Creates an EIP20Token contract with arguments passed in the
      *      contract constructor.
      *
-     * @param _token Value chain EIP20 contract address. It acts as an identifier.
+     * @param _token Address of branded token. It acts as an identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
@@ -179,49 +179,184 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      *
      * @return True if mint is successful, false otherwise.
      */
-    function mint(
-        address _beneficiary,
+//    function mint(
+//        address _beneficiary,
+//        uint256 _amount
+//    )
+//        public
+//        onlyCoGateway
+//        returns (bool)
+//    {
+//        require(
+//            (isInternalActor[_beneficiary]),
+//            "Beneficiary is not an economy actor."
+//        );
+//
+//        balances[_beneficiary] = balances[_beneficiary].add(_amount);
+//        totalTokenSupply = totalTokenSupply.add(_amount);
+//
+//        emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
+//
+//        return true;
+//    }
+//
+//    /**
+//     * @notice Public function burn.
+//     *
+//     * @dev Function requires:
+//     *          - It is called by only CoGateway contract.
+//     *          - It only allows to burn BTs.
+//     *
+//     * @param _amount Amount of tokens to burn.
+//     *
+//     * @return True if burn is successful, false otherwise.
+//     */
+//    function burn(uint256 _amount)
+//        public
+//        onlyCoGateway
+//        returns (bool)
+//    {
+//        balances[msg.sender] = balances[msg.sender].sub(_amount);
+//        totalTokenSupply = totalTokenSupply.sub(_amount);
+//
+//        emit Burnt(msg.sender, _amount, totalTokenSupply, address(this));
+//
+//        return true;
+//    }
+
+    /**
+     * @notice Increases the total token supply. Also, adds the number of
+     *         tokens to the beneficiary balance.The parameters _account
+     *         and _amount should not be zero. This check is added in function
+     *         increaseSupplyInternal.
+     *
+     * @dev Function requires:
+     *          1. It should only be called by coGateway address.
+     *
+     * @param _account Account address for which the balance will be increased.
+     * @param _amount Amount of tokens.
+     *
+     * @return True if increase supply is successful, false otherwise.
+     */
+    function increaseSupply(
+        address _account,
         uint256 _amount
     )
-        public
+        external
         onlyCoGateway
-        returns (bool)
+        returns (bool success_)
     {
         require(
-            (isInternalActor[_beneficiary]),
+            (isInternalActor[_account]),
             "Beneficiary is not an economy actor."
         );
-
-        balances[_beneficiary] = balances[_beneficiary].add(_amount);
-        totalTokenSupply = totalTokenSupply.add(_amount);
-
-        emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
-
-        return true;
+        success_ = increaseSupplyInternal(_account, _amount);
     }
 
     /**
-     * @notice Public function burn.
+     * @notice Decreases the token supply.The parameters _amount should not be
+     *         zero. This check is added in function decreaseSupplyInternal.
      *
      * @dev Function requires:
-     *          - It is called by only CoGateway contract.
-     *          - It only allows to burn BTs.
+     *          1. It should only be called by coGateway address.
      *
-     * @param _amount Amount of tokens to burn.
+     * @param _amount Amount of tokens.
      *
-     * @return True if burn is successful, false otherwise.
+     * @return True if decrease supply is successful, false otherwise.
      */
-    function burn(uint256 _amount)
-        public
+    function decreaseSupply(
+        uint256 _amount
+    )
+        external
         onlyCoGateway
-        returns (bool)
+        returns (bool success_)
     {
-        balances[msg.sender] = balances[msg.sender].sub(_amount);
+        success_ = decreaseSupplyInternal(_amount);
+    }
+
+
+    /* Internal functions. */
+
+    /**
+     * @notice Internal function to increases the total token supply.
+     *
+     * @dev Adds number of tokens to beneficiary balance and increases the
+     *      total token supply.
+     *
+     * @param _account Account address for which the balance will be increased.
+     * @param _amount Amount of tokens.
+     *
+     * @return success_ `true` if increase supply is successful, false otherwise.
+     */
+    function increaseSupplyInternal(
+        address _account,
+        uint256 _amount
+    )
+        internal
+        returns (bool success_)
+    {
+        require(
+            _account != address(0),
+            "Account address should not be zero."
+        );
+
+        require(
+            _amount > 0,
+            "Amount should be greater than zero."
+        );
+
+        // Increase the balance of the _account
+        balances[_account] = balances[_account].add(_amount);
+        totalTokenSupply = totalTokenSupply.add(_amount);
+
+        /*
+         * Creation of the new tokens should trigger a Transfer event with
+         * _from as 0x0.
+         */
+        emit Transfer(address(0), _account, _amount);
+
+        success_ = true;
+    }
+
+    /**
+     * @notice Internal function to decreases the token supply.
+     *
+     * @dev Decreases the token balance from the msg.sender address and
+     *      decreases the total token supply count.
+     *
+     * @param _amount Amount of tokens.
+     *
+     * @return success_ `true` if decrease supply is successful, false otherwise.
+     */
+    function decreaseSupplyInternal(
+        uint256 _amount
+    )
+        internal
+        returns (bool success_)
+    {
+        require(
+            _amount > 0,
+            "Amount should be greater than zero."
+        );
+
+        address sender = msg.sender;
+
+        require(
+            balances[sender] >= _amount,
+            "Insufficient balance."
+        );
+
+        // Decrease the balance of the msg.sender account.
+        balances[sender] = balances[sender].sub(_amount);
         totalTokenSupply = totalTokenSupply.sub(_amount);
 
-        emit Burnt(msg.sender, _amount, totalTokenSupply, address(this));
+        /*
+         * Burning of the tokens should trigger a Transfer event with _to
+         * as 0x0.
+         */
+        emit Transfer(sender, address(0), _amount);
 
-        return true;
+        success_ = true;
     }
 
 

@@ -14,15 +14,13 @@ pragma solidity ^0.4.23;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import "./CoGatewayUtilityTokenInterface.sol";
-
 
 /**
- *  @title CoGatewayMock contract.
+ *  @title MockCoGateway contract.
  *
  *  @notice It contains utility token address.
  */
-contract CoGatewayMock is CoGatewayUtilityTokenInterface {
+contract MockCoGateway {
 
 
     /* Storage */

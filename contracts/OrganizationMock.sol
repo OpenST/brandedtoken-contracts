@@ -23,7 +23,7 @@ import "./OrganizationIsWorkerInterface.sol";
  *  @notice Provides mocking for Organization contract to set
  *          and verify worker.
  */
-contract OrganizationMock is OrganizationIsWorkerInterface {
+contract OrganizationMock {
 
     /* Storage */
 

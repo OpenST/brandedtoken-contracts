@@ -24,22 +24,6 @@ interface UtilityTokenInterface {
 
     /* Events */
 
-    /** Minted raised when new utility tokens are minted for a beneficiary. */
-    event Minted(
-        address indexed _beneficiary,
-        uint256 _amount,
-        uint256 _totalSupply,
-        address _utilityToken
-    );
-
-    /** Burnt raised when new utility tokens are burnt for an address. */
-    event Burnt(
-        address indexed _beneficiary,
-        uint256 _amount,
-        uint256 _totalSupply,
-        address _utilityToken
-    );
-
     /** Emitted whenever a CoGateway address is set. */
     event CoGatewaySet(
         address _utilityToken,
@@ -47,44 +31,37 @@ interface UtilityTokenInterface {
     );
 
 
-    /* Public Functions */
+    /* External Functions */
 
     /**
-     * @notice Public function mint.
+     * @notice Increases the total token supply.
      *
-     * @dev Function requires:
-     *          - It is called by only CoGateway contract.
-     *          - It only mints to internal actors.
-     *
-     * @param _beneficiary Address of beneficiary.
-     * @param _amount Amount of utility tokens to mint.
-     *
-     * @return True if mint is successful, false otherwise.
+     * @dev Adds number of tokens to beneficiary balance and increases the
+     *      total token supply.
+     *
+     * @param _account Account address for which the balance will be increased.
+     * @param _amount Amount of tokens.
+     *
+     * @return success_ `true` if increase supply is successful, false otherwise.
      */
-    function mint(
-        address _beneficiary,
+    function increaseSupply(
+        address _account,
         uint256 _amount
     )
         external
         returns (bool success_);
 
     /**
-     * @notice Public function burn.
+     * @notice Decreases the token supply.
      *
-     * @dev Function requires:
-     *          - It is called by only CoGateway contract.
-     *          - It only allows to burn BTs.
+     * @dev Decreases the token balance from the msg.sender address and
+     *      decreases the total token supply count.
      *
-     * @param _amount Amount of tokens to burn.
+     * @param _amount Amount of tokens.
      *
-     * @return True if burn is successful, false otherwise.
+     * @return success_ `true` if decrease supply is successful, false otherwise.
      */
-    function burn(
-        uint256 _amount
-    )
-        payable
-        external
-        returns (bool success_);
+    function decreaseSupply(uint256 _amount) external returns (bool success_);
 
     /**
      * @notice Sets the CoGateway contract address.
@@ -95,9 +72,6 @@ interface UtilityTokenInterface {
      *          - coGateway.utilityToken must match this contract.
      *
      * @param _coGateway CoGateway contract address.
-     *
      */
-    function setCoGateway(address _coGateway)
-        external
-        returns (bool);
+    function setCoGateway(address _coGateway) external returns (bool);
 }

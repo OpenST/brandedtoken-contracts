@@ -21,10 +21,8 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
   let valueToken,
     organization,
-    accountProvider,
-    conversionRate = 5,
-    conversionRateDecimals = 10;
-
+    accountProvider;
+  
   const SYMBOL = "MOCK",
     NAME = "Mock Token",
     DECIMALS = "5";
@@ -34,8 +32,6 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
     accountProvider = new AccountProvider(accounts);
     organization = accountProvider.get();
     valueToken = await EIP20TokenMock.new(
-      conversionRate,
-      conversionRateDecimals,
       SYMBOL,
       NAME,
       DECIMALS,

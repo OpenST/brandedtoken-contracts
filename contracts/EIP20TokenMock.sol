@@ -21,30 +21,21 @@ import "./EIP20Token.sol";
 /**
  * @title EIP20TokenMock contract.
  *
- * @notice It provides EIP20Token with mock functionality to facilitate testing
- *         payments.
+ * @notice It provides EIP20Token with mock functionality to facilitate
+ *         testing.
  */
 contract EIP20TokenMock is EIP20Token {
-
-    /* Storage */
-
-    uint256 public conversionRate;
-    uint8 public conversionRateDecimals;
-
 
     /* Special functions */
 
     /**
-     *  @dev Takes _conversionRate, _symbol, _name, _decimals.
+     *  @dev Takes _symbol, _name, _decimals.
      *
-     *  @param _conversionRate ConversionRate.
      *  @param _symbol Symbol.
      *  @param _name Name.
      *  @param _decimals Decimals.
      */
     constructor(
-        uint256 _conversionRate,
-        uint8 _conversionRateDecimals,
         string _symbol,
         string _name,
         uint8 _decimals
@@ -52,10 +43,7 @@ contract EIP20TokenMock is EIP20Token {
         /* solhint-disable-next-line visibility-modifier-order */
         EIP20Token(_symbol, _name, _decimals)
         public
-    {
-        conversionRate = _conversionRate;
-        conversionRateDecimals = _conversionRateDecimals;
-    }
+    { }
 
 
     /* Public functions */
@@ -92,20 +80,4 @@ contract EIP20TokenMock is EIP20Token {
         return true;
     }
 
-    /**
-     * @notice Takes _conversionRate; sets conversionRate to _conversionRate.
-     *
-     * @param _conversionRate ConversionRate.
-     *
-     * @return True if conversionRate is set.
-     */
-    function setConverionRate(
-        uint256 _conversionRate
-    )
-        public
-        returns (bool)
-    {
-        conversionRate = _conversionRate;
-        return true;
-    }
 }

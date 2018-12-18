@@ -18,7 +18,7 @@ const utils = require('../test_lib/utils'),
 
 contract('UtilityBrandedToken::transfer', async (accounts) => {
 
-  let utilityBrandedTokenMock,
+  let testUtilityBrandedToken,
     internalActors,
     tokenHolder1,
     tokenHolder2,
@@ -37,13 +37,13 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
     internalActors.push(tokenHolder1);
 
     ({
-      utilityBrandedTokenMock,
+      testUtilityBrandedToken,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
       accountProvider, internalActors
     ));
 
-    await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
+    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
 
   });
 
@@ -51,7 +51,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
 
     it('Reverts if to address is not registered internal actor', async () => {
 
-      await utils.expectRevert(utilityBrandedTokenMock.transfer(
+      await utils.expectRevert(testUtilityBrandedToken.transfer(
         tokenHolder2,
         amount,
         { from: tokenHolder1 }),
@@ -69,20 +69,20 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
 
       internalActors.push(tokenHolder2);
 
-      await utilityBrandedTokenMock.registerInternalActor(
+      await testUtilityBrandedToken.registerInternalActor(
         internalActors,
         { from: worker },
       );
 
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2), 0);
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder2), 0);
 
-      await utilityBrandedTokenMock.transfer(
+      await testUtilityBrandedToken.transfer(
         tokenHolder2,
         amount,
         { from: tokenHolder1 },
       );
 
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2),amount);
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder2),amount);
 
     });
   });

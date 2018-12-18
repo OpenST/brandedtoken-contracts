@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
+const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken'),
   EIP20TokenMock = artifacts.require('EIP20TokenMock'),
   OrganizationMock = artifacts.require('OrganizationMock');
 
@@ -20,9 +20,7 @@ const UtilityBrandedTokenMock = artifacts.require('UtilityBrandedTokenMock'),
  * Setup UtilityBrandedToken.
  */
 module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor) => {
-  const conversionRate = 35,
-    conversionRateDecimals = 1,
-    SYMBOL = "MOCK",
+  const SYMBOL = "MOCK",
     NAME = "Mock Token",
     DECIMALS = "5",
     organization = accountProvider.get();
@@ -33,15 +31,13 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
   } = await this.setupOrganization(accountProvider);
 
   const valueToken = await EIP20TokenMock.new(
-    conversionRate,
-    conversionRateDecimals,
     SYMBOL,
     NAME,
     DECIMALS,
     { from: organization },
   );
 
-  const utilityBrandedTokenMock = await UtilityBrandedTokenMock.new(
+  const testUtilityBrandedToken = await TestUtilityBrandedToken.new(
     valueToken.address,
     SYMBOL,
     NAME,
@@ -50,12 +46,12 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
     { from: organization },
   );
 
-  await utilityBrandedTokenMock.registerInternalActor(
+  await testUtilityBrandedToken.registerInternalActor(
     internalActor,
     { from: worker },
   );
 
-  return { utilityBrandedTokenMock, worker };
+  return { testUtilityBrandedToken, worker };
 };
 
 /**
@@ -70,4 +66,4 @@ module.exports.setupOrganization = async(accountProvider) => {
 
   return { organizationMock, worker };
 
-}
+};

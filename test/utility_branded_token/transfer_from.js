@@ -18,7 +18,7 @@ const utils = require('../test_lib/utils'),
 
 contract('UtilityBrandedToken::transferFrom', async (accounts) => {
 
-  let utilityBrandedTokenMock,
+  let testUtilityBrandedToken,
     internalActors,
     tokenHolder1,
     tokenHolder2,
@@ -42,20 +42,20 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
     internalActors.push(tokenHolder3);
 
     ({
-      utilityBrandedTokenMock,
+      testUtilityBrandedToken,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
       accountProvider, internalActors
     ));
 
-    await utilityBrandedTokenMock.registerInternalActor(
+    await testUtilityBrandedToken.registerInternalActor(
       internalActors,
       { from: worker },
     );
 
-    await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
+    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
 
-    await utilityBrandedTokenMock.approve(
+    await testUtilityBrandedToken.approve(
       tokenHolder3,
       approvalAmount,
       { from: tokenHolder1 },
@@ -67,7 +67,7 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
 
     it('Reverts if to address is not registered internal actor', async () => {
 
-      await utils.expectRevert(utilityBrandedTokenMock.transferFrom(
+      await utils.expectRevert(testUtilityBrandedToken.transferFrom(
         tokenHolder1,
         tokenHolder2,
         amount,
@@ -85,20 +85,20 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
     it('Validate the transfer to internal actor', async () => {
 
       internalActors.push(tokenHolder2);
-      await utilityBrandedTokenMock.registerInternalActor(
+      await testUtilityBrandedToken.registerInternalActor(
         internalActors,
         { from: worker }
       );
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2), 0);
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder2), 0);
 
-      await utilityBrandedTokenMock.transferFrom(
+      await testUtilityBrandedToken.transferFrom(
         tokenHolder1,
         tokenHolder2,
         amount,
         { from: tokenHolder3 },
       );
 
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder2),amount);
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder2),amount);
 
     });
   });

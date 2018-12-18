@@ -20,14 +20,14 @@ import "./OrganizationIsWorkerInterface.sol";
 
 
 /**
- * @title UtilityBrandedTokenMock contract.
+ * @title TestUtilityBrandedToken contract.
  *
  * @notice UtilityBrandedToken is inheriting UtilityBrandedToken contract.
  *
- * @dev UtilityBrandedTokenMock facilitates testing of UtilityBrandedToken.
+ * @dev TestUtilityBrandedToken facilitates testing of UtilityBrandedToken.
  *
  */
-contract UtilityBrandedTokenMock is UtilityBrandedToken {
+contract TestUtilityBrandedToken is UtilityBrandedToken {
 
     /* Special Function */
 
@@ -57,7 +57,8 @@ contract UtilityBrandedTokenMock is UtilityBrandedToken {
      */
     function setBalance(
         address _owner,
-        uint256 _value)
+        uint256 _value
+    )
         public
         returns (bool)
     {
