@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -25,8 +25,10 @@ contract MockOrganization {
 
     /* Storage */
 
-    /** List of worker addresses */
-    address[] public workers;
+    /**
+     *  Map of whitelisted worker addresses.
+     */
+    mapping(address => bool) public workers;
 
     /** Organization address */
     address public organization;
@@ -45,7 +47,10 @@ contract MockOrganization {
     {
         organization = _organization;
         admin = _admin;
-        workers = _workers;
+        for(uint256 i = 0; i < _workers.length; i++) {
+            workers[_workers[i]] = true;
+        }
+
     }
 
 
@@ -57,7 +62,7 @@ contract MockOrganization {
      * @param _worker Worker address to be added.
      */
     function setWorker(address _worker) public {
-        workers.push(_worker);
+        workers[_worker] = true;
     }
 
     /**
@@ -80,16 +85,7 @@ contract MockOrganization {
      * @return True if the worker is already added.
      */
     function isWorker(address _worker) external view returns (bool) {
-        bool workerPresent;
-
-        for(uint256 i = 0; i < workers.length; i++) {
-            if(workers[i] == _worker){
-                workerPresent = true;
-                break;
-            }
-        }
-
-        return workerPresent;
+        return workers[_worker];
     }
 
     /**
@@ -104,9 +100,9 @@ contract MockOrganization {
     )
         external
         view
-        returns (bool)
+        returns (bool isOrganization_)
     {
-        return((organization == _organization) || admin == _organization);
+        isOrganization_ = _organization == organization || _organization == admin;
     }
 
 }

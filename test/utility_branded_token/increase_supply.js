@@ -65,7 +65,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
           { from: coGateway },
         ),
         'Beneficiary should be registered internal actor',
-        'Beneficiary is not an economy actor.'
+        'Beneficiary is not an internal actor.'
       );
 
     });
@@ -79,7 +79,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
           { from: coGateway },
         ),
         'Beneficiary address cannot be empty',
-        'Beneficiary is not an economy actor.',
+        'Beneficiary is not an internal actor.',
       );
 
     });
@@ -90,7 +90,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
     it('Validate the increase in supply of tokens', async () => {
 
-      // Before minting
+      // Before increase in supply
       assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder3), 0);
       assert.equal(await testUtilityBrandedToken.totalSupply(), 0);
 

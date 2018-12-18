@@ -31,7 +31,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
     admin
   } = await this.setupOrganization(accountProvider);
   
-  const valueToken = await EIP20TokenMock.new(
+  const brandedToken = await EIP20TokenMock.new(
     SYMBOL,
     NAME,
     DECIMALS,
@@ -39,7 +39,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
   );
   
   const testUtilityBrandedToken = await TestUtilityBrandedToken.new(
-    valueToken.address,
+    brandedToken.address,
     SYMBOL,
     NAME,
     DECIMALS,

@@ -22,15 +22,6 @@ pragma solidity ^0.4.23;
  */
 interface UtilityTokenInterface {
 
-    /* Events */
-
-    /** Emitted whenever a CoGateway address is set. */
-    event CoGatewaySet(
-        address _utilityToken,
-        address _coGateway
-    );
-
-
     /* External Functions */
 
     /**

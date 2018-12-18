@@ -63,23 +63,34 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
   
   describe('Negative Tests', async () => {
     
-    it('Reverts if non-owner address sets the cogateway.', async () => {
+    it('Reverts if non-owner address sets the cogateway', async () => {
       
       let non_organization = accountProvider.get();
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        {from: non_organization}),
+        { from: non_organization }),
         'Only organization or admin can call',
         'Only the organization is allowed to call this method.',
       );
       
+    });
+  
+    it('Reverts if cogateway address is zero', async () => {
+      
+      await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
+        utils.NULL_ADDRESS,
+        { from: admin }),
+        'Only organization or admin can call',
+        'CoGateway address should not be zero.',
+      );
+    
     });
     
     it('Reverts if coGateway address is already set', async () => {
       
       await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        {from: admin},
+        { from: admin },
       );
       
       let mockCoGateway2 = await MockCoGateway.new(
@@ -88,7 +99,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         mockCoGateway2.address,
-        {from: admin}),
+        { from: admin }),
         'Cogateway address cannot be set again.',
         'CoGateway address already set.',
       );
@@ -109,7 +120,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         mockCoGateway2.address,
-        {from: admin}),
+        { from: admin }),
         'CoGateway is linked to other utility token',
         'CoGateway.utilityToken is required to be UBT address.',
       );
@@ -124,7 +135,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       
       await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        {from: admin},
+        { from: admin },
       );
       
       assert.equal(
@@ -141,7 +152,7 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       
       let transactionResponse = await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        {from: admin},
+        { from: admin },
       );
       
       let events = Event.decodeTransactionResponse(transactionResponse);
@@ -154,7 +165,6 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
       Event.assertEqual(events[0], {
         name: 'CoGatewaySet',
         args: {
-          _utilityToken: testUtilityBrandedToken.address,
           _coGateway: mockCoGateway.address
         }
       });

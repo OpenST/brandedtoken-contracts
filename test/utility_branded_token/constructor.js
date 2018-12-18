@@ -19,7 +19,7 @@ const utils = require('../test_lib/utils'),
 
 contract('UtilityBrandedToken::constructor', async (accounts) => {
 
-  let valueToken,
+  let brandedToken,
     organization,
     accountProvider;
   
@@ -31,7 +31,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
     accountProvider = new AccountProvider(accounts);
     organization = accountProvider.get();
-    valueToken = await EIP20TokenMock.new(
+    brandedToken = await EIP20TokenMock.new(
       SYMBOL,
       NAME,
       DECIMALS,
@@ -61,10 +61,10 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
   describe('Storage', async () => {
 
-    it('Checks the value token address', async () => {
+    it('Checks the branded token address', async () => {
 
       let utilityBrandedToken = await UtilityBrandedToken.new(
-            valueToken.address,
+            brandedToken.address,
             SYMBOL,
             NAME,
             DECIMALS,
@@ -72,7 +72,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
             { from: organization },
             );
 
-      assert.equal(await utilityBrandedToken.valueToken.call(), valueToken.address);
+      assert.equal(await utilityBrandedToken.brandedToken.call(), brandedToken.address);
 
     });
   });
