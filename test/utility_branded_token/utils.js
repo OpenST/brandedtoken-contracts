@@ -14,7 +14,7 @@
 
 const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken'),
   EIP20TokenMock = artifacts.require('EIP20TokenMock'),
-  OrganizationMock = artifacts.require('OrganizationMock');
+  MockOrganization = artifacts.require('MockOrganization');
 
 /**
  * Setup UtilityBrandedToken.
@@ -22,48 +22,56 @@ const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken'),
 module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor) => {
   const SYMBOL = "MOCK",
     NAME = "Mock Token",
-    DECIMALS = "5",
-    organization = accountProvider.get();
-
+    DECIMALS = "5";
+  
   const {
-    organizationMock,
+    mockOrganization,
     worker,
+    organization,
+    admin
   } = await this.setupOrganization(accountProvider);
-
+  
   const valueToken = await EIP20TokenMock.new(
     SYMBOL,
     NAME,
     DECIMALS,
-    { from: organization },
+    {from: organization},
   );
-
+  
   const testUtilityBrandedToken = await TestUtilityBrandedToken.new(
     valueToken.address,
     SYMBOL,
     NAME,
     DECIMALS,
-    organizationMock.address,
-    { from: organization },
+    mockOrganization.address,
+    {from: organization},
   );
-
+  
   await testUtilityBrandedToken.registerInternalActor(
     internalActor,
-    { from: worker },
+    {from: worker},
   );
-
-  return { testUtilityBrandedToken, worker };
+  
+  return {testUtilityBrandedToken, worker, admin, organization};
 };
 
 /**
- * Creates an instance of OrganizationMock contract and sets worker.
+ * Creates an instance of MockOrganization contract and sets worker.
  */
-module.exports.setupOrganization = async(accountProvider) => {
-
-  const worker = accountProvider.get();
-  const organizationMock = await OrganizationMock.new();
-
-  organizationMock.setWorker(worker);
-
-  return { organizationMock, worker };
-
+module.exports.setupOrganization = async (accountProvider) => {
+  
+  const worker = accountProvider.get(),
+    organization = accountProvider.get(),
+    admin = accountProvider.get();
+  
+  const mockOrganization = await MockOrganization.new(
+    organization,
+    admin,
+    [worker]
+  );
+  
+  await mockOrganization.setWorker(worker);
+  
+  return {mockOrganization, worker, organization, admin};
+  
 };

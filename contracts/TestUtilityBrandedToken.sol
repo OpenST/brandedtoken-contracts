@@ -16,7 +16,7 @@ pragma solidity ^0.4.23;
 
 import "./UtilityBrandedToken.sol";
 import "./EIP20Interface.sol";
-import "./OrganizationIsWorkerInterface.sol";
+import "./OrganizationInterface.sol";
 
 
 /**
@@ -36,7 +36,7 @@ contract TestUtilityBrandedToken is UtilityBrandedToken {
         string _symbol,
         string _name,
         uint8 _decimals,
-        OrganizationIsWorkerInterface _organization
+        OrganizationInterface _organization
     )
         public
         UtilityBrandedToken(_token, _symbol, _name, _decimals, _organization)
