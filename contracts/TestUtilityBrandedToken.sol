@@ -31,6 +31,19 @@ contract TestUtilityBrandedToken is UtilityBrandedToken {
 
     /* Special Function */
 
+    /**
+     * @notice Contract constructor.
+     *
+     * @dev Creates an EIP20Token contract with arguments passed in the
+     *      contract constructor.
+     *
+     * @param _token Address of branded token on origin chain.
+     *        It acts as an identifier.
+     * @param _symbol Symbol of the token.
+     * @param _name Name of the token.
+     * @param _decimals Decimal places of the token.
+     * @param _organization Address of the Organization contract.
+     */
     constructor(
         EIP20Interface _token,
         string _symbol,

@@ -69,7 +69,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @dev Creates an EIP20Token contract with arguments passed in the
      *      contract constructor.
      *
-     * @param _token Address of branded token. It acts as an identifier.
+     * @param _token Address of branded token on origin chain.
+     *        It acts as an identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
