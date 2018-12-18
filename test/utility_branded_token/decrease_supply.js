@@ -62,15 +62,21 @@ contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
         {from: tokenHolder2},
       );
       
-      // Before burning
+      // Before decrease supply.
       assert.equal(await testUtilityBrandedToken.balanceOf(coGateway), amount);
       assert.equal(await testUtilityBrandedToken.totalSupply(), amount);
       
       await testUtilityBrandedToken.decreaseSupply(burnAmount, {from: coGateway});
       
-      // After burning
-      assert.equal(await testUtilityBrandedToken.balanceOf(coGateway), amount - burnAmount);
-      assert.equal(await testUtilityBrandedToken.totalSupply(), amount - burnAmount);
+      // After decrease supply.
+      assert.equal(
+        await testUtilityBrandedToken.balanceOf(coGateway),
+        amount - burnAmount
+      );
+      assert.equal(
+        await testUtilityBrandedToken.totalSupply(),
+        amount - burnAmount
+      );
       
     });
   });

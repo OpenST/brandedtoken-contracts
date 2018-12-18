@@ -100,7 +100,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
         { from: coGateway },
       );
 
-      // After minting
+      // After increase supply.
       assert.equal(await testUtilityBrandedToken.totalSupply(), amount);
       assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder3), amount);
 
@@ -109,7 +109,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
   describe('Events', async () => {
 
-    it('Verify Minted event', async () => {
+    it('Verify Transfer event', async () => {
 
       let transactionResponse = await testUtilityBrandedToken.increaseSupply(
         tokenHolder3,

@@ -67,7 +67,7 @@ contract TestUtilityBrandedToken is UtilityBrandedToken {
     }
 
     /**
-     * @dev It is used in testing mint and burn methods.
+     * @dev It is used in testing increaseSupply and decreaseSupply methods.
      *
      * @notice It sets the coGateway address.
      *

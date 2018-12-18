@@ -27,7 +27,7 @@ import "./CoGatewayUtilityTokenInterface.sol";
  *         UtilityTokenInterface.
  *
  * @dev UtilityBrandedToken are designed to be used within a decentralised
- *      application and support minting and burning of tokens.
+ *      application and support increaseSupply and decreaseSupply of tokens.
  */
 contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
 
@@ -37,8 +37,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     EIP20Interface public valueToken;
 
     /**
-     *  Address of CoGateway contract. It ensures that minting and burning is
-     *  done from coGateway.
+     *  Address of CoGateway contract. It ensures that increaseSupply and
+     *  decreaseSupply is done from coGateway.
      */
     address public coGateway;
 
@@ -96,8 +96,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      *         and _amount should not be zero. This check is added in function
      *         increaseSupplyInternal.
      *
-     * @dev Function requires:
-     *          1. It should only be called by coGateway address.
+     * @dev Function requires it should only be called by coGateway address.
+     *
      *
      * @param _account Account address for which the balance will be increased.
      * @param _amount Amount of tokens.
@@ -123,8 +123,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @notice Decreases the token supply.The parameters _amount should not be
      *         zero. This check is added in function decreaseSupplyInternal.
      *
-     * @dev Function requires:
-     *          1. It should only be called by coGateway address.
+     * @dev Function requires it should only be called by coGateway address.
+     *
      *
      * @param _amount Amount of tokens.
      *
