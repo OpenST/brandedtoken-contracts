@@ -88,7 +88,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
   describe('Storage', async () => {
 
-    it('Validate the minting of tokens', async () => {
+    it('Validate the increase in supply of tokens', async () => {
 
       // Before minting
       assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder3), 0);

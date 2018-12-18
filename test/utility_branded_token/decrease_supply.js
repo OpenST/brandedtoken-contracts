@@ -52,7 +52,7 @@ contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
   
   describe('Storage', async () => {
     
-    it('Validate the burning of tokens', async () => {
+    it('Validate the decrease in supply of tokens', async () => {
       
       let coGateway = tokenHolder2;
       await testUtilityBrandedToken.mockSetCoGateway(coGateway);
