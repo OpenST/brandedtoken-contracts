@@ -17,10 +17,10 @@ const utils = require('../test_lib/utils'),
   AccountProvider =  utils.AccountProvider,
   { Event } = require('../test_lib/event_decoder.js');
 
-contract('UtilityBrandedToken::mint', async (accounts) => {
+contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
-  let utilityBrandedTokenMock,
-    internalActor,
+  let testUtilityBrandedToken,
+    internalActors,
     tokenHolder1,
     tokenHolder2,
     tokenHolder3,
@@ -38,19 +38,19 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     tokenHolder3 =  accountProvider.get();
     coGateway = accountProvider.get();
 
-    internalActor = [];
-    internalActor.push(tokenHolder1);
-    internalActor.push(tokenHolder3);
+    internalActors = [];
+    internalActors.push(tokenHolder1);
+    internalActors.push(tokenHolder3);
 
     ({
-      utilityBrandedTokenMock,
+      testUtilityBrandedToken,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
-      accountProvider, internalActor
+      accountProvider, internalActors
     ));
 
-    await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
-    await utilityBrandedTokenMock.mockSetCoGateway(coGateway);
+    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
+    await testUtilityBrandedToken.mockSetCoGateway(coGateway);
 
   });
 
@@ -59,13 +59,13 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     it('Reverts if beneficiary address is not registered internal actor', async () => {
 
       await utils.expectRevert(
-        utilityBrandedTokenMock.mint(
+        testUtilityBrandedToken.increaseSupply(
           tokenHolder2,
           amount,
           { from: coGateway },
         ),
         'Beneficiary should be registered internal actor',
-        'Beneficiary is not an economy actor.'
+        'Beneficiary is not an internal actor.'
       );
 
     });
@@ -73,13 +73,13 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
     it('Reverts if beneficiary address is empty', async () => {
 
       await utils.expectRevert(
-        utilityBrandedTokenMock.mint(
+        testUtilityBrandedToken.increaseSupply(
           '',
           amount,
           { from: coGateway },
         ),
         'Beneficiary address cannot be empty',
-        'Beneficiary is not an economy actor.',
+        'Beneficiary is not an internal actor.',
       );
 
     });
@@ -88,30 +88,30 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
 
   describe('Storage', async () => {
 
-    it('Validate the minting of tokens', async () => {
+    it('Validate the increase in supply of tokens', async () => {
 
-      // Before minting
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder3), 0);
-      assert.equal(await utilityBrandedTokenMock.totalSupply(), 0);
+      // Before increase in supply
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder3), 0);
+      assert.equal(await testUtilityBrandedToken.totalSupply(), 0);
 
-      await utilityBrandedTokenMock.mint(
+      await testUtilityBrandedToken.increaseSupply(
         tokenHolder3,
         amount,
         { from: coGateway },
       );
 
-      // After minting
-      assert.equal(await utilityBrandedTokenMock.totalSupply(), amount);
-      assert.equal(await utilityBrandedTokenMock.balanceOf(tokenHolder3), amount);
+      // After increase supply.
+      assert.equal(await testUtilityBrandedToken.totalSupply(), amount);
+      assert.equal(await testUtilityBrandedToken.balanceOf(tokenHolder3), amount);
 
     });
   });
 
   describe('Events', async () => {
 
-    it('Verify Minted event', async () => {
+    it('Verify Transfer event', async () => {
 
-      let transactionResponse = await utilityBrandedTokenMock.mint(
+      let transactionResponse = await testUtilityBrandedToken.increaseSupply(
         tokenHolder3,
         amount,
         { from: coGateway },
@@ -123,14 +123,13 @@ contract('UtilityBrandedToken::mint', async (accounts) => {
         events.length,
         1,
       );
-
+      
       Event.assertEqual(events[0],{
-        name: 'Minted',
+        name: 'Transfer',
         args: {
-          _beneficiary: tokenHolder3,
-          _amount: new web3.utils.BN(amount),
-          _totalSupply: new web3.utils.BN(amount),
-          _utilityToken: utilityBrandedTokenMock.address
+          _from: utils.NULL_ADDRESS,
+          _to: tokenHolder3,
+          _value: new web3.utils.BN(amount)
         },
       });
 

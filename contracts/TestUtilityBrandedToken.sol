@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -16,27 +16,40 @@ pragma solidity ^0.4.23;
 
 import "./UtilityBrandedToken.sol";
 import "./EIP20Interface.sol";
-import "./OrganizationIsWorkerInterface.sol";
+import "./OrganizationInterface.sol";
 
 
 /**
- * @title UtilityBrandedTokenMock contract.
+ * @title TestUtilityBrandedToken contract.
  *
  * @notice UtilityBrandedToken is inheriting UtilityBrandedToken contract.
  *
- * @dev UtilityBrandedTokenMock facilitates testing of UtilityBrandedToken.
+ * @dev TestUtilityBrandedToken facilitates testing of UtilityBrandedToken.
  *
  */
-contract UtilityBrandedTokenMock is UtilityBrandedToken {
+contract TestUtilityBrandedToken is UtilityBrandedToken {
 
     /* Special Function */
 
+    /**
+     * @notice Contract constructor.
+     *
+     * @dev Creates an EIP20Token contract with arguments passed in the
+     *      contract constructor.
+     *
+     * @param _token Address of branded token on origin chain.
+     *        It acts as an identifier.
+     * @param _symbol Symbol of the token.
+     * @param _name Name of the token.
+     * @param _decimals Decimal places of the token.
+     * @param _organization Address of the Organization contract.
+     */
     constructor(
         EIP20Interface _token,
         string _symbol,
         string _name,
         uint8 _decimals,
-        OrganizationIsWorkerInterface _organization
+        OrganizationInterface _organization
     )
         public
         UtilityBrandedToken(_token, _symbol, _name, _decimals, _organization)
@@ -57,7 +70,8 @@ contract UtilityBrandedTokenMock is UtilityBrandedToken {
      */
     function setBalance(
         address _owner,
-        uint256 _value)
+        uint256 _value
+    )
         public
         returns (bool)
     {
@@ -66,7 +80,7 @@ contract UtilityBrandedTokenMock is UtilityBrandedToken {
     }
 
     /**
-     * @dev It is used in testing mint and burn methods.
+     * @dev It is used in testing increaseSupply and decreaseSupply methods.
      *
      * @notice It sets the coGateway address.
      *

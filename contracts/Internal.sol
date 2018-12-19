@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -47,7 +47,7 @@ contract Internal is Organized {
 
     /* Special Functions */
 
-    constructor(OrganizationIsWorkerInterface _organization)
+    constructor(OrganizationInterface _organization)
         public
         Organized(_organization)
     {}

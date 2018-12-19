@@ -18,8 +18,8 @@ const utils = require('../test_lib/utils'),
 
 contract('UtilityBrandedToken::approve', async (accounts) => {
 
-  let utilityBrandedTokenMock,
-    internalActor,
+  let testUtilityBrandedToken,
+    internalActors,
     tokenHolder1,
     tokenHolder2,
     worker,
@@ -33,17 +33,17 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
     tokenHolder1 = accountProvider.get();
     tokenHolder2 = accountProvider.get();
 
-    internalActor = [];
-    internalActor.push(tokenHolder1);
+    internalActors = [];
+    internalActors.push(tokenHolder1);
 
     ({
-      utilityBrandedTokenMock,
+      testUtilityBrandedToken,
       worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
-      accountProvider, internalActor
+      accountProvider, internalActors
     ));
 
-    await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
+    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
 
   });
 
@@ -51,7 +51,7 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
 
     it('Reverts if spender address is not registered internal actor', async () => {
 
-      await utils.expectRevert(utilityBrandedTokenMock.approve(
+      await utils.expectRevert(testUtilityBrandedToken.approve(
         tokenHolder2,
         approvalAmount,
         { from: tokenHolder1 },
@@ -68,26 +68,26 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
 
     it('Approval to registered internal actor', async () => {
 
-      internalActor.push(tokenHolder2);
-      await utilityBrandedTokenMock.registerInternalActor(
-        internalActor,
+      internalActors.push(tokenHolder2);
+      await testUtilityBrandedToken.registerInternalActor(
+        internalActors,
         { from: worker },
       );
 
-      assert.equal(await utilityBrandedTokenMock.allowance(
+      assert.equal(await testUtilityBrandedToken.allowance(
         tokenHolder1,
         tokenHolder2,
         ),
         0,
       );
 
-      await utilityBrandedTokenMock.approve(
+      await testUtilityBrandedToken.approve(
         tokenHolder2,
         approvalAmount,
         { from: tokenHolder1 },
       );
 
-      assert.equal(await utilityBrandedTokenMock.allowance(
+      assert.equal(await testUtilityBrandedToken.allowance(
         tokenHolder1,
         tokenHolder2),
         approvalAmount,

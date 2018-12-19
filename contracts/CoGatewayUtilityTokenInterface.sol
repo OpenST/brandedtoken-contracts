@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -17,7 +17,8 @@ pragma solidity ^0.4.23;
 /**
  *  @title CoGatewayUtilityTokenInterface.
  *
- *  @notice It is interface for utilityToken.
+ *  @notice This interface is used when we need to get utilityToken address
+ *			from CoGateway.
  */
 interface CoGatewayUtilityTokenInterface {
 
@@ -28,4 +29,3 @@ interface CoGatewayUtilityTokenInterface {
      */
 	function utilityToken() external view returns (address);
 }
-

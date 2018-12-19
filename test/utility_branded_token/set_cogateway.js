@@ -14,12 +14,12 @@
 
 const utils = require('../test_lib/utils'),
   UtilityBrandedTokenUtils = require('./utils'),
-  CoGatewayMock = artifacts.require('CoGatewayMock'),
-  AccountProvider =  utils.AccountProvider,
-  { Event } = require('../test_lib/event_decoder.js');
+  MockCoGateway = artifacts.require('MockCoGateway'),
+  AccountProvider = utils.AccountProvider,
+  {Event} = require('../test_lib/event_decoder.js');
 
 contract('UtilityBrandedToken::burn', async (accounts) => {
-
+  
   let internalActor,
     tokenHolder1,
     tokenHolder2,
@@ -27,134 +27,148 @@ contract('UtilityBrandedToken::burn', async (accounts) => {
     worker,
     accountProvider,
     tokenHolder1Balance = 100,
-    coGatewayMock,
-    utilityBrandedTokenMock,
-    utilityBrandedTokenMock2;
-
-  beforeEach(async function() {
-
+    mockCoGateway,
+    testUtilityBrandedToken,
+    testUtilityBrandedToken2,
+    admin,
+    organization;
+  
+  beforeEach(async function () {
+    
     accountProvider = new AccountProvider(accounts);
     tokenHolder1 = accountProvider.get();
     tokenHolder2 = accountProvider.get();
-    tokenHolder3 =  accountProvider.get();
-
+    tokenHolder3 = accountProvider.get();
+    
     internalActor = [];
     internalActor.push(tokenHolder1);
     internalActor.push(tokenHolder3);
-
+    
     ({
-      utilityBrandedTokenMock,
+      testUtilityBrandedToken,
       worker,
+      admin,
+      organization
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
       accountProvider, internalActor
     ));
-
-    coGatewayMock = await CoGatewayMock.new(
-      utilityBrandedTokenMock.address,
+    
+    mockCoGateway = await MockCoGateway.new(
+      testUtilityBrandedToken.address,
     );
-
-    await utilityBrandedTokenMock.setBalance(tokenHolder1, tokenHolder1Balance);
-
+    
+    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
+    
   });
-
+  
   describe('Negative Tests', async () => {
-
-    it('Reverts if non-worker address sets the cogateway.', async () => {
-
-      let non_worker = accountProvider.get();
-      await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock.address,
-        { from: non_worker }),
-        'Worker needs to be registered to set cogateway address.',
-        'Only whitelisted worker is allowed to call.',
+    
+    it('Reverts if non-owner address sets the cogateway', async () => {
+      
+      let non_organization = accountProvider.get();
+      await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: non_organization }),
+        'Only organization or admin can call',
+        'Only the organization is allowed to call this method.',
       );
-
+      
     });
-
-    it('Reverts if coGateway address is already set.', async () => {
-
-      await utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock.address,
-        { from: worker },
+  
+    it('Reverts if cogateway address is zero', async () => {
+      
+      await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
+        utils.NULL_ADDRESS,
+        { from: admin }),
+        'Only organization or admin can call',
+        'CoGateway address should not be zero.',
       );
-
-      let coGatewayMock2 = await CoGatewayMock.new(
-        utilityBrandedTokenMock.address,
+    
+    });
+    
+    it('Reverts if coGateway address is already set', async () => {
+      
+      await testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: admin },
       );
-
-      await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock2.address,
-        { from: worker }),
-        'Cogateway address cannot be set again.' ,
+      
+      let mockCoGateway2 = await MockCoGateway.new(
+        testUtilityBrandedToken.address,
+      );
+      
+      await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
+        mockCoGateway2.address,
+        { from: admin }),
+        'Cogateway address cannot be set again.',
         'CoGateway address already set.',
       );
-
+      
     });
-
-    it('Reverts if CoGateway is linked with some other utility token.', async () => {
-
+    
+    it('Reverts if CoGateway is linked to other utility token', async () => {
+      
       let utilityMock = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
         accountProvider, internalActor
       );
-
-      utilityBrandedTokenMock2 = utilityMock.utilityBrandedTokenMock;
-
-      let coGatewayMock2 = await CoGatewayMock.new(
-        utilityBrandedTokenMock2.address,
+      
+      testUtilityBrandedToken2 = utilityMock.testUtilityBrandedToken;
+      
+      let mockCoGateway2 = await MockCoGateway.new(
+        testUtilityBrandedToken2.address,
       );
-
-      await utils.expectRevert(utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock2.address,
-        { from: worker }),
-        'CoGateway is linked to other utility token' ,
-        'CoGateway is linked with some other utility token.',
+      
+      await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
+        mockCoGateway2.address,
+        { from: admin }),
+        'CoGateway is linked to other utility token',
+        'CoGateway.utilityToken is required to be UBT address.',
       );
-
+      
     });
-
+    
   });
-
+  
   describe('Storage', async () => {
-
+    
     it('Validate the cogateway address', async () => {
-
-      await utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock.address,
-        { from: worker },
+      
+      await testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: admin },
       );
-
+      
       assert.equal(
-        await utilityBrandedTokenMock.coGateway.call(),
-        coGatewayMock.address,
+        await testUtilityBrandedToken.coGateway.call(),
+        mockCoGateway.address,
       );
-
+      
     });
   });
-
+  
   describe('Events', async () => {
-
+    
     it('Verify CoGatewaySet event', async () => {
-
-      let transactionResponse = await utilityBrandedTokenMock.setCoGateway(
-        coGatewayMock.address,
-        { from: worker },
+      
+      let transactionResponse = await testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: admin },
       );
-
+      
       let events = Event.decodeTransactionResponse(transactionResponse);
-
+      
       assert.strictEqual(
         events.length,
         1,
       );
-
-      Event.assertEqual(events[0],{
+      
+      Event.assertEqual(events[0], {
         name: 'CoGatewaySet',
         args: {
-          _utilityToken: utilityBrandedTokenMock.address,
-          _coGateway: coGatewayMock.address
+          _coGateway: mockCoGateway.address
         }
       });
-
+      
     });
   });
 });

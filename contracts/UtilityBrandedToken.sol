@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -27,18 +27,24 @@ import "./CoGatewayUtilityTokenInterface.sol";
  *         UtilityTokenInterface.
  *
  * @dev UtilityBrandedToken are designed to be used within a decentralised
- *      application and support minting and burning of tokens.
+ *      application and support increaseSupply and decreaseSupply of tokens.
  */
 contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
 
+    /* Events */
+
+    /** Emitted whenever a CoGateway address is set. */
+    event CoGatewaySet(address _coGateway);
+
+
     /* Storage */
 
-    /** Address of the EIP20 token(VBT) in origin chain. */
-    EIP20Interface public valueToken;
+    /** Address of BrandedToken in origin chain. */
+    EIP20Interface public brandedToken;
 
     /**
-     *  Address of CoGateway contract. It ensures that minting and burning is
-     *  done from coGateway.
+     *  Address of CoGateway contract. It ensures that increaseSupply and
+     *  decreaseSupply is done from coGateway.
      */
     address public coGateway;
 
@@ -63,7 +69,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @dev Creates an EIP20Token contract with arguments passed in the
      *      contract constructor.
      *
-     * @param _token Value chain EIP20 contract address. It acts as an identifier.
+     * @param _token Address of branded token on origin chain.
+     *        It acts as an identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
@@ -74,7 +81,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         string _symbol,
         string _name,
         uint8 _decimals,
-        OrganizationIsWorkerInterface _organization
+        OrganizationInterface _organization
     )
         public
         Internal(_organization)
@@ -84,7 +91,96 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
             address(_token) != address(0),
             "Token address is null."
         );
-        valueToken = _token;
+        brandedToken = _token;
+    }
+
+
+    /* External functions */
+
+    /**
+     * @notice Increases the total token supply. Also, adds the number of
+     *         tokens to the beneficiary balance.The parameters _account
+     *         and _amount should not be zero. This check is added in function
+     *         increaseSupplyInternal.
+     *
+     * @dev Function requires it should only be called by coGateway address.
+     *
+     * @param _beneficiary Account address for which the balance will be increased.
+     * @param _amount Amount of tokens.
+     *
+     * @return True if increase supply is successful, false otherwise.
+     */
+    function increaseSupply(
+        address _beneficiary,
+        uint256 _amount
+    )
+        external
+        onlyCoGateway
+        returns (bool success_)
+    {
+        require(
+            (isInternalActor[_beneficiary]),
+            "Beneficiary is not an internal actor."
+        );
+        success_ = increaseSupplyInternal(_beneficiary, _amount);
+    }
+
+    /**
+     * @notice Sets the CoGateway contract address.
+     *
+     * @dev Function requires:
+     *          - Caller must be a whitelisted worker.
+     *          - coGateway is required to be address(0).
+     *          - coGateway.utilityToken must be equal to this contract address.
+     *
+     * @param _coGateway CoGateway contract address.
+     */
+    function setCoGateway(address _coGateway)
+        external
+        onlyOrganization
+        returns (bool success_)
+    {
+        require(
+            coGateway == address(0),
+            "CoGateway address already set."
+        );
+
+        require(
+            _coGateway != address(0),
+            "CoGateway address should not be zero."
+        );
+
+        require(
+            CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
+            address(this),
+            "CoGateway.utilityToken is required to be UBT address."
+        );
+
+        coGateway = _coGateway;
+
+        emit CoGatewaySet(coGateway);
+
+        success_ = true;
+    }
+
+    /**
+     * @notice Decreases the token supply.The parameters _amount should not be
+     *         zero. This check is added in function decreaseSupplyInternal.
+     *
+     * @dev Function requires it should only be called by coGateway address.
+     *
+     * @param _amount Amount of tokens.
+     *
+     * @return True if decrease supply is successful, false otherwise.
+     */
+    function decreaseSupply(
+        uint256 _amount
+    )
+        external
+        onlyCoGateway
+        returns (bool success_)
+    {
+        success_ = decreaseSupplyInternal(_amount);
     }
 
 
@@ -167,99 +263,89 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         return super.approve(_spender, _value);
     }
 
+
+    /* Internal functions. */
+
     /**
-     * @notice Public function mint.
+     * @notice Internal function to increases the total token supply.
      *
-     * @dev Function requires:
-     *          - It is called by only CoGateway contract.
-     *          - It only mints to internal actors.
+     * @dev Adds number of tokens to beneficiary balance and increases the
+     *      total token supply.
      *
-     * @param _beneficiary Address of beneficiary.
-     * @param _amount Amount of utility tokens to mint.
+     * @param _beneficiary Account address for which the balance will be increased.
+     * @param _amount Amount of tokens.
      *
-     * @return True if mint is successful, false otherwise.
+     * @return success_ `true` if increase supply is successful, false otherwise.
      */
-    function mint(
+    function increaseSupplyInternal(
         address _beneficiary,
         uint256 _amount
     )
-        public
-        onlyCoGateway
-        returns (bool)
+        internal
+        returns (bool success_)
     {
         require(
-            (isInternalActor[_beneficiary]),
-            "Beneficiary is not an economy actor."
+            _beneficiary != address(0),
+            "Beneficiary address should not be zero."
         );
 
+        require(
+            _amount > 0,
+            "Amount should be greater than zero."
+        );
+
+        // Increase the balance of the _account
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
-        emit Minted(_beneficiary, _amount, totalTokenSupply, address(this));
+        /*
+         * Creation of the new tokens should trigger a Transfer event with
+         * _from as 0x0.
+         */
+        emit Transfer(address(0), _beneficiary, _amount);
 
-        return true;
+        success_ = true;
     }
 
     /**
-     * @notice Public function burn.
+     * @notice Internal function to decreases the token supply.
      *
-     * @dev Function requires:
-     *          - It is called by only CoGateway contract.
-     *          - It only allows to burn BTs.
+     * @dev Decreases the token balance from the msg.sender address and
+     *      decreases the total token supply count.
      *
-     * @param _amount Amount of tokens to burn.
+     * @param _amount Amount of tokens.
      *
-     * @return True if burn is successful, false otherwise.
+     * @return success_ `true` if decrease supply is successful, false otherwise.
      */
-    function burn(uint256 _amount)
-        public
-        onlyCoGateway
-        payable
-        returns (bool)
+    function decreaseSupplyInternal(
+        uint256 _amount
+    )
+        internal
+        returns (bool success_)
     {
-        // force non-payable, as only ST" handles in base tokens.
-        // ST" burn is not allowed from this function. Only BT Burn can be done
-        // from here.
-        require(msg.value == 0, "msg.value is not 0");
+        require(
+            _amount > 0,
+            "Amount should be greater than zero."
+        );
 
-        balances[msg.sender] = balances[msg.sender].sub(_amount);
+        address sender = msg.sender;
+
+        require(
+            balances[sender] >= _amount,
+            "Insufficient balance."
+        );
+
+        // Decrease the balance of the msg.sender account.
+        balances[sender] = balances[sender].sub(_amount);
         totalTokenSupply = totalTokenSupply.sub(_amount);
 
-        emit Burnt(msg.sender, _amount, totalTokenSupply, address(this));
+        /*
+         * Burning of the tokens should trigger a Transfer event with _to
+         * as 0x0.
+         */
+        emit Transfer(sender, address(0), _amount);
 
-        return true;
+        success_ = true;
     }
 
-
-    /**
-     * @notice Sets the CoGateway contract address.
-     *
-     * @dev Function requires:
-     *          - It is called by whitelisted workers.
-     *          - coGateway address is set only once.
-     *          - It checks whether Cogateway is linked with any other utility
-     *            tokens.
-     *
-     * @param _coGatewayAddress CoGateway contract address.
-     *
-     */
-    function setCoGateway(address _coGatewayAddress)
-        public
-        onlyWorker
-    {
-        require(
-            coGateway == address(0),
-            "CoGateway address already set."
-        );
-
-        require(
-            CoGatewayUtilityTokenInterface(_coGatewayAddress).utilityToken() ==
-            address(this),
-            "CoGateway is linked with some other utility token."
-        );
-
-        coGateway = _coGatewayAddress;
-
-        emit CoGatewaySet(address(this), coGateway);
-    }
 }
