@@ -13,21 +13,27 @@
 // limitations under the License.
 
 const Internal = artifacts.require('Internal'),
-  OrganizationMock = artifacts.require('OrganizationMock');
+  MockOrganization = artifacts.require('MockOrganization');
 
 /**
  * Creates an instance of Internal contract and sets worker.
  */
-module.exports.setupInternal = async(accountProvider) => {
-
-  const worker = accountProvider.get();
-  const organizationMock = await OrganizationMock.new();
-  const internal = await Internal.new(organizationMock.address);
-
-  const organizationAddress = organizationMock.address;
-  await organizationMock.setWorker(worker);
-
-  return { internal, worker, organizationAddress };
-
+module.exports.setupInternal = async (accountProvider) => {
+  
+  const worker = accountProvider.get(),
+    organization = accountProvider.get(),
+    admin = accountProvider.get();
+  const mockOrganization = await MockOrganization.new(
+    organization,
+    admin,
+    [worker]
+  );
+  const internal = await Internal.new(mockOrganization.address);
+  
+  const organizationAddress = mockOrganization.address;
+  await mockOrganization.setWorker(worker);
+  
+  return {internal, worker, organizationAddress};
+  
 }
 

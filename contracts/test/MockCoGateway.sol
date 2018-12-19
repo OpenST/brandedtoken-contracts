@@ -38,7 +38,7 @@ contract MockCoGateway {
     }
 
 
-    /* External methods */
+    /* Public methods */
 
     /**
      * @notice Get the utility token address.
