@@ -35,24 +35,24 @@ class Event {
     }
 
     static assertEqual(actual, expected) {
-        assert.strictEqual(actual.name, expected.name);
-        Object.keys(expected.args).forEach((key) => {
-            if (key !== '0' && key !== '1' && key !== '__length__') {
-                assert.isOk(Object.hasOwnProperty.call(actual.args, key));
-                if (web3.utils.isBN(expected.args[key])) {
-                    assert.isOk(web3.utils.isBN(actual.args[key]));
-                    assert.isOk(expected.args[key].eq(actual.args[key]));
-                } else {
-                    assert.strictEqual(actual.args[key], expected.args[key]);
-                }
-            }
-        });
+      assert.strictEqual(actual.name, expected.name);
+      Object.keys(expected.args).forEach((key) => {
+        if (key !== '0' && key !== '1' && key !== '__length__') {
+          assert.isOk(Object.hasOwnProperty.call(actual.args, key));
+          if (web3.utils.isBN(expected.args[key])) {
+            assert.isOk(web3.utils.isBN(actual.args[key]));
+            assert.isOk(expected.args[key].eq(actual.args[key]));
+          } else {
+            assert.strictEqual(actual.args[key], expected.args[key]);
+          }
+        }
+      });
 
-        Object.keys(actual.args).forEach((key) => {
-            if (Number.isNaN(Number.parseInt(key, 10)) && key !== '__length__') {
-                assert.isOk(Object.hasOwnProperty.call(expected.args, key));
-            }
-        });
+      Object.keys(actual.args).forEach((key) => {
+        if (Number.isNaN(Number.parseInt(key, 10)) && key !== '__length__') {
+          assert.isOk(Object.hasOwnProperty.call(expected.args, key));
+        }
+      });
     }
 
     static assertEqualMulti(actualList, expectedList) {
@@ -68,6 +68,7 @@ class Event {
             this.assertEqual(actual, expected);
         }
     }
+    
 }
 
 module.exports = {
