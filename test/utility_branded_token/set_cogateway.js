@@ -18,7 +18,7 @@ const utils = require('../test_lib/utils'),
   AccountProvider = utils.AccountProvider,
   {Event} = require('../test_lib/event_decoder.js');
 
-contract('UtilityBrandedToken::burn', async (accounts) => {
+contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
   
   let internalActor,
     tokenHolder1,
