@@ -80,7 +80,7 @@ contract MockBrandedToken is EIP20TokenRequiredInterface, Organized {
 
     /**
      * The nonce is to ensure that the stakeRequestHash is always unique.
-     * It would include the address of the BrandedToken in the domainseparator
+     * It would include the address of the BrandedToken in the domain separator
      * already to differentiate on similar requests for different BT's.
      * Without a nonce, the same staker for the same stake amount, in
      * the same BT would have the same stakeRequestHash;
@@ -110,8 +110,9 @@ contract MockBrandedToken is EIP20TokenRequiredInterface, Organized {
 
     /**
      * @dev Conversion parameters provide the conversion rate and its scale.
-     *      For example, if 1 value valueToken is equivalent to 3.5 utility/value branded
-     *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
+     *      For example, if 1 value valueToken is equivalent to 3.5 utility/value
+     *      branded tokens (1:3.5), _conversionRate == 35 and
+     *      _conversionRateDecimals == 1.
      *
      *      Constructor requires:
      *          - valueToken address is not null;
@@ -333,8 +334,9 @@ contract MockBrandedToken is EIP20TokenRequiredInterface, Organized {
      * @notice Transfers _amount from _from to _to.
      *
      * @dev The intention is to limit tradeability whilst enabling transfers
-     *      that support the token economy. Thus, the account executing the transfer
-     *      is restricted and not the account from which tokens are transferred.
+     *      that support the token economy. Thus, the account executing the
+     *      transfer is restricted and not the account from which tokens are
+     *      transferred.
      *
      *      Function requires:
      *          - _from has a balance at least equal to _amount;
