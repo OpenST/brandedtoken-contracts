@@ -31,7 +31,6 @@ import "./OrganizationInterface.sol";
  */
 contract Organized {
 
-
     /* Storage */
 
     /** Organization which holds all the keys needed to administer the economy. */
