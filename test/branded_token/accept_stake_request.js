@@ -20,20 +20,20 @@ const web3 = require('../test_lib/web3.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
-contract('TestBrandedToken::requestStake', async () => {
+contract('BrandedToken::acceptStakeRequest', async () => {
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Checks that StakeRequestAccepted & Transfer events are emitted successfully.', async () => {
+        it('Emits StakeRequestAccepted and Transfer events.', async () => {
             const {
-                testBrandedToken,
-            } = await brandedTokenUtils.setupTestBrandedToken(accountProvider);
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(accountProvider);
 
             const stakeRequestHash = web3.utils.soliditySha3('test');
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('r');
             const v = 0;
-            const transactionResponse = await testBrandedToken.acceptStakeRequest(
+            const transactionResponse = await brandedToken.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,

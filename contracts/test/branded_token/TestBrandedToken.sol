@@ -17,7 +17,7 @@ pragma solidity ^0.4.24;
 /**
  * @title TestBrandedToken.
  *
- * @notice It's needed for testing branded token contract.
+ * @notice Supports testing of BrandedToken (BT).
  */
 contract TestBrandedToken {
 
@@ -51,7 +51,7 @@ contract TestBrandedToken {
      *      decimals
      *      conversionRate
      *      conversionRateDecimals
-     *      Organization contract address
+     *      organization contract address
      */
     constructor(
         address,
@@ -72,10 +72,10 @@ contract TestBrandedToken {
      * @notice Mocks BT requestStake method.
      *
      * @dev It takes below parameters in order:
-     *      - Amount to Stake.
-     *      - Amount to Mint.
+     *      amount to stake.
+     *      amount to mint.
      *
-     * @return unique hash for each stake request.
+     * @return Unique hash for each stake request.
      */
     function requestStake(
         uint256,
@@ -93,12 +93,12 @@ contract TestBrandedToken {
      * @notice Mocks BT acceptStakeRequest method.
      *
      * @dev It takes below parameters in order:
-     *      - Unique request hash.
-     *      - r is the actual signature.
-     *      - s is the second point on the curve in order to ecrecover.
-     *      - v selects the final public key.
+     *      stake request hash.
+     *      r is the actual signature.
+     *      s is the second point on the curve in order to ecrecover.
+     *      v selects the final public key.
      *
-     * @return Returns true if execution is successful.
+     * @return True if execution is successful.
      */
     function acceptStakeRequest(
         bytes32,

@@ -19,18 +19,18 @@ const { Event } = require('../test_lib/event_decoder.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
-contract('TestBrandedToken::requestStake', async () => {
+contract('BrandedToken::requestStake', async () => {
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Checks that StakeRequested event is emitted successfully.', async () => {
+        it('Emits StakeRequested event.', async () => {
             const {
-                testBrandedToken,
-            } = await brandedTokenUtils.setupTestBrandedToken(accountProvider);
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(accountProvider);
 
             const stakeAmount = 1;
-            const mintAmount = 5;
-            const transactionResponse = await testBrandedToken.requestStake(
+            const mintAmount = 1;
+            const transactionResponse = await brandedToken.requestStake(
                 stakeAmount,
                 mintAmount,
             );

@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const TestBrandedToken = artifacts.require('TestBrandedToken');
+const BrandedToken = artifacts.require('TestBrandedToken');
 
 /**
- * Setup TestBrandedToken.
+ * Setup BrandedToken.
  */
-module.exports.setupTestBrandedToken = async (accountProvider) => {
+module.exports.setupBrandedToken = async (accountProvider) => {
     const eip20Token = accountProvider.get();
     const symbol = 'Test';
     const name = 'Test';
@@ -26,7 +26,7 @@ module.exports.setupTestBrandedToken = async (accountProvider) => {
     const conversionRateDecimals = 0;
     const organization = accountProvider.get();
 
-    const testBrandedToken = await TestBrandedToken.new(
+    const brandedToken = await BrandedToken.new(
         eip20Token,
         symbol,
         name,
@@ -37,6 +37,6 @@ module.exports.setupTestBrandedToken = async (accountProvider) => {
     );
 
     return {
-        testBrandedToken,
+        brandedToken,
     };
 };
