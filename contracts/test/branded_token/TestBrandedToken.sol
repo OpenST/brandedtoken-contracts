@@ -72,8 +72,8 @@ contract TestBrandedToken {
      * @notice Mocks BT requestStake method.
      *
      * @dev It takes below parameters in order:
-     *      amount to stake.
-     *      amount to mint.
+     *      amount to stake
+     *      amount to mint
      *
      * @return Unique hash for each stake request.
      */
@@ -93,10 +93,10 @@ contract TestBrandedToken {
      * @notice Mocks BT acceptStakeRequest method.
      *
      * @dev It takes below parameters in order:
-     *      stake request hash.
-     *      r is the actual signature.
-     *      s is the second point on the curve in order to ecrecover.
-     *      v selects the final public key.
+     *      stake request hash
+     *      r is the actual signature
+     *      s is the second point on the curve in order to ecrecover
+     *      v selects the final public key
      *
      * @return True if execution is successful.
      */
