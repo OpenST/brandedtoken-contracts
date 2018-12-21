@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -14,6 +14,8 @@ pragma solidity ^0.4.23;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import "./Organized.sol";
+
 
 /**
  * @notice Contract implements internal actors interfaces.
@@ -23,7 +25,8 @@ pragma solidity ^0.4.23;
  *      contract construction. De-registration of internal actors (even by
  *      organization) is prohibited.
  */
-contract Internal {
+contract Internal is Organized {
+
 
     /* Events */
 
@@ -35,8 +38,6 @@ contract Internal {
 
     /* Storage */
 
-    address public organization;
-
     /**
      * Variable is defined private to highlight that even derived contracts
      * are not able to modify the internal actors.
@@ -44,30 +45,12 @@ contract Internal {
     mapping (address /* internal actor */ => bool) public isInternalActor;
 
 
-    /* Modifiers */
-
-    /** @dev Checks if msg.sender is the organization address or not. */
-    modifier onlyOrganization() {
-        require(
-            organization == msg.sender,
-            "Only organization can call."
-        );
-        _;
-    }
-
-
     /* Special Functions */
 
-    constructor(address _organization)
+    constructor(OrganizationInterface _organization)
         public
-    {
-        require(
-            _organization != address(0),
-            "Organization address is null."
-        );
-
-        organization = _organization;
-    }
+        Organized(_organization)
+    {}
 
 
     /* External Functions */
@@ -80,7 +63,7 @@ contract Internal {
      */
     function registerInternalActor(address[] _internalActors)
         external
-        onlyOrganization
+        onlyWorker
     {
         for (uint256 i = 0; i < _internalActors.length; i++) {
 
