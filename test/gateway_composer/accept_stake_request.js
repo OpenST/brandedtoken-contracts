@@ -22,7 +22,7 @@ contract('GatewayComposer::acceptStakeRequest', async () => {
     contract('Positive Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Should return message hash.', async () => {
+        it('Returns message hash.', async () => {
             const {
                 gatewayComposer,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);

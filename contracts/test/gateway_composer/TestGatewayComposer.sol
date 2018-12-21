@@ -67,6 +67,7 @@ contract TestGatewayComposer {
         uint256
     )
         external
+        pure
         returns (bytes32)
     {
         return bytes32(0);
@@ -92,6 +93,7 @@ contract TestGatewayComposer {
         bytes32
     )
         external
+        pure
         returns (bytes32)
     {
         return bytes32(0);
