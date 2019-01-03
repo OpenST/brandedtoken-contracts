@@ -126,8 +126,14 @@ contract('Internal::registerinternalactor', async (accounts) => {
                 { from: worker },
             );
 
-            assert.equal(await internal.isInternalActor.call(internalActors[0]), true);
-            assert.equal(await internal.isInternalActor.call(internalActors[1]), true);
+            assert.strictEqual(
+                await internal.isInternalActor.call(internalActors[0]),
+                true,
+            );
+            assert.strictEqual(
+                await internal.isInternalActor.call(internalActors[1]),
+                true,
+            );
         });
     });
 });
