@@ -116,4 +116,32 @@ contract TestBrandedToken {
         return true;
     }
 
+    /**
+     * @notice Mocks BT liftRestriction method.
+     *
+     * @dev It takes an array of addresses.
+     *
+     * @return True if execution is successful.
+     */
+    function liftRestriction(address[])
+        external
+        returns (bool)
+    {
+        return true;
+    }
+
+    /**
+     * @notice Mocks BT isUnrestricted method.
+     *
+     * @dev It takes an address.
+     *
+     * @return True if address is unrestricted.
+     */
+    function isUnrestricted(address)
+        external
+        returns (bool)
+    {
+        return true;
+    }
+
 }
