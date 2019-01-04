@@ -70,16 +70,22 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
     });
 
-    it('Reverts if beneficiary address is empty', async () => {
+    it('Reverts if beneficiary address is zero', async () => {
+
+      const actors = [utils.NULL_ADDRESS];
+      await testUtilityBrandedToken.registerInternalActor(
+        actors,
+        { from: worker },
+      );
 
       await utils.expectRevert(
         testUtilityBrandedToken.increaseSupply(
-          '',
+          utils.NULL_ADDRESS,
           amount,
           { from: coGateway },
         ),
-        'Beneficiary address cannot be empty',
-        'Beneficiary is not an internal actor.',
+        'Beneficiary address cannot be zero',
+        'Beneficiary address should not be zero.',
       );
 
     });

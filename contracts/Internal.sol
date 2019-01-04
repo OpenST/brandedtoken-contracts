@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -61,7 +61,7 @@ contract Internal is Organized {
      * @param _internalActors Array of addresses of the internal actors
      *        to register.
      */
-    function registerInternalActor(address[] _internalActors)
+    function registerInternalActor(address[] calldata _internalActors)
         external
         onlyWorker
     {
@@ -69,7 +69,7 @@ contract Internal is Organized {
 
             if (!isInternalActor[_internalActors[i]]) {
                 isInternalActor[_internalActors[i]] = true;
-                emit InternalActorRegistered(organization, _internalActors[i]);
+                emit InternalActorRegistered(address(organization), _internalActors[i]);
             }
         }
     }
