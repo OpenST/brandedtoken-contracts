@@ -1,24 +1,25 @@
 {
-  "name": "@openstfoundation/openst-tokens",
+  "name": "@openstfoundation/brandedtoken-contracts",
   "version": "0.0.0",
-  "description": "OpenST Tokens provides token and related smart contracts for token economies.",
+  "description": "BrandedToken Contracts provides token and related smart contracts for token economies.",
   "keywords": [
     "OpenST",
     "OST",
     "Simple Token",
     "Token Economy",
     "Ethereum",
-    "EIP20"
+    "EIP20",
+    "Branded Token"
   ],
   "homepage": "https://openst.org",
   "author": "OpenST Foundation Ltd.",
   "license": "LGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSTFoundation/openst-tokens.git"
+    "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts.git"
   },
   "bugs": {
-    "url": "https://github.com/OpenSTFoundation/openst-tokens/issues"
+    "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts/issues"
   },
   "scripts": {},
   "devDependencies": {
