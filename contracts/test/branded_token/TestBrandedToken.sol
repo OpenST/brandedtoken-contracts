@@ -123,8 +123,9 @@ contract TestBrandedToken {
      *
      * @return True if execution is successful.
      */
-    function liftRestriction(address[])
+    function liftRestriction(address[] calldata)
         external
+        pure
         returns (bool)
     {
         return true;
@@ -139,6 +140,7 @@ contract TestBrandedToken {
      */
     function isUnrestricted(address)
         external
+        pure
         returns (bool)
     {
         return true;
