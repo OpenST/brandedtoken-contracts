@@ -26,7 +26,7 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
     const name = 'Test';
     const decimals = 18;
     const conversionRate = 1;
-    const conversionRateDecimals = 0;
+    const conversionRateDecimals = 1;
     const organization = accountProvider.get();
     const owner = accountProvider.get();
     const ownerBalance = new BN(1000);

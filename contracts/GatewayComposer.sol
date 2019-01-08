@@ -169,7 +169,6 @@ contract GatewayComposer {
 
         stakeRequests[requestStakeHash_] = StakeRequest({
             stakeVT: _stakeVT,
-            mintBT: _mintBT,
             gateway: _gateway,
             beneficiary: _beneficiary,
             gasPrice: _gasPrice,
