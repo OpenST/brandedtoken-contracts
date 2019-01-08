@@ -14,9 +14,10 @@
 
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
+const OrganizationMockPass = artifacts.require('OrganizationMockPass');
 
 /**
- * Setup BrandedToken.
+ * Sets up a BrandedToken.
  */
 module.exports.setupBrandedToken = async (accountProvider) => {
     const valueToken = await EIP20TokenMockPass.new();
@@ -25,7 +26,7 @@ module.exports.setupBrandedToken = async (accountProvider) => {
     const decimals = 18;
     const conversionRate = 35;
     const conversionRateDecimals = 1;
-    const organization = accountProvider.get();
+    const organization = await OrganizationMockPass.new();
 
     const brandedToken = await BrandedToken.new(
         valueToken.address,
@@ -34,10 +35,44 @@ module.exports.setupBrandedToken = async (accountProvider) => {
         decimals,
         conversionRate,
         conversionRateDecimals,
-        organization,
+        organization.address,
     );
 
     return {
         brandedToken,
+    };
+};
+
+/**
+ * Sets up a BrandedToken and a stake request.
+ */
+module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
+    const {
+      brandedToken,
+    } = await this.setupBrandedToken(
+        accountProvider
+    );
+
+    const staker = accountProvider.get();
+    const stake = 1;
+    const mint = await brandedToken.convertToBrandedTokens(stake);
+
+    const stakeRequestHash = await brandedToken.requestStake.call(
+        stake,
+        mint,
+        { from: staker },
+    );
+
+    await brandedToken.requestStake(
+        stake,
+        mint,
+        { from: staker },
+    );
+
+    return {
+        brandedToken,
+        staker,
+        stake,
+        stakeRequestHash,
     };
 };

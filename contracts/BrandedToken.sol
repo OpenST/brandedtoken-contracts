@@ -1,5 +1,6 @@
 pragma solidity ^0.5.0;
 
+
 // Copyright 2019 OpenST Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +15,11 @@ pragma solidity ^0.5.0;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 import "./EIP20Token.sol";
 import "./Organized.sol";
+import "./SafeMath.sol";
+
 
 /**
  *  @title Branded Token.
@@ -28,6 +32,11 @@ import "./Organized.sol";
  */
 contract BrandedToken is Organized, EIP20Token {
 
+    /* Usings */
+
+    using SafeMath for uint256;
+
+
     /* Events */
 
     event StakeRequested(
@@ -37,6 +46,10 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 _nonce
     );
 
+    event StakeRequestAccepted(
+        address _staker,
+        uint256 _stake
+    );
     /* Structs */
 
     struct StakeRequest {
@@ -44,6 +57,7 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 stake;
         uint256 nonce;
     }
+
 
     /* Storage */
 
@@ -64,6 +78,7 @@ contract BrandedToken is Organized, EIP20Token {
 
     /** Maps stakeRequestHash to StakeRequests. */
     mapping(bytes32 => StakeRequest) public stakeRequests;
+
 
     /* Constructor */
 
@@ -111,6 +126,7 @@ contract BrandedToken is Organized, EIP20Token {
         conversionRate = _conversionRate;
         conversionRateDecimals = _conversionRateDecimals;
     }
+
 
     /* External Functions */
 
@@ -181,6 +197,44 @@ contract BrandedToken is Organized, EIP20Token {
             "ValueToken.transferFrom returned false."
         );
     }
+
+    function acceptStakeRequest(
+        bytes32 _stakeRequestHash,
+        bytes32 _r,
+        bytes32 _s,
+        uint8 _v
+    )
+        external
+        returns (bool success_)
+    {
+        require(
+            stakeRequests[_stakeRequestHash].staker != address(0),
+            "Stake request not found."
+        );
+        require(
+            organization.isWorker(ecrecover(_stakeRequestHash, _v, _r, _s)),
+            "Signer is not a worker."
+        );
+
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
+
+        emit StakeRequestAccepted(
+            stakeRequest.staker,
+            stakeRequest.stake
+        );
+
+        uint256 mint = convertToBrandedTokens(stakeRequest.stake);
+        balances[stakeRequest.staker] = balances[stakeRequest.staker].add(mint);
+        totalTokenSupply = totalTokenSupply.add(mint);
+
+        emit Transfer(address(0), stakeRequest.staker, mint);
+
+        return true;
+    }
+
 
     /* Public Functions */
 
