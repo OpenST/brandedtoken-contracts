@@ -12,23 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const GatewayComposer = artifacts.require('TestGatewayComposer');
+const BN = require('bn.js');
+
+const BrandedToken = artifacts.require('TestBrandedToken');
+const GatewayComposer = artifacts.require('GatewayComposer');
+const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 
 /**
  * Setup GatewayComposer.
  */
 module.exports.setupGatewayComposer = async (accountProvider) => {
+    const symbol = 'Test';
+    const name = 'Test';
+    const decimals = 18;
+    const conversionRate = 1;
+    const conversionRateDecimals = 0;
+    const organization = accountProvider.get();
     const owner = accountProvider.get();
-    const valueToken = accountProvider.get();
-    const brandedToken = accountProvider.get();
+    const ownerBalance = new BN(1000);
+    const valueToken = await EIP20TokenMock.new(
+        symbol,
+        name,
+        decimals,
+        { from: organization },
+    );
+
+    await valueToken.setBalance(owner, ownerBalance);
+    assert.strictEqual(
+        (await valueToken.balanceOf.call(owner)).cmp(ownerBalance),
+        0,
+    );
+
+    const brandedToken = await BrandedToken.new(
+        valueToken.address,
+        symbol,
+        name,
+        decimals,
+        conversionRate,
+        conversionRateDecimals,
+        organization,
+    );
 
     const gatewayComposer = await GatewayComposer.new(
         owner,
-        valueToken,
-        brandedToken,
+        valueToken.address,
+        brandedToken.address,
     );
 
     return {
         gatewayComposer,
+        brandedToken,
+        owner,
     };
 };

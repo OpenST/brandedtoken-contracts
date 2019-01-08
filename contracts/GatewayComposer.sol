@@ -15,6 +15,7 @@ pragma solidity ^0.4.24;
 // limitations under the License.
 
 import "./EIP20Interface.sol";
+import "./test/branded_token/TestBrandedToken.sol";
 
 
 /**
@@ -24,6 +25,7 @@ import "./EIP20Interface.sol";
  *         optimise the UX flow of the user where the user intends to perform
  *         a single combined action.
  */
+// TODO Rename TestBT to BT
 contract GatewayComposer {
 
     /* Struct */
@@ -49,7 +51,9 @@ contract GatewayComposer {
      * A Branded Token allows a mainstream application to create a value-backed
      * token designed specifically for its application's context.
      */
-    address public brandedToken;
+    TestBrandedToken public brandedToken;
+
+    mapping (bytes32 => StakeRequest) public stakeRequests;
 
 
     /* Modifiers */
@@ -81,7 +85,7 @@ contract GatewayComposer {
     constructor(
         address _owner,
         EIP20Interface _valueToken,
-        address _brandedToken
+        TestBrandedToken _brandedToken
     )
         public
     {
@@ -94,7 +98,7 @@ contract GatewayComposer {
             "Value token address is null."
         );
         require(
-            _brandedToken != address(0),
+            address(_brandedToken) != address(0),
             "Branded token address is null."
         );
 
@@ -127,6 +131,8 @@ contract GatewayComposer {
      *
      * @return requestStakeHash_ Hash unique for each stake request.
      */
+    // TODO add @dev with details. add about nonce verification
+    // TODO nonce verification
     function requestStake(
         uint256 _stakeVT,
         uint256 _mintBT,
@@ -152,23 +158,25 @@ contract GatewayComposer {
             _beneficiary != address(0),
             "Beneficiary address is null."
         );
-        require(
-            valueToken.transferFrom(msg.sender, address(this), _stakeVT),
-            "ValueToken transfer failed."
-        );
-
+//        require(
+//            valueToken.transferFrom(msg.sender, address(this), _stakeVT),
+//            "ValueToken transfer failed."
+//        );
+//
         valueToken.approve(brandedToken, _stakeVT);
 
         requestStakeHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
 
         stakeRequests[requestStakeHash_] = StakeRequest({
-            stakeVT: stakeVT,
+            stakeVT: _stakeVT,
+            mintBT: _mintBT,
             gateway: _gateway,
             beneficiary: _beneficiary,
             gasPrice: _gasPrice,
             gasLimit: _gasLimit,
             nonce: _nonce
         });
+
     }
 
 }
