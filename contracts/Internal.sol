@@ -38,7 +38,7 @@ contract Internal is Organized {
     /* Storage */
 
     /**
-     * It denotes the address is registered as internal actor or not.
+     * Mapping stores addresses which are registered as internal actor.
      */
     mapping (address /* internal actor */ => bool) public isInternalActor;
 

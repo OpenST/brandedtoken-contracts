@@ -47,7 +47,7 @@ contract('Internal::registerinternalactor', async (accounts) => {
     });
 
     describe('Events', async () => {
-        it('Verify InternalActorRegistered event', async () => {
+        it('Emits InternalActorRegistered events for multiple internal actors registration', async () => {
             const internalActors = [];
             internalActors.push(accountProvider.get());
             internalActors.push(accountProvider.get());
@@ -89,7 +89,7 @@ contract('Internal::registerinternalactor', async (accounts) => {
             ]);
         });
 
-        it('Do not register already registered internal actor', async () => {
+        it('Doesn\'t register already registered internal actor', async () => {
             const internalActors = [];
             internalActors.push(accountProvider.get());
 
@@ -110,13 +110,13 @@ contract('Internal::registerinternalactor', async (accounts) => {
             assert.strictEqual(
                 events.length,
                 0,
-                'Should not emit InternalActorRegistered',
+                'Should not emit InternalActorRegistered event',
             );
         });
     });
 
     describe('Storage', async () => {
-        it('Verifies added internal actor', async () => {
+        it('Verifies registered internal actors', async () => {
             const internalActors = [];
             internalActors.push(accountProvider.get());
             internalActors.push(accountProvider.get());
