@@ -81,8 +81,19 @@ contract BrandedToken is Organized, EIP20Token {
     /** Maps stakeRequestHash to StakeRequests. */
     mapping(bytes32 => StakeRequest) public stakeRequests;
 
-    /** Maps transferor to restriction status. */
+    /** Maps actor to restriction status. */
     mapping(address => bool) private unrestricted;
+
+
+    /* Modifiers */
+
+    modifier onlyUnrestricted {
+        require(
+            unrestricted[msg.sender],
+            "Msg.sender is restricted."
+        );
+        _;
+    }
 
 
     /* Constructor */
@@ -299,6 +310,48 @@ contract BrandedToken is Organized, EIP20Token {
 
 
     /* Public Functions */
+
+    /**
+     * @notice Overrides EIP20Token.transfer by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens to be transferred.
+     *
+     * @return success_ Success.
+     */
+    function transfer(
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transfer(_to, _value);
+    }
+
+    /**
+     * @notice Overrides EIP20Token.transferFrom by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _from Address from which tokens are transferred.
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens transferred.
+     *
+     * @return success_ Success.
+     */
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transferFrom(_from, _to, _value);
+    }
 
     /**
      * @notice Returns the amount of branded tokens equivalent to a

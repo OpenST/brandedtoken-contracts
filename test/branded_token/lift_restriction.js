@@ -15,7 +15,7 @@
 const { AccountProvider } = require('../test_lib/utils.js');
 const brandedTokenUtils = require('./utils');
 
-contract('BrandedToken::requestStake', async () => {
+contract('BrandedToken::liftRestriction', async () => {
     // TODO: add negative tests
 
     contract('Storage', async (accounts) => {
