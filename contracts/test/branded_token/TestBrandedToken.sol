@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -55,8 +55,8 @@ contract TestBrandedToken {
      */
     constructor(
         address,
-        string,
-        string,
+        string memory,
+        string memory,
         uint8,
         uint256,
         uint8,
@@ -123,8 +123,9 @@ contract TestBrandedToken {
      *
      * @return True if execution is successful.
      */
-    function liftRestriction(address[])
+    function liftRestriction(address[] calldata)
         external
+        pure
         returns (bool)
     {
         return true;
@@ -139,6 +140,7 @@ contract TestBrandedToken {
      */
     function isUnrestricted(address)
         external
+        pure
         returns (bool)
     {
         return true;
