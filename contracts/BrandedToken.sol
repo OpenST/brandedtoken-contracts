@@ -200,6 +200,23 @@ contract BrandedToken is Organized, EIP20Token {
         );
     }
 
+    /**
+     * @notice Mints and transfers branded tokens to a staker,
+     *         increases the total token supply, and
+     *         emits stake request acceptance and transfer information.
+     *
+     * @dev The function has no access controls, but will only accept
+     *      the signature of a worker, as defined in Organization.
+     *
+     *      Function requires:
+     *          - stake request exists;
+     *          - signature is from a worker.
+     *
+     * @param _stakeRequestHash Stake request hash.
+     * @param _r R of the signature.
+     * @param _s S of the signature.
+     * @param _v V of the signature.
+     */
     function acceptStakeRequest(
         bytes32 _stakeRequestHash,
         bytes32 _r,
