@@ -14,7 +14,7 @@
 
 const BN = require('bn.js');
 
-const BrandedToken = artifacts.require('TestBrandedToken');
+const BrandedToken = artifacts.require('BrandedToken');
 const GatewayComposer = artifacts.require('GatewayComposer');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 
@@ -26,10 +26,12 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
     const name = 'Test';
     const decimals = 18;
     const conversionRate = 1;
-    const conversionRateDecimals = 1;
+    const conversionRateDecimals = 0;
     const organization = accountProvider.get();
     const owner = accountProvider.get();
+    const stakeAmount = 1;
     const ownerBalance = new BN(1000);
+
     const valueToken = await EIP20TokenMock.new(
         symbol,
         name,
@@ -38,6 +40,7 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
     );
 
     await valueToken.setBalance(owner, ownerBalance);
+
     assert.strictEqual(
         (await valueToken.balanceOf.call(owner)).cmp(ownerBalance),
         0,
@@ -59,9 +62,16 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
         brandedToken.address,
     );
 
+    await valueToken.approve(
+        gatewayComposer.address,
+        stakeAmount,
+        { from: owner },
+    );
+
     return {
         gatewayComposer,
         brandedToken,
         owner,
+        stakeAmount,
     };
 };

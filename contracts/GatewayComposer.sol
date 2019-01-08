@@ -15,7 +15,7 @@ pragma solidity ^0.5.0;
 // limitations under the License.
 
 import "./EIP20Interface.sol";
-import "./test/branded_token/TestBrandedToken.sol";
+import "./BrandedToken.sol";
 
 
 /**
@@ -25,7 +25,6 @@ import "./test/branded_token/TestBrandedToken.sol";
  *         optimise the UX flow of the user where the user intends to perform
  *         a single combined action.
  */
-// TODO Rename TestBT to BT
 contract GatewayComposer {
 
     /* Struct */
@@ -51,7 +50,7 @@ contract GatewayComposer {
      * A Branded Token allows a mainstream application to create a value-backed
      * token designed specifically for its application's context.
      */
-    TestBrandedToken public brandedToken;
+    BrandedToken public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
 
@@ -85,7 +84,7 @@ contract GatewayComposer {
     constructor(
         address _owner,
         EIP20Interface _valueToken,
-        TestBrandedToken _brandedToken
+        BrandedToken _brandedToken
     )
         public
     {
@@ -147,7 +146,7 @@ contract GatewayComposer {
         returns (bytes32 requestStakeHash_)
     {
         require(
-            _mintBT == brandedToken.convert(_stakeVT),
+            _mintBT == brandedToken.convertToBrandedTokens(_stakeVT),
             "Minted BT should be equal to converted staked VT."
         );
         require(
@@ -158,12 +157,12 @@ contract GatewayComposer {
             _beneficiary != address(0),
             "Beneficiary address is null."
         );
-//        require(
-//            valueToken.transferFrom(msg.sender, address(this), _stakeVT),
-//            "ValueToken transfer failed."
-//        );
-//
-        valueToken.approve(brandedToken, _stakeVT);
+        require(
+            valueToken.transferFrom(msg.sender, address(this), _stakeVT),
+            "ValueToken.transferFrom returned false."
+        );
+
+        valueToken.approve(address(brandedToken), _stakeVT);
 
         requestStakeHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
 
