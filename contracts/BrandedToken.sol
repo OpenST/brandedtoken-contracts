@@ -81,6 +81,9 @@ contract BrandedToken is Organized, EIP20Token {
     /** Maps stakeRequestHash to StakeRequests. */
     mapping(bytes32 => StakeRequest) public stakeRequests;
 
+    /** Maps transferor to restriction status. */
+    mapping(address => bool) private unrestricted;
+
 
     /* Constructor */
 
@@ -255,6 +258,43 @@ contract BrandedToken is Organized, EIP20Token {
         emit Transfer(address(0), stakeRequest.staker, mint);
 
         return true;
+    }
+
+
+    /**
+     * @notice Maps addresses in _restrictionLifted to true in unrestricted.
+     *
+     * @param _restrictionLifted Addresses for which to lift restrictions.
+     *
+     * @return success_ Success.
+     */
+    function liftRestriction(
+        address[] calldata _restrictionLifted
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        for (uint256 i = 0; i < _restrictionLifted.length; i++) {
+            unrestricted[_restrictionLifted[i]] = true;
+        }
+
+        return true;
+    }
+
+    /**
+     * @notice Indicates whether an actor is unrestricted.
+     *
+     * @param _actor Actor.
+     *
+     * @return isUnrestricted_ Whether unrestricted.
+     */
+    function isUnrestricted(address _actor)
+        external
+        view
+        returns (bool isUnrestricted_)
+    {
+        return unrestricted[_actor];
     }
 
 
