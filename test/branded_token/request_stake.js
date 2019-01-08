@@ -15,12 +15,10 @@
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
-
-const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::requestStake', async () => {
-	// TODO: add negative tests
+    // TODO: add negative tests
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
@@ -31,7 +29,7 @@ contract('BrandedToken::requestStake', async () => {
             const {
                 brandedToken,
             } = await brandedTokenUtils.setupBrandedToken(
-            	accountProvider
+                accountProvider,
             );
 
             const stake = 1;

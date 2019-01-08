@@ -21,19 +21,19 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::acceptStakeRequest', async () => {
-	// TODO: add negative tests
+    // TODO: add negative tests
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Emits StakeRequestAccepted and Transfer events', async () => {
             const {
-		        brandedToken,
-		        staker,
-		        stake,
-		        stakeRequestHash,
+                brandedToken,
+                staker,
+                stake,
+                stakeRequestHash,
             } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
-				accountProvider,
+                accountProvider,
             );
 
             const r = web3.utils.soliditySha3('r');
@@ -84,12 +84,12 @@ contract('BrandedToken::acceptStakeRequest', async () => {
 
         it('Successfully mints branded tokens', async () => {
             const {
-		        brandedToken,
-		        staker,
-		        stake,
-		        stakeRequestHash,
+                brandedToken,
+                staker,
+                stake,
+                stakeRequestHash,
             } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
-				accountProvider,
+                accountProvider,
             );
 
             const r = web3.utils.soliditySha3('r');
@@ -99,12 +99,12 @@ contract('BrandedToken::acceptStakeRequest', async () => {
 
             assert.isOk(
                 await brandedToken.acceptStakeRequest.call(
-	                stakeRequestHash,
-	                r,
-	                s,
-	                v,
-	                { from: worker },
-                )
+                    stakeRequestHash,
+                    r,
+                    s,
+                    v,
+                    { from: worker },
+                ),
             );
 
             brandedToken.acceptStakeRequest(

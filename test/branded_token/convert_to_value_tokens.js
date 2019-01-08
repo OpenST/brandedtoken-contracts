@@ -14,13 +14,11 @@
 
 
 const BN = require('bn.js');
-const utils = require('../test_lib/utils.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const BrandedTokenUtils = require('./utils.js');
 
 contract('BrandedToken::convertToValueTokens', async () => {
     contract('Returns', async (accounts) => {
-
         it('Correctly converts to value tokens', async () => {
             const accountProvider = new AccountProvider(accounts);
 
@@ -36,7 +34,8 @@ contract('BrandedToken::convertToValueTokens', async () => {
             const valueTokens = await brandedToken.convertToValueTokens(brandedTokens);
 
             // TODO: test to reflect the potential for loss in conversion
-            // TODO: test to reflect actual expected number and not just operations (as in test below)
+            // TODO: test to reflect actual expected number and
+            //       not just operations (as in test below)
             assert.strictEqual(
                 valueTokens.cmp(
                     brandedTokens.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),

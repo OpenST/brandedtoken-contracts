@@ -19,7 +19,7 @@ const OrganizationMockPass = artifacts.require('OrganizationMockPass');
 /**
  * Sets up a BrandedToken.
  */
-module.exports.setupBrandedToken = async (accountProvider) => {
+module.exports.setupBrandedToken = async () => {
     const valueToken = await EIP20TokenMockPass.new();
     const symbol = 'BrandedToken';
     const name = 'BT';
@@ -48,10 +48,8 @@ module.exports.setupBrandedToken = async (accountProvider) => {
  */
 module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
     const {
-      brandedToken,
-    } = await this.setupBrandedToken(
-        accountProvider
-    );
+        brandedToken,
+    } = await this.setupBrandedToken();
 
     const staker = accountProvider.get();
     const stake = 1;

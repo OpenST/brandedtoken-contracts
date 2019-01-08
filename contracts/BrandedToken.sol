@@ -50,6 +50,8 @@ contract BrandedToken is Organized, EIP20Token {
         address _staker,
         uint256 _stake
     );
+
+
     /* Structs */
 
     struct StakeRequest {
@@ -161,7 +163,7 @@ contract BrandedToken is Organized, EIP20Token {
             "Mint is not equivalent to stake."
         );
         require(
-            stakeRequestHashes[msg.sender] == '',
+            stakeRequestHashes[msg.sender] == "",
             "Staker has a stake request hash."
         );
 
@@ -227,7 +229,8 @@ contract BrandedToken is Organized, EIP20Token {
         );
 
         uint256 mint = convertToBrandedTokens(stakeRequest.stake);
-        balances[stakeRequest.staker] = balances[stakeRequest.staker].add(mint);
+        balances[stakeRequest.staker] = balances[stakeRequest.staker]
+            .add(mint);
         totalTokenSupply = totalTokenSupply.add(mint);
 
         emit Transfer(address(0), stakeRequest.staker, mint);
@@ -257,7 +260,9 @@ contract BrandedToken is Organized, EIP20Token {
         view
         returns (uint256)
     {
-        return (_valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals));
+        return (
+            _valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals)
+        );
     }
 
     /**
@@ -278,6 +283,8 @@ contract BrandedToken is Organized, EIP20Token {
         view
         returns (uint256)
     {
-        return (_brandedTokens.mul(10 ** uint256(conversionRateDecimals))).div(conversionRate);
+        return (
+            _brandedTokens.mul(10 ** uint256(conversionRateDecimals))
+        ).div(conversionRate);
     }
 }
