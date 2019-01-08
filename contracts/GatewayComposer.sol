@@ -30,12 +30,13 @@ contract GatewayComposer {
 
     address public owner;
 
-    /* EIP20Token value token which is staked on the value chain. */
+    /** EIP20Token value token which is staked on the value chain. */
     EIP20Interface public valueToken;
 
     /**
-     * A Branded Token allows a mainstream application to create a value-backed
-     * token designed specifically for its application's context.
+     * A BrandedToken is an EIP20Token which allows a mainstream application
+     * to create a value-backed token designed specifically for its
+     * application's context.
      */
     address public brandedToken;
 
@@ -44,6 +45,11 @@ contract GatewayComposer {
 
     /**
      * @notice Contract constructor.
+     *
+     * @dev Function requires:
+     *          - Owner address should not be null
+     *          - ValueToken address should not be null
+     *          - BrandedToken address should not be null
      *
      * @param _owner Address of the staker on the value chain.
      * @param _valueToken EIP20Token which is staked.
