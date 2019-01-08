@@ -28,16 +28,42 @@ import "./Organized.sol";
  */
 contract BrandedToken is Organized, EIP20Token {
 
+    /* Events */
+
+    event StakeRequested(
+        bytes32 indexed _stakeRequestHash,
+        address _staker,
+        uint256 _stake,
+        uint256 _nonce
+    );
+
+    /* Structs */
+
+    struct StakeRequest {
+        address staker;
+        uint256 stake;
+        uint256 nonce;
+    }
+
     /* Storage */
 
     /** Address for value tokens staked to mint branded tokens. */
-    EIP20TokenInterface public valueToken;
+    EIP20Interface public valueToken;
 
     /** Conversion rate from value tokens to branded tokens. */
     uint256 public conversionRate;
 
     /** Number of digits to the right of the decimal point in conversionRate. */
     uint8 public conversionRateDecimals;
+
+    /** Global count of stake requests. */
+    uint256 public nonce;
+
+    /** Maps staker to stakeRequestHashes. */
+    mapping(address => bytes32) public stakeRequestHashes;
+
+    /** Maps stakeRequestHash to StakeRequests. */
+    mapping(bytes32 => StakeRequest) public stakeRequests;
 
     /* Constructor */
 
@@ -51,20 +77,20 @@ contract BrandedToken is Organized, EIP20Token {
      *          - conversionRate is not zero;
      *
      * @param _valueToken The value to which valueToken is set.
-	 * @param _symbol The value to which tokenSymbol, defined in EIP20Token, is set.
-	 * @param _name The value to which tokenName, defined in EIP20Token, is set.
-	 * @param _decimals The value to which tokenDecimals, defined in EIP20Token, is set.
+     * @param _symbol The value to which tokenSymbol, defined in EIP20Token, is set.
+     * @param _name The value to which tokenName, defined in EIP20Token, is set.
+     * @param _decimals The value to which tokenDecimals, defined in EIP20Token, is set.
      * @param _conversionRate The value to which conversionRate is set.
      * @param _conversionRateDecimals The value to which conversionRateDecimals
      *                                is set.
      * @param _organization The value to which organization, defined in Organized, is set.
      */
     constructor(
-        EIP20TokenInterface _valueToken,
-		string memory _symbol,
-		string memory _name,
-		uint8 _decimals,
-		uint256 _conversionRate,
+        EIP20Interface _valueToken,
+        string memory _symbol,
+        string memory _name,
+        uint8 _decimals,
+        uint256 _conversionRate,
         uint8 _conversionRateDecimals,
         OrganizationInterface _organization
     )
@@ -84,5 +110,120 @@ contract BrandedToken is Organized, EIP20Token {
         valueToken = _valueToken;
         conversionRate = _conversionRate;
         conversionRateDecimals = _conversionRateDecimals;
+    }
+
+    /* External Functions */
+
+    /**
+     * @notice Transfers value tokens from msg.sender to itself,
+     *         stores the amount of branded tokens to mint if request
+     *         is accepted, and emits stake request information.
+     *
+     * @dev It is expected that this contract will have a sufficient allowance to
+     *      transfer value tokens from the staker at the time this function
+     *      is executed.
+     *
+     *      Function requires:
+     *          - _mint is equivalent to _stake;
+     *          - msg.sender does not have a stake request hash;
+     *          - valueToken.transferFrom returns true.
+     *
+     * @param _stake Amount of value tokens to stake.
+     * @param _mint Amount of branded tokens to mint.
+     *
+     * @return stakeRequestHash_ Hash of stake request information calculated per EIP 712.
+     */
+    function requestStake(
+        uint256 _stake,
+        uint256 _mint
+    )
+        external
+        returns (bytes32 stakeRequestHash_)
+    {
+        require(
+            _mint == convertToBrandedTokens(_stake),
+            "Mint is not equivalent to stake."
+        );
+        require(
+            stakeRequestHashes[msg.sender] == '',
+            "Staker has a stake request hash."
+        );
+
+        // TODO: confirm alignment with nonce updating in Gateway
+        nonce += 1;
+
+        // TODO: update to calculate stakeRequestHash_ per EIP 712
+        stakeRequestHash_ = keccak256(
+            abi.encodePacked(
+                "stakeRequestHash_",
+                nonce
+            )
+        );
+        stakeRequestHashes[msg.sender] = stakeRequestHash_;
+
+        stakeRequests[stakeRequestHash_] = StakeRequest({
+            staker: msg.sender,
+            stake: _stake,
+            nonce: nonce
+        });
+
+        StakeRequest memory stakeRequest = stakeRequests[stakeRequestHash_];
+
+        emit StakeRequested(
+            stakeRequestHash_,
+            stakeRequest.staker,
+            stakeRequest.stake,
+            stakeRequest.nonce
+        );
+
+        require(
+            valueToken.transferFrom(msg.sender, address(this), _stake),
+            "ValueToken.transferFrom returned false."
+        );
+    }
+
+    /* Public Functions */
+
+    /**
+     * @notice Returns the amount of branded tokens equivalent to a
+     *         given amount of value tokens.
+     *
+     * @dev Please note there may be a loss of up to 1 indivisible unit of
+     *      this token (i.e., assuming 1 value token is equivalent
+     *      to 3.5 branded tokens, convert(1) --> 3, not 3.5).
+     *
+     * @param _valueTokens Amount to convert.
+     *
+     * @return uint256 Converted amount.
+     */
+    function convertToBrandedTokens(
+        uint256 _valueTokens
+    )
+        public
+        view
+        returns (uint256)
+    {
+        return (_valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals));
+    }
+
+    /**
+     * @notice Returns the amount of value tokens equivalent to a
+     *         given amount of branded tokens.
+     *
+     * @dev Please note there may be a loss of up to 1 indivisible unit of
+     *      this token.
+     *
+     * @param _brandedTokens Amount to convert.
+     *
+     * @return uint256 Converted amount.
+     */
+    function convertToValueTokens(
+        uint256 _brandedTokens
+    )
+        public
+        view
+        returns (uint256)
+    {
+        return (_brandedTokens.mul(10 ** uint256(conversionRateDecimals))).div(conversionRate);
     }
 }

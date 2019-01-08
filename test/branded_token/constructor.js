@@ -13,6 +13,7 @@
 // limitations under the License.
 
 
+const BN = require('bn.js');
 const utils = require('../test_lib/utils.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 
@@ -80,7 +81,7 @@ contract('BrandedToken::constructor', async () => {
             const conversionRate = 35;
             const conversionRateDecimals = 1;
 
-            const BrandedToken = await BrandedToken.new(
+            const brandedToken = await BrandedToken.new(
                 valueToken,
                 symbol,
                 name,
@@ -91,19 +92,19 @@ contract('BrandedToken::constructor', async () => {
             );
 
             assert.strictEqual(
-                (await BrandedToken.valueToken()),
+                (await brandedToken.valueToken()),
                 valueToken,
             );
 
             assert.strictEqual(
-                (await BrandedToken.conversionRate()).cmp(
+                (await brandedToken.conversionRate()).cmp(
                     new BN(conversionRate),
                 ),
                 0,
             );
 
             assert.strictEqual(
-                (await BrandedToken.conversionRateDecimals()).cmp(
+                (await brandedToken.conversionRateDecimals()).cmp(
                     new BN(conversionRateDecimals),
                 ),
                 0,

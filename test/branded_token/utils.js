@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const BrandedToken = artifacts.require('TestBrandedToken');
+const BrandedToken = artifacts.require('BrandedToken');
+const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 
 /**
  * Setup BrandedToken.
  */
 module.exports.setupBrandedToken = async (accountProvider) => {
-    const eip20Token = accountProvider.get();
-    const symbol = 'Test';
-    const name = 'Test';
+    const valueToken = await EIP20TokenMockPass.new();
+    const symbol = 'BrandedToken';
+    const name = 'BT';
     const decimals = 18;
-    const conversionRate = 10;
-    const conversionRateDecimals = 0;
+    const conversionRate = 35;
+    const conversionRateDecimals = 1;
     const organization = accountProvider.get();
 
     const brandedToken = await BrandedToken.new(
-        eip20Token,
+        valueToken.address,
         symbol,
         name,
         decimals,

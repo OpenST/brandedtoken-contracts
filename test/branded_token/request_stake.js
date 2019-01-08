@@ -20,34 +20,49 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::requestStake', async () => {
+	// TODO: add negative tests
+
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
+
+        const staker = accountProvider.get();
 
         it('Emits StakeRequested event.', async () => {
             const {
                 brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(accountProvider);
-
-            const stakeAmount = 1;
-            const mintAmount = 1;
-            const transactionResponse = await brandedToken.requestStake(
-                stakeAmount,
-                mintAmount,
+            } = await brandedTokenUtils.setupBrandedToken(
+            	accountProvider
             );
 
-            const events = Event.decodeTransactionResponse(transactionResponse);
+            const stake = 1;
 
-            assert.strictEqual(events.length, 1);
+            const transactionResponse = await brandedToken.requestStake(
+                stake,
+                await brandedToken.convertToBrandedTokens(stake),
+                { from: staker },
+            );
+
+            const events = Event.decodeTransactionResponse(
+                transactionResponse,
+            );
+
+            assert.strictEqual(
+                events.length,
+                1,
+                'Only StakeRequested event should be emitted.',
+            );
 
             Event.assertEqual(events[0], {
                 name: 'StakeRequested',
                 args: {
-                    _stakeRequestHash: utils.NULL_BYTES32,
-                    _staker: utils.NULL_ADDRESS,
-                    _stake: new BN(0),
-                    _nonce: new BN(0),
+                    _stakeRequestHash: await brandedToken.stakeRequestHashes(staker),
+                    _staker: staker,
+                    _stake: new BN(stake),
+                    _nonce: await brandedToken.nonce(),
                 },
             });
         });
     });
+
+    // TODO: add storage tests
 });
