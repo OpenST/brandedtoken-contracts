@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const web3 = require('../test_lib/web3.js');
+
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 const OrganizationMockPass = artifacts.require('OrganizationMockPass');
@@ -72,5 +74,40 @@ module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
         staker,
         stake,
         stakeRequestHash,
+    };
+};
+
+/**
+ * Sets up a BrandedToken and an accepted stake request.
+ */
+module.exports.setupBrandedTokenAndAcceptedStakeRequest = async (accountProvider) => {
+    const {
+        brandedToken,
+        staker,
+        stake,
+        stakeRequestHash,
+    } = await this.setupBrandedTokenAndStakeRequest(
+        accountProvider,
+    );
+
+    const r = web3.utils.soliditySha3('r');
+    const s = web3.utils.soliditySha3('r');
+    const v = 0;
+    const worker = accountProvider.get();
+
+    brandedToken.acceptStakeRequest(
+        stakeRequestHash,
+        r,
+        s,
+        v,
+        { from: worker },
+    );
+
+    return {
+        brandedToken,
+        staker,
+        stake,
+        stakeRequestHash,
+        worker,
     };
 };

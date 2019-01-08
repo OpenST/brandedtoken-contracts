@@ -81,6 +81,20 @@ contract BrandedToken is Organized, EIP20Token {
     /** Maps stakeRequestHash to StakeRequests. */
     mapping(bytes32 => StakeRequest) public stakeRequests;
 
+    /** Maps actor to restriction status. */
+    mapping(address => bool) private unrestricted;
+
+
+    /* Modifiers */
+
+    modifier onlyUnrestricted {
+        require(
+            unrestricted[msg.sender],
+            "Msg.sender is restricted."
+        );
+        _;
+    }
+
 
     /* Constructor */
 
@@ -216,6 +230,8 @@ contract BrandedToken is Organized, EIP20Token {
      * @param _r R of the signature.
      * @param _s S of the signature.
      * @param _v V of the signature.
+     *
+     * @return success_ Success.
      */
     function acceptStakeRequest(
         bytes32 _stakeRequestHash,
@@ -256,7 +272,86 @@ contract BrandedToken is Organized, EIP20Token {
     }
 
 
+    /**
+     * @notice Maps addresses in _restrictionLifted to true in unrestricted.
+     *
+     * @param _restrictionLifted Addresses for which to lift restrictions.
+     *
+     * @return success_ Success.
+     */
+    function liftRestriction(
+        address[] calldata _restrictionLifted
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        for (uint256 i = 0; i < _restrictionLifted.length; i++) {
+            unrestricted[_restrictionLifted[i]] = true;
+        }
+
+        return true;
+    }
+
+    /**
+     * @notice Indicates whether an actor is unrestricted.
+     *
+     * @param _actor Actor.
+     *
+     * @return isUnrestricted_ Whether unrestricted.
+     */
+    function isUnrestricted(address _actor)
+        external
+        view
+        returns (bool isUnrestricted_)
+    {
+        return unrestricted[_actor];
+    }
+
+
     /* Public Functions */
+
+    /**
+     * @notice Overrides EIP20Token.transfer by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens to be transferred.
+     *
+     * @return success_ Success.
+     */
+    function transfer(
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transfer(_to, _value);
+    }
+
+    /**
+     * @notice Overrides EIP20Token.transferFrom by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _from Address from which tokens are transferred.
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens transferred.
+     *
+     * @return success_ Success.
+     */
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transferFrom(_from, _to, _value);
+    }
 
     /**
      * @notice Returns the amount of branded tokens equivalent to a
