@@ -65,11 +65,13 @@ contract Internal is Organized {
         external
         onlyWorker
     {
+        address org = address(organization);
+
         for (uint256 i = 0; i < _internalActors.length; i++) {
 
             if (!isInternalActor[_internalActors[i]]) {
                 isInternalActor[_internalActors[i]] = true;
-                emit InternalActorRegistered(address(organization), _internalActors[i]);
+                emit InternalActorRegistered(org, _internalActors[i]);
             }
         }
     }
