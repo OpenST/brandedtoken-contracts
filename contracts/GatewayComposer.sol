@@ -109,8 +109,8 @@ contract GatewayComposer {
     /**
      * @notice Contract constructor.
      *
-     * @param _stakeVT ValueToken amount to be staked.
-     * @param _mintBT Minted BT amount.
+     * @param _stakeVT ValueToken amount which is staked.
+     * @param _mintBT Amount of BT amount which will be minted.
      * @param _gateway Gateway contract address.
      * @param _beneficiary The address in the auxiliary chain where the utility
      *                     tokens will be minted..
@@ -125,7 +125,7 @@ contract GatewayComposer {
      *          - Beneficiary address can't be null
      *          - Successful execution of ValueToken transfer
      *
-     * @return requestStakeHash_ requestHash unique for each stake request.
+     * @return requestStakeHash_ Hash unique for each stake request.
      */
     function requestStake(
         uint256 _stakeVT,
