@@ -47,9 +47,10 @@ contract GatewayComposer {
     EIP20Interface public valueToken;
 
     /**
-     * A Branded Token allows a mainstream application to create a value-backed
-     * token designed specifically for its application's context.
-     */
+    * A BrandedToken is an EIP20Token which allows a mainstream application
+    * to create a value-backed token designed specifically for its
+    * application's context.
+    */
     BrandedToken public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
