@@ -18,16 +18,62 @@ const web3 = require('../test_lib/web3.js');
 
 const gatewayComposerUtils = require('./utils');
 
-contract('GatewayComposer::acceptStakeRequest', async () => {
-    contract('Positive Tests', async (accounts) => {
+contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
+    describe('Positive Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
         it('Returns message hash.', async () => {
             const {
+                valueToken,
+                brandedToken,
                 gatewayComposer,
+                owner,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
-            const stakeRequestHash = web3.utils.soliditySha3('test');
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
+
+            const {
+                gateway,
+                facilitator,
+            } = await gatewayComposerUtils.setupGatewayComposerAcceptStake(
+                accountProvider,
+            );
+
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            const stakeRequestHash = await gatewayComposer.requestStake.call(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            let transactionResponse = await gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            assert.strictEqual(transactionResponse.receipt.status, true);
+
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('s');
             const v = 0;
@@ -41,6 +87,17 @@ contract('GatewayComposer::acceptStakeRequest', async () => {
             );
 
             assert.strictEqual(messageHash, utils.NULL_BYTES32);
+
+            transactionResponse = await gatewayComposer.acceptStakeRequest(
+                stakeRequestHash,
+                r,
+                s,
+                v,
+                hashLock,
+                { from: facilitator },
+            );
+
+            assert.strictEqual(transactionResponse.receipt.status, true);
         });
     });
 });

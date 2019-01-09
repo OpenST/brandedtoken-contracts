@@ -16,11 +16,18 @@ pragma solidity ^0.5.0;
 
 
 /**
- * @title MockGateway.
+ * @title MockGatewayPass contract.
  *
- * @notice Mocks gateway contract functions.
+ * @notice Mocks gateway contract with successful returns.
  */
-contract MockGateway {
+contract MockGatewayPass {
+
+    /* Special Functions */
+
+    constructor()
+        public
+    {}
+
 
     /* External Functions */
 
@@ -31,28 +38,27 @@ contract MockGateway {
      */
     function bounty()
         external
+        pure
         returns (uint256)
     {
-        return 10;
+        return 0;
     }
 
     /**
-     * @notice Initiates the stake process.  In order to stake the staker
+     * @notice Initiates the stake process. In order to stake the staker
      *         needs to approve Gateway contract for stake amount.
      *         Staked amount is transferred from staker address to
      *         Gateway contract. Bounty amount is also transferred from staker.
      *
-     * @param _amount Stake amount that will be transferred from the staker
-     *                account.
-     * @param _beneficiary The address in the auxiliary chain where the utility
-     *                     tokens will be minted.
-     * @param _gasPrice Gas price that staker is ready to pay to get the stake
-     *                  and mint process done.
-     * @param _gasLimit Gas limit that staker is ready to pay.
-     * @param _nonce Nonce of the staker address.
-     * @param _hashLock Hash Lock provided by the facilitator.
+     * @dev parameters are in below order:
+     *      _amount
+     *      _beneficiary
+     *      _gasPrice
+     *      _gasLimit
+     *      _nonce
+     *      _hashLock
      *
-     * @return messageHash_ Message hash is unique for each request.
+     * @return Message hash unique for each request.
      */
     function stake(
         uint256,
@@ -62,11 +68,11 @@ contract MockGateway {
         uint256,
         bytes32
     )
+        pure
         external
         returns (bytes32)
     {
         return bytes32(0);
     }
-
 
 }

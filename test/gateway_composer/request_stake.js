@@ -24,41 +24,21 @@ contract('GatewayComposer::requestStake', async (accounts) => {
     describe('Positive Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
-        // it('Returns stake request hash.', async () => {
-        //     const {
-        //         gatewayComposer,
-        //         brandedToken,
-        //         owner,
-        //     } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
-        //
-        //     const stakeAmount = 1;
-        //     const mintAmount = await brandedToken.convertToBrandedTokens.call(stakeAmount);
-        //     const gateway = accountProvider.get();
-        //     const beneficiary = accountProvider.get();
-        //     const gasPrice = 1;
-        //     const gasLimit = 1;
-        //     const nonce = 1;
-        //     const stakeRequestHash = await gatewayComposer.requestStake.call(
-        //         stakeAmount,
-        //         mintAmount,
-        //         gateway,
-        //         beneficiary,
-        //         gasPrice,
-        //         gasLimit,
-        //         nonce,
-        //         { from: owner },
-        //     );
-        //
-        //     assert.strictEqual(stakeRequestHash, utils.NULL_BYTES32);
-        // });
-
         it('Validates storage of state variables.', async () => {
             const {
-                gatewayComposer,
+                valueToken,
                 brandedToken,
+                gatewayComposer,
                 owner,
-                stakeAmount,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
             const gateway = accountProvider.get();
@@ -66,7 +46,6 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             const gasPrice = 1;
             const gasLimit = 1;
             const nonce = 1;
-
             const stakeRequestHash = await gatewayComposer.requestStake.call(
                 stakeAmount,
                 mintAmount,

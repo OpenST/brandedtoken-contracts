@@ -14,13 +14,11 @@
 
 const BN = require('bn.js');
 
-const BrandedToken = artifacts.require('BrandedToken');
+const MockBrandedTokenPass = artifacts.require('MockBrandedTokenPass');
 const GatewayComposer = artifacts.require('GatewayComposer');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
+const MockGatewayPass = artifacts.require('MockGatewayPass');
 
-/**
- * Setup GatewayComposer.
- */
 module.exports.setupGatewayComposer = async (accountProvider) => {
     const symbol = 'Test';
     const name = 'Test';
@@ -29,7 +27,6 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
     const conversionRateDecimals = 0;
     const organization = accountProvider.get();
     const owner = accountProvider.get();
-    const stakeAmount = 1;
     const ownerBalance = new BN(1000);
 
     const valueToken = await EIP20TokenMock.new(
@@ -46,7 +43,7 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
         0,
     );
 
-    const brandedToken = await BrandedToken.new(
+    const brandedToken = await MockBrandedTokenPass.new(
         valueToken.address,
         symbol,
         name,
@@ -62,6 +59,17 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
         brandedToken.address,
     );
 
+    return {
+        valueToken,
+        brandedToken,
+        gatewayComposer,
+        owner,
+    };
+};
+
+module.exports.setupGatewayComposerRequestStake = async (valueToken, gatewayComposer, owner) => {
+    const stakeAmount = 1;
+
     await valueToken.approve(
         gatewayComposer.address,
         stakeAmount,
@@ -69,9 +77,15 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
     );
 
     return {
-        gatewayComposer,
-        brandedToken,
-        owner,
         stakeAmount,
+    };
+};
+
+module.exports.setupGatewayComposerAcceptStake = async (accountProvider) => {
+    const mockGatewayPass = await MockGatewayPass.new();
+
+    return {
+        facilitator: accountProvider.get(),
+        gateway: mockGatewayPass,
     };
 };

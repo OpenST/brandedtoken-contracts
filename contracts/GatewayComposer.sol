@@ -15,6 +15,7 @@ pragma solidity ^0.5.0;
 // limitations under the License.
 
 import "./EIP20Interface.sol";
+import "./GatewayInterface.sol";
 import "./BrandedToken.sol";
 
 
@@ -113,6 +114,22 @@ contract GatewayComposer {
     /**
      * @notice Contract constructor.
      *
+     * @dev Staker approves GC for stakeVT amount. Staker then calls
+     *      GC.requestStake. In GC.requestStake, stakeVT amount is approved
+     *      to BT contract. BT.requestStake function is called and after
+     *      successful execution, data is stored in stakeRequests mapping.
+     *
+     *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
+     *      amount. This condition also helps in validation of in progress
+     *      stake requests. See acceptStakeRequest for details.
+     *
+     *      Function requires:
+     *          - stakeVT can't be 0
+     *          - mintBT amount and converted stakeVT amount should be equal
+     *          - Gateway address can't be null
+     *          - Beneficiary address can't be null
+     *          - Successful execution of ValueToken transfer
+     *
      * @param _stakeVT ValueToken amount which is staked.
      * @param _mintBT Amount of BT amount which will be minted.
      * @param _gateway Gateway contract address.
@@ -123,16 +140,12 @@ contract GatewayComposer {
      * @param _gasLimit Gas limit that staker is ready to pay.
      * @param _nonce Nonce of the staker address.
      *
-     * @dev Function requires:
-     *          - mintBT amount and converted stakeVT amount should be equal
-     *          - Gateway address can't be null
-     *          - Beneficiary address can't be null
-     *          - Successful execution of ValueToken transfer
-     *
      * @return requestStakeHash_ Hash unique for each stake request.
      */
-    // TODO add @dev with details. add about nonce verification
+    // TODO add about nonce verification
     // TODO nonce verification
+    // TODO -ve test cases
+    // TODO assert for transferfrom balance
     function requestStake(
         uint256 _stakeVT,
         uint256 _mintBT,
@@ -146,6 +159,10 @@ contract GatewayComposer {
         onlyOwner
         returns (bytes32 requestStakeHash_)
     {
+        require(
+            _stakeVT > uint256(0),
+            "Stake amount is zero."
+        );
         require(
             _mintBT == brandedToken.convertToBrandedTokens(_stakeVT),
             "Minted BT should be equal to converted staked VT."
@@ -175,7 +192,56 @@ contract GatewayComposer {
             gasLimit: _gasLimit,
             nonce: _nonce
         });
+    }
 
+    // TODO Documentation
+    // TODO GatewayInterface
+    // TODO How to require Gateway.stake
+    // TODO -ve test cases
+    // Positive test case for bounty
+    function acceptStakeRequest(
+        bytes32 _stakeRequestHash,
+        bytes32 _r,
+        bytes32 _s,
+        uint8 _v,
+        bytes32 _hashLock
+    )
+        external
+        returns (bytes32 messageHash_)
+    {
+        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+        require(
+            stakeRequests[_stakeRequestHash].stakeVT > uint256(0),
+            "Stake request not found."
+        );
+
+        uint256 bounty = GatewayInterface(stakeRequest.gateway).bounty();
+        if (bounty > 0) {
+            valueToken.transferFrom(msg.sender, address(this), bounty);
+            valueToken.approve(stakeRequest.gateway, bounty);
+        }
+
+        require(
+            brandedToken.acceptStakeRequest(_stakeRequestHash, _r, _s, _v),
+            "BT.acceptStakeRequest returned false."
+        );
+
+        uint256 mintBT = brandedToken.convertToBrandedTokens(
+            stakeRequest.stakeVT
+        );
+
+        valueToken.approve(stakeRequest.gateway, mintBT);
+
+        messageHash_ = GatewayInterface(stakeRequest.gateway).stake(
+            mintBT,
+            stakeRequest.beneficiary,
+            stakeRequest.gasPrice,
+            stakeRequest.gasLimit,
+            stakeRequest.nonce,
+            _hashLock
+        );
+
+        delete stakeRequests[_stakeRequestHash];
     }
 
 }
