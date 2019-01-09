@@ -51,6 +51,11 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 _stake
     );
 
+    event StakeRequestRevoked(
+        address _staker,
+        uint256 _stake
+    );
+
 
     /* Structs */
 
@@ -274,7 +279,6 @@ contract BrandedToken is Organized, EIP20Token {
         return true;
     }
 
-
     /**
      * @notice Maps addresses in _restrictionLifted to true in unrestricted.
      *
@@ -311,7 +315,6 @@ contract BrandedToken is Organized, EIP20Token {
         return unrestricted[_actor];
     }
 
-
     /**
      * @notice Lifts restrictions from all actors.
      *
@@ -323,6 +326,47 @@ contract BrandedToken is Organized, EIP20Token {
         returns (bool success_)
     {
         allRestrictionsLifted = true;
+
+        return true;
+    }
+
+    /**
+     * @notice Revokes stake request by deleting its information and
+     *         transferring staked value tokens back to staker.
+     *
+     * @dev Function requires:
+     *          - msg.sender is staker;
+     *          - valueToken.transfer returns true.
+     *
+     * @param _stakeRequestHash Stake request hash.
+     *
+     * @return success_ Success.
+     */
+    function revokeStakeRequest(
+        bytes32 _stakeRequestHash
+    )
+        external
+        returns (bool success_)
+    {
+        require(
+            stakeRequests[_stakeRequestHash].staker == msg.sender,
+            "Msg.sender is not staker."
+        );
+
+        uint256 stake = stakeRequests[_stakeRequestHash].stake;
+
+        delete stakeRequestHashes[msg.sender];
+        delete stakeRequests[_stakeRequestHash];
+
+        emit StakeRequestRevoked(
+            msg.sender,
+            stake
+        );
+
+        require(
+            valueToken.transfer(msg.sender, stake),
+            "ValueToken.transfer returned false."
+        );
 
         return true;
     }
