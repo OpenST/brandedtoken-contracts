@@ -14,6 +14,7 @@
 
 const utils = require('../test_lib/utils');
 const UtilityBrandedTokenUtils = require('./utils');
+const web3 = require('../test_lib/web3');
 
 contract('UtilityBrandedToken::transferFrom', async (accounts) => {
     let testUtilityBrandedToken;

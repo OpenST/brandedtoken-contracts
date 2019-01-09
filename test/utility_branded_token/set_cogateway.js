@@ -41,9 +41,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
 
         ({
             testUtilityBrandedToken,
-            worker,
             admin,
-            organization,
         } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
             accountProvider, internalActor,
         ));
@@ -57,10 +55,10 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
 
     describe('Negative Tests', async () => {
         it('Reverts if non-owner address sets the cogateway', async () => {
-            const non_organization = accountProvider.get();
+            const nonOrganization = accountProvider.get();
             await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
-                { from: non_organization },
+                { from: nonOrganization },
             ),
             'Only organization or admin can call',
             'Only the organization is allowed to call this method.');

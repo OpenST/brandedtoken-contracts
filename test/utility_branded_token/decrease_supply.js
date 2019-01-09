@@ -15,6 +15,7 @@
 const utils = require('../test_lib/utils');
 const UtilityBrandedTokenUtils = require('./utils');
 const { Event } = require('../test_lib/event_decoder.js');
+const web3 = require('../test_lib/web3');
 
 contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
     let testUtilityBrandedToken;

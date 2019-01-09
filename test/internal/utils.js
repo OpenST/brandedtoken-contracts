@@ -13,8 +13,6 @@
 // limitations under the License.
 
 const Internal = artifacts.require('Internal');
-
-
 const MockOrganization = artifacts.require('MockOrganization');
 
 /**
@@ -22,11 +20,7 @@ const MockOrganization = artifacts.require('MockOrganization');
  */
 module.exports.setupInternal = async (accountProvider) => {
     const worker = accountProvider.get();
-
-
     const organization = accountProvider.get();
-
-
     const admin = accountProvider.get();
     const mockOrganization = await MockOrganization.new(
         organization,

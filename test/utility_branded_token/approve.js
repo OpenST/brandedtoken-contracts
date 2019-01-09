@@ -13,7 +13,7 @@
 // limitations under the License.
 
 const utils = require('../test_lib/utils');
-
+const web3 = require('../test_lib/web3');
 const UtilityBrandedTokenUtils = require('./utils');
 
 contract('UtilityBrandedToken::approve', async (accounts) => {
