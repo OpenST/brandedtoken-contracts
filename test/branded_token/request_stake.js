@@ -47,7 +47,6 @@ contract('BrandedToken::requestStake', async () => {
             assert.strictEqual(
                 events.length,
                 1,
-                'Only StakeRequested event should be emitted.',
             );
 
             Event.assertEqual(events[0], {
