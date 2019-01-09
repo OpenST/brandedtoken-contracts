@@ -19,6 +19,37 @@ const web3 = require('../test_lib/web3.js');
 const gatewayComposerUtils = require('./utils');
 
 contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
+    describe('Negative Tests', async () => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Fails when requestHash is invalid.', async () => {
+            const {
+                gatewayComposer,
+            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+            const {
+                facilitator,
+            } = await gatewayComposerUtils.setupGatewayComposerAcceptStake(
+                accountProvider,
+            );
+
+            const r = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
+            const v = 0;
+            const hashLock = web3.utils.soliditySha3('hl');
+
+            const invalidStakeRequestHash = web3.utils.soliditySha3('invalid');
+            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+                invalidStakeRequestHash,
+                r,
+                s,
+                v,
+                hashLock,
+                { from: facilitator },
+            ));
+        });
+    });
+
     describe('Positive Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 

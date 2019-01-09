@@ -63,6 +63,3 @@ interface GatewayInterface {
         returns (bytes32 messageHash_);
 
 }
-
-
-

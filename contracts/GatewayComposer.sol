@@ -140,7 +140,6 @@ contract GatewayComposer {
      * @return requestStakeHash_ Hash unique for each stake request.
      */
     // TODO -ve test cases
-    // TODO gateway nonce verification
     function requestStake(
         uint256 _stakeVT,
         uint256 _mintBT,
@@ -196,6 +195,12 @@ contract GatewayComposer {
      * @dev Function requires:
      *          - stake request hash is valid
      *          - BT.acceptStakeRequest execution is successful
+     *
+     *      As per requirement bounty token is same as valueToken.
+     *      Bounty flow:
+     *          - Facilitator approves GC for base tokens as bounty
+     *          - If bounty is greater than 0, it's transferred to GC
+     *          - GC approves Gateway for the bounty
      *
      * @param _stakeRequestHash Unique hash for each stake request.
      * @param _r R of the signature.
