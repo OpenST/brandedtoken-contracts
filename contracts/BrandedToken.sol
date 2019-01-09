@@ -57,6 +57,11 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 _valueTokens
     );
 
+    event StakeRequestRejected(
+        address _staker,
+        uint256 _stake
+    );
+
 
     /* Structs */
 
@@ -417,6 +422,46 @@ contract BrandedToken is Organized, EIP20Token {
 
         require(
             valueToken.transfer(msg.sender, valueTokens),
+            "ValueToken.transfer returned false."
+        );
+
+        return true;
+    }
+
+    /**
+     * @notice Rejects stake request by deleting its information and
+     *         transferring staked value tokens back to staker.
+     *
+     * @dev Function requires:
+     *          - msg.sender is a worker
+     *          - stake request exists
+     *          - valueToken.transfer returns true
+     *
+     * @param _stakeRequestHash Stake request hash.
+     *
+     * @return success_ Success.
+     */
+    function rejectStakeRequest(
+        bytes32 _stakeRequestHash
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        require(
+            stakeRequests[_stakeRequestHash].staker != address(0),
+            "Stake request not found."
+        );
+
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
+
+        emit StakeRequestRejected(stakeRequest.staker, stakeRequest.stake);
+
+        require(
+            valueToken.transfer(stakeRequest.staker, stakeRequest.stake),
             "ValueToken.transfer returned false."
         );
 
