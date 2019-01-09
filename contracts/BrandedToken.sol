@@ -112,8 +112,8 @@ contract BrandedToken is Organized, EIP20Token {
      *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
      *
      *      Constructor requires:
-     *          - valueToken address is not zero;
-     *          - conversionRate is not zero;
+     *          - valueToken address is not zero
+     *          - conversionRate is not zero
      *
      * @param _valueToken The value to which valueToken is set.
      * @param _symbol The value to which tokenSymbol, defined in EIP20Token, is set.
@@ -164,9 +164,9 @@ contract BrandedToken is Organized, EIP20Token {
      *      is executed.
      *
      *      Function requires:
-     *          - _mint is equivalent to _stake;
-     *          - msg.sender does not have a stake request hash;
-     *          - valueToken.transferFrom returns true.
+     *          - _mint is equivalent to _stake
+     *          - msg.sender does not have a stake request hash
+     *          - valueToken.transferFrom returns true
      *
      * @param _stake Amount of value tokens to stake.
      * @param _mint Amount of branded tokens to mint.
@@ -231,8 +231,8 @@ contract BrandedToken is Organized, EIP20Token {
      *      the signature of a worker, as defined in Organization.
      *
      *      Function requires:
-     *          - stake request exists;
-     *          - signature is from a worker.
+     *          - stake request exists
+     *          - signature is from a worker
      *
      * @param _stakeRequestHash Stake request hash.
      * @param _r R of the signature.
@@ -335,8 +335,8 @@ contract BrandedToken is Organized, EIP20Token {
      *         transferring staked value tokens back to staker.
      *
      * @dev Function requires:
-     *          - msg.sender is staker;
-     *          - valueToken.transfer returns true.
+     *          - msg.sender is staker
+     *          - valueToken.transfer returns true
      *
      * @param _stakeRequestHash Stake request hash.
      *
