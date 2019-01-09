@@ -19,7 +19,7 @@ const { Event } = require('../test_lib/event_decoder.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
-contract('BrandedToken::transfer', async () => {
+contract('BrandedToken::revokeStakeRequest', async () => {
     contract('Negative Tests', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
