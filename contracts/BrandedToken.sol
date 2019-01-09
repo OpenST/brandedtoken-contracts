@@ -75,6 +75,9 @@ contract BrandedToken is Organized, EIP20Token {
     /** Global count of stake requests. */
     uint256 public nonce;
 
+    /** Flag indicating whether restrictions have been lifted for all actors. */
+    bool public allRestrictionsLifted;
+
     /** Maps staker to stakeRequestHashes. */
     mapping(address => bytes32) public stakeRequestHashes;
 
@@ -89,7 +92,7 @@ contract BrandedToken is Organized, EIP20Token {
 
     modifier onlyUnrestricted {
         require(
-            unrestricted[msg.sender],
+            allRestrictionsLifted || unrestricted[msg.sender],
             "Msg.sender is restricted."
         );
         _;
@@ -306,6 +309,22 @@ contract BrandedToken is Organized, EIP20Token {
         returns (bool isUnrestricted_)
     {
         return unrestricted[_actor];
+    }
+
+
+    /**
+     * @notice Lifts restrictions from all actors.
+     *
+     * @return success_ Success.
+     */
+    function liftAllRestrictions()
+        external
+        onlyOrganization
+        returns (bool success_)
+    {
+        allRestrictionsLifted = true;
+
+        return true;
     }
 
 

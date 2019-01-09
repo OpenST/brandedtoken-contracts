@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 
-// Copyright 2018 OpenST Ltd.
+// Copyright 2019 OpenST Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,19 @@ pragma solidity ^0.5.0;
 contract OrganizationMockPass {
 
     /* External Functions */
+
+    /**
+     * @notice Mocks passing isOrganization.
+     *
+     * @return bool True.
+     */
+    function isOrganization(address)
+        external
+        pure
+        returns (bool)
+    {
+        return true;
+    }
 
     /**
      * @notice Mocks passing isWorker.
