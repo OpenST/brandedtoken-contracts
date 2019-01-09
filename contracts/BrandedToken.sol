@@ -380,6 +380,41 @@ contract BrandedToken is Organized, EIP20Token {
         return true;
     }
 
+    /**
+     * @notice Reduces msg.sender's balance and the total supply by
+     *         _brandedTokens and transfers an equivalent amount of
+     *         value tokens to msg.sender.
+     *
+     * @dev Redemption may risk loss of branded tokens.
+     *      It is possible to redeem branded tokens for 0 value tokens.
+     *
+     *      Function requires:
+     *          - valueToken.transfer returns true
+     *
+     * @param _brandedTokens Amount of branded tokens to redeem.
+     *
+     * @return success_ Success.
+     */
+    function redeem(
+        uint256 _brandedTokens
+    )
+        external
+        returns (bool success_)
+    {
+        balances[msg.sender] = balances[msg.sender].sub(_brandedTokens);
+        totalTokenSupply = totalTokenSupply.sub(_brandedTokens);
+
+        // Burn redeemed branded tokens
+        emit Transfer(msg.sender, address(0), _brandedTokens);
+
+        require(
+            valueToken.transfer(msg.sender, convertToValueTokens(_brandedTokens)),
+            "ValueToken.transfer returned false."
+        );
+
+        return true;
+    }
+
 
     /* Public Functions */
 

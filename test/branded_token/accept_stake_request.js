@@ -107,7 +107,7 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                 ),
             );
 
-            brandedToken.acceptStakeRequest(
+            await brandedToken.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,

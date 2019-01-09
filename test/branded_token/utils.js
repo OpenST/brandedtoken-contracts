@@ -54,7 +54,7 @@ module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
     } = await this.setupBrandedToken();
 
     const staker = accountProvider.get();
-    const stake = 1;
+    const stake = 2;
     const mint = await brandedToken.convertToBrandedTokens(stake);
 
     const stakeRequestHash = await brandedToken.requestStake.call(
@@ -95,7 +95,7 @@ module.exports.setupBrandedTokenAndAcceptedStakeRequest = async (accountProvider
     const v = 0;
     const worker = accountProvider.get();
 
-    brandedToken.acceptStakeRequest(
+    await brandedToken.acceptStakeRequest(
         stakeRequestHash,
         r,
         s,
