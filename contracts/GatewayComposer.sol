@@ -112,23 +112,20 @@ contract GatewayComposer {
     /* External Functions */
 
     /**
-     * @notice Contract constructor.
+     * @notice Transfers value tokens from msg.sender to itself after staker
+     *         approves GC, approves BT for value tokens and calls
+     *         BT.requestStake function.
      *
-     * @dev Staker approves GC for stakeVT amount. Staker then calls
-     *      GC.requestStake. In GC.requestStake, stakeVT amount is approved
-     *      to BT contract. BT.requestStake function is called and after
-     *      successful execution, data is stored in stakeRequests mapping.
-     *
-     *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
-     *      amount. This condition also helps in validation of in progress
-     *      stake requests. See acceptStakeRequest for details.
-     *
-     *      Function requires:
+     * @dev Function requires:
      *          - stakeVT can't be 0
      *          - mintBT amount and converted stakeVT amount should be equal
      *          - Gateway address can't be null
      *          - Beneficiary address can't be null
      *          - Successful execution of ValueToken transfer
+     *
+     *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
+     *      amount. This condition also helps in validation of in progress
+     *      stake requests. See acceptStakeRequest for details.
      *
      * @param _stakeVT ValueToken amount which is staked.
      * @param _mintBT Amount of BT amount which will be minted.
@@ -142,10 +139,8 @@ contract GatewayComposer {
      *
      * @return requestStakeHash_ Hash unique for each stake request.
      */
-    // TODO add about nonce verification
-    // TODO nonce verification
     // TODO -ve test cases
-    // TODO assert for transferfrom balance
+    // TODO gateway nonce verification
     function requestStake(
         uint256 _stakeVT,
         uint256 _mintBT,
@@ -194,11 +189,24 @@ contract GatewayComposer {
         });
     }
 
-    // TODO Documentation
-    // TODO GatewayInterface
-    // TODO How to require Gateway.stake
+    /**
+     * @notice Approves Gateway for the minted BTs, calls Gateway.stake after
+     *         BT.acceptStakeRequest execution is successful.
+     *
+     * @dev Function requires:
+     *          - stake request hash is valid
+     *          - BT.acceptStakeRequest execution is successful
+     *
+     * @param _stakeRequestHash Unique hash for each stake request.
+     * @param _r R of the signature.
+     * @param _s S of the signature.
+     * @param _v V of the signature.
+     * @param _hashLock Hash Lock provided by the facilitator.
+     *
+     * @return messageHash_ Message hash unique for each stake request.
+     */
     // TODO -ve test cases
-    // Positive test case for bounty
+    // TODO Positive test case for bounty
     function acceptStakeRequest(
         bytes32 _stakeRequestHash,
         bytes32 _r,
