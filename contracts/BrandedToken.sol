@@ -22,13 +22,9 @@ import "./SafeMath.sol";
 
 
 /**
- *  @title Branded Token.
+ * @title Branded Token.
  *
- * @notice Supports staking value tokens for minting branded tokens
- *         where the conversion rate from value token to branded token
- *         is not 1:1. This contract does not require a non-1:1 conversion rate,
- *         but it is expected that if the conversion rate is 1:1, value tokens
- *         will be staked directly through a Gateway.
+ * @notice Branded tokens are minted by staking specified value tokens.
  */
 contract BrandedToken is Organized, EIP20Token {
 
@@ -109,20 +105,25 @@ contract BrandedToken is Organized, EIP20Token {
     /**
      * @dev Conversion parameters provide the conversion rate and its scale.
      *      For example, if 1 value token is equivalent to 3.5 branded
-     *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
+     *      tokens (1:3.5), _conversionRate == 35 and
+     *      _conversionRateDecimals == 1.
      *
      *      Constructor requires:
      *          - valueToken address is not zero
      *          - conversionRate is not zero
      *
      * @param _valueToken The value to which valueToken is set.
-     * @param _symbol The value to which tokenSymbol, defined in EIP20Token, is set.
-     * @param _name The value to which tokenName, defined in EIP20Token, is set.
-     * @param _decimals The value to which tokenDecimals, defined in EIP20Token, is set.
+     * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
+     *                is set.
+     * @param _name The value to which tokenName, defined in EIP20Token,
+     *              is set.
+     * @param _decimals The value to which tokenDecimals, defined in EIP20Token,
+     *                  is set.
      * @param _conversionRate The value to which conversionRate is set.
-     * @param _conversionRateDecimals The value to which conversionRateDecimals
-     *                                is set.
-     * @param _organization The value to which organization, defined in Organized, is set.
+     * @param _conversionRateDecimals The value to which
+     *                                conversionRateDecimals is set.
+     * @param _organization The value to which organization, defined in Organized,
+     *                      is set.
      */
     constructor(
         EIP20Interface _valueToken,
@@ -159,8 +160,8 @@ contract BrandedToken is Organized, EIP20Token {
      *         stores the amount of branded tokens to mint if request
      *         is accepted, and emits stake request information.
      *
-     * @dev It is expected that this contract will have a sufficient allowance to
-     *      transfer value tokens from the staker at the time this function
+     * @dev It is expected that this contract will have a sufficientallowance
+     *      to transfer value tokens from the staker at the time this function
      *      is executed.
      *
      *      Function requires:
@@ -171,7 +172,8 @@ contract BrandedToken is Organized, EIP20Token {
      * @param _stake Amount of value tokens to stake.
      * @param _mint Amount of branded tokens to mint.
      *
-     * @return stakeRequestHash_ Hash of stake request information calculated per EIP 712.
+     * @return stakeRequestHash_ Hash of stake request information calculated per
+     *                           EIP 712.
      */
     function requestStake(
         uint256 _stake,
@@ -274,6 +276,7 @@ contract BrandedToken is Organized, EIP20Token {
             .add(mint);
         totalTokenSupply = totalTokenSupply.add(mint);
 
+        // Mint branded tokens
         emit Transfer(address(0), stakeRequest.staker, mint);
 
         return true;
@@ -281,6 +284,9 @@ contract BrandedToken is Organized, EIP20Token {
 
     /**
      * @notice Maps addresses in _restrictionLifted to true in unrestricted.
+     *
+     * @dev Function requires:
+     *          - msg.sender is a worker
      *
      * @param _restrictionLifted Addresses for which to lift restrictions.
      *
@@ -317,6 +323,9 @@ contract BrandedToken is Organized, EIP20Token {
 
     /**
      * @notice Lifts restrictions from all actors.
+     *
+     * @dev Function requires:
+     *          - msg.sender is organization
      *
      * @return success_ Success.
      */
@@ -436,7 +445,9 @@ contract BrandedToken is Organized, EIP20Token {
         returns (uint256)
     {
         return (
-            _valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals)
+            _valueTokens
+            .mul(conversionRate)
+            .div(10 ** uint256(conversionRateDecimals))
         );
     }
 
@@ -459,7 +470,9 @@ contract BrandedToken is Organized, EIP20Token {
         returns (uint256)
     {
         return (
-            _brandedTokens.mul(10 ** uint256(conversionRateDecimals))
-        ).div(conversionRate);
+            _brandedTokens
+            .mul(10 ** uint256(conversionRateDecimals))
+            .div(conversionRate)
+        );
     }
 }
