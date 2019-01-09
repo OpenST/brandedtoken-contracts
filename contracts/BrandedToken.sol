@@ -52,6 +52,11 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 _stake
     );
 
+    event Redeemed(
+        address _redeemer,
+        uint256 _valueTokens
+    );
+
 
     /* Structs */
 
@@ -403,12 +408,15 @@ contract BrandedToken is Organized, EIP20Token {
     {
         balances[msg.sender] = balances[msg.sender].sub(_brandedTokens);
         totalTokenSupply = totalTokenSupply.sub(_brandedTokens);
+        uint256 valueTokens = convertToValueTokens(_brandedTokens);
+
+        emit Redeemed(msg.sender, valueTokens);
 
         // Burn redeemed branded tokens
         emit Transfer(msg.sender, address(0), _brandedTokens);
 
         require(
-            valueToken.transfer(msg.sender, convertToValueTokens(_brandedTokens)),
+            valueToken.transfer(msg.sender, valueTokens),
             "ValueToken.transfer returned false."
         );
 

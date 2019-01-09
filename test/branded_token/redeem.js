@@ -12,12 +12,63 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
+const { Event } = require('../test_lib/event_decoder.js');
 
+const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::redeem', async () => {
     // TODO: add negative tests
+
+    contract('Event', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Emits Redeemed and Transfer events', async () => {
+            const {
+                brandedToken,
+                staker,
+            } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
+                accountProvider,
+            );
+
+            // At a conversion rate of 3.5, 4 branded tokens (least divisible unit)
+            // evaluates to 1 value token (least divisible unit)
+            const brandedTokens = 4;
+
+            const transactionResponse = await brandedToken.redeem(
+                brandedTokens,
+                { from: staker },
+            );
+
+            const events = Event.decodeTransactionResponse(
+                transactionResponse,
+            );
+
+            assert.strictEqual(
+                events.length,
+                2,
+            );
+
+            Event.assertEqual(events[0], {
+                name: 'Redeemed',
+                args: {
+                    _redeemer: staker,
+                    _valueTokens: await brandedToken.convertToValueTokens(brandedTokens),
+                },
+            });
+
+            Event.assertEqual(events[1], {
+                name: 'Transfer',
+                args: {
+                    _from: staker,
+                    _to: utils.NULL_ADDRESS,
+                    _value: new BN(brandedTokens),
+                },
+            });
+        });
+    });
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
