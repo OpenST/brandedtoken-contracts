@@ -22,13 +22,9 @@ import "./SafeMath.sol";
 
 
 /**
- *  @title Branded Token.
+ * @title Branded Token.
  *
- * @notice Supports staking value tokens for minting branded tokens
- *         where the conversion rate from value token to branded token
- *         is not 1:1. This contract does not require a non-1:1 conversion rate,
- *         but it is expected that if the conversion rate is 1:1, value tokens
- *         will be staked directly through a Gateway.
+ * @notice Branded tokens are minted by staking specified value tokens.
  */
 contract BrandedToken is Organized, EIP20Token {
 
@@ -47,11 +43,24 @@ contract BrandedToken is Organized, EIP20Token {
     );
 
     event StakeRequestAccepted(
+        bytes32 indexed _stakeRequestHash,
         address _staker,
         uint256 _stake
     );
 
     event StakeRequestRevoked(
+        bytes32 indexed _stakeRequestHash,
+        address _staker,
+        uint256 _stake
+    );
+
+    event Redeemed(
+        address _redeemer,
+        uint256 _valueTokens
+    );
+
+    event StakeRequestRejected(
+        bytes32 indexed _stakeRequestHash,
         address _staker,
         uint256 _stake
     );
@@ -77,8 +86,11 @@ contract BrandedToken is Organized, EIP20Token {
     /** Number of digits to the right of the decimal point in conversionRate. */
     uint8 public conversionRateDecimals;
 
-    /** Global count of stake requests. */
+    /** Global nonce for stake requests. */
     uint256 public nonce;
+
+    /** Flag indicating whether restrictions have been lifted for all actors. */
+    bool public allRestrictionsLifted;
 
     /** Maps staker to stakeRequestHashes. */
     mapping(address => bytes32) public stakeRequestHashes;
@@ -94,7 +106,7 @@ contract BrandedToken is Organized, EIP20Token {
 
     modifier onlyUnrestricted {
         require(
-            unrestricted[msg.sender],
+            allRestrictionsLifted || unrestricted[msg.sender],
             "Msg.sender is restricted."
         );
         _;
@@ -106,20 +118,25 @@ contract BrandedToken is Organized, EIP20Token {
     /**
      * @dev Conversion parameters provide the conversion rate and its scale.
      *      For example, if 1 value token is equivalent to 3.5 branded
-     *      tokens (1:3.5), _conversionRate == 35 and _conversionRateDecimals == 1.
+     *      tokens (1:3.5), _conversionRate == 35 and
+     *      _conversionRateDecimals == 1.
      *
      *      Constructor requires:
-     *          - valueToken address is not zero;
-     *          - conversionRate is not zero;
+     *          - valueToken address is not zero
+     *          - conversionRate is not zero
      *
      * @param _valueToken The value to which valueToken is set.
-     * @param _symbol The value to which tokenSymbol, defined in EIP20Token, is set.
-     * @param _name The value to which tokenName, defined in EIP20Token, is set.
-     * @param _decimals The value to which tokenDecimals, defined in EIP20Token, is set.
+     * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
+     *                is set.
+     * @param _name The value to which tokenName, defined in EIP20Token,
+     *              is set.
+     * @param _decimals The value to which tokenDecimals, defined in EIP20Token,
+     *                  is set.
      * @param _conversionRate The value to which conversionRate is set.
-     * @param _conversionRateDecimals The value to which conversionRateDecimals
-     *                                is set.
-     * @param _organization The value to which organization, defined in Organized, is set.
+     * @param _conversionRateDecimals The value to which
+     *                                conversionRateDecimals is set.
+     * @param _organization The value to which organization, defined in Organized,
+     *                      is set.
      */
     constructor(
         EIP20Interface _valueToken,
@@ -156,19 +173,20 @@ contract BrandedToken is Organized, EIP20Token {
      *         stores the amount of branded tokens to mint if request
      *         is accepted, and emits stake request information.
      *
-     * @dev It is expected that this contract will have a sufficient allowance to
-     *      transfer value tokens from the staker at the time this function
+     * @dev It is expected that this contract will have a sufficientallowance
+     *      to transfer value tokens from the staker at the time this function
      *      is executed.
      *
      *      Function requires:
-     *          - _mint is equivalent to _stake;
-     *          - msg.sender does not have a stake request hash;
-     *          - valueToken.transferFrom returns true.
+     *          - _mint is equivalent to _stake
+     *          - msg.sender does not have a stake request hash
+     *          - valueToken.transferFrom returns true
      *
      * @param _stake Amount of value tokens to stake.
      * @param _mint Amount of branded tokens to mint.
      *
-     * @return stakeRequestHash_ Hash of stake request information calculated per EIP 712.
+     * @return stakeRequestHash_ Hash of stake request information calculated per
+     *                           EIP 712.
      */
     function requestStake(
         uint256 _stake,
@@ -186,9 +204,6 @@ contract BrandedToken is Organized, EIP20Token {
             "Staker has a stake request hash."
         );
 
-        // TODO: confirm alignment with nonce updating in Gateway
-        nonce += 1;
-
         // TODO: update to calculate stakeRequestHash_ per EIP 712
         stakeRequestHash_ = keccak256(
             abi.encodePacked(
@@ -202,9 +217,11 @@ contract BrandedToken is Organized, EIP20Token {
             staker: msg.sender,
             stake: _stake,
             nonce: nonce
-            });
+        });
 
         StakeRequest memory stakeRequest = stakeRequests[stakeRequestHash_];
+
+        nonce += 1;
 
         emit StakeRequested(
             stakeRequestHash_,
@@ -228,8 +245,8 @@ contract BrandedToken is Organized, EIP20Token {
      *      the signature of a worker, as defined in Organization.
      *
      *      Function requires:
-     *          - stake request exists;
-     *          - signature is from a worker.
+     *          - stake request exists
+     *          - signature is from a worker
      *
      * @param _stakeRequestHash Stake request hash.
      * @param _r R of the signature.
@@ -262,16 +279,75 @@ contract BrandedToken is Organized, EIP20Token {
         delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestAccepted(
+            _stakeRequestHash,
             stakeRequest.staker,
             stakeRequest.stake
         );
 
         uint256 mint = convertToBrandedTokens(stakeRequest.stake);
         balances[stakeRequest.staker] = balances[stakeRequest.staker]
-        .add(mint);
+            .add(mint);
         totalTokenSupply = totalTokenSupply.add(mint);
 
+        // Mint branded tokens
         emit Transfer(address(0), stakeRequest.staker, mint);
+
+        return true;
+    }
+
+    /**
+     * @notice Maps addresses in _restrictionLifted to true in unrestricted.
+     *
+     * @dev Function requires:
+     *          - msg.sender is a worker
+     *
+     * @param _restrictionLifted Addresses for which to lift restrictions.
+     *
+     * @return success_ Success.
+     */
+    function liftRestriction(
+        address[] calldata _restrictionLifted
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        for (uint256 i = 0; i < _restrictionLifted.length; i++) {
+            unrestricted[_restrictionLifted[i]] = true;
+        }
+
+        return true;
+    }
+
+    /**
+     * @notice Indicates whether an actor is unrestricted.
+     *
+     * @param _actor Actor.
+     *
+     * @return isUnrestricted_ Whether unrestricted.
+     */
+    function isUnrestricted(address _actor)
+        external
+        view
+        returns (bool isUnrestricted_)
+    {
+        return unrestricted[_actor];
+    }
+
+    /**
+     * @notice Lifts restrictions from all actors.
+     *
+     * @dev Function requires:
+     *          - msg.sender is organization
+     *
+     * @return success_ Success.
+     */
+    function liftAllRestrictions()
+        external
+        onlyOrganization
+        returns (bool success_)
+    {
+        allRestrictionsLifted = true;
 
         return true;
     }
@@ -305,6 +381,7 @@ contract BrandedToken is Organized, EIP20Token {
         delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestRevoked(
+            _stakeRequestHash,
             msg.sender,
             stake
         );
@@ -317,8 +394,132 @@ contract BrandedToken is Organized, EIP20Token {
         return true;
     }
 
+    /**
+     * @notice Reduces msg.sender's balance and the total supply by
+     *         _brandedTokens and transfers an equivalent amount of
+     *         value tokens to msg.sender.
+     *
+     * @dev Redemption may risk loss of branded tokens.
+     *      It is possible to redeem branded tokens for 0 value tokens.
+     *
+     *      Function requires:
+     *          - valueToken.transfer returns true
+     *
+     * @param _brandedTokens Amount of branded tokens to redeem.
+     *
+     * @return success_ Success.
+     */
+    function redeem(
+        uint256 _brandedTokens
+    )
+        external
+        returns (bool success_)
+    {
+        balances[msg.sender] = balances[msg.sender].sub(_brandedTokens);
+        totalTokenSupply = totalTokenSupply.sub(_brandedTokens);
+        uint256 valueTokens = convertToValueTokens(_brandedTokens);
+
+        emit Redeemed(msg.sender, valueTokens);
+
+        // Burn redeemed branded tokens
+        emit Transfer(msg.sender, address(0), _brandedTokens);
+
+        require(
+            valueToken.transfer(msg.sender, valueTokens),
+            "ValueToken.transfer returned false."
+        );
+
+        return true;
+    }
+
+    /**
+     * @notice Rejects stake request by deleting its information and
+     *         transferring staked value tokens back to staker.
+     *
+     * @dev Function requires:
+     *          - msg.sender is a worker
+     *          - stake request exists
+     *          - valueToken.transfer returns true
+     *
+     * @param _stakeRequestHash Stake request hash.
+     *
+     * @return success_ Success.
+     */
+    function rejectStakeRequest(
+        bytes32 _stakeRequestHash
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        require(
+            stakeRequests[_stakeRequestHash].staker != address(0),
+            "Stake request not found."
+        );
+
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
+
+        emit StakeRequestRejected(
+            _stakeRequestHash,
+            stakeRequest.staker,
+            stakeRequest.stake
+        );
+
+        require(
+            valueToken.transfer(stakeRequest.staker, stakeRequest.stake),
+            "ValueToken.transfer returned false."
+        );
+
+        return true;
+    }
+
 
     /* Public Functions */
+
+    /**
+     * @notice Overrides EIP20Token.transfer by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens to be transferred.
+     *
+     * @return success_ Success.
+     */
+    function transfer(
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transfer(_to, _value);
+    }
+
+    /**
+     * @notice Overrides EIP20Token.transferFrom by additionally
+     *         requiring msg.sender to be unrestricted.
+     *
+     * @param _from Address from which tokens are transferred.
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens transferred.
+     *
+     * @return success_ Success.
+     */
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        public
+        onlyUnrestricted
+        returns (bool success_)
+    {
+        return super.transferFrom(_from, _to, _value);
+    }
 
     /**
      * @notice Returns the amount of branded tokens equivalent to a
@@ -340,7 +541,9 @@ contract BrandedToken is Organized, EIP20Token {
         returns (uint256)
     {
         return (
-        _valueTokens.mul(conversionRate)).div(10 ** uint256(conversionRateDecimals)
+            _valueTokens
+            .mul(conversionRate)
+            .div(10 ** uint256(conversionRateDecimals))
         );
     }
 
@@ -363,7 +566,9 @@ contract BrandedToken is Organized, EIP20Token {
         returns (uint256)
     {
         return (
-        _brandedTokens.mul(10 ** uint256(conversionRateDecimals))
-        ).div(conversionRate);
+            _brandedTokens
+            .mul(10 ** uint256(conversionRateDecimals))
+            .div(conversionRate)
+        );
     }
 }
