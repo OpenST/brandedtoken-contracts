@@ -107,4 +107,21 @@ contract MockBrandedTokenPass is BrandedToken {
         return true;
     }
 
+    /**
+     * @notice Mocks BT.revokeStakeRequest() function.
+     *
+     * @dev It takes below parameters in order:
+     *      - stake request hash
+     *
+     * @return True.
+     */
+    function revokeStakeRequest(
+        bytes32
+    )
+        external
+        returns (bool)
+    {
+        return true;
+    }
+
 }

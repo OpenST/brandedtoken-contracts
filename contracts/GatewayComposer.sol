@@ -75,9 +75,9 @@ contract GatewayComposer {
      * @notice Contract constructor.
      *
      * @dev Function requires:
-     *          - Owner address should not be null
-     *          - ValueToken address should not be null
-     *          - BrandedToken address should not be null
+     *          - owner address should not be null
+     *          - valueToken address should not be null
+     *          - brandedToken address should not be null
      *
      * @param _owner Address of the staker on the value chain.
      * @param _valueToken EIP20Token which is staked.
@@ -119,9 +119,9 @@ contract GatewayComposer {
      * @dev Function requires:
      *          - stakeVT can't be 0
      *          - mintBT amount and converted stakeVT amount should be equal
-     *          - Gateway address can't be null
-     *          - Beneficiary address can't be null
-     *          - Successful execution of ValueToken transfer
+     *          - gateway address can't be null
+     *          - beneficiary address can't be null
+     *          - successful execution of ValueToken transfer
      *
      *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
      *      amount. This condition also helps in validation of in progress
@@ -206,8 +206,8 @@ contract GatewayComposer {
      *
      *      As per requirement bounty token currency is same as valueToken.
      *      Bounty flow:
-     *          - Facilitator approves GC for base tokens as bounty
-     *          - If bounty is greater than 0, it's transferred to GC
+     *          - facilitator approves GC for base tokens as bounty
+     *          - if bounty is greater than 0, it's transferred to GC
      *          - GC approves Gateway for the bounty
      *
      * @param _stakeRequestHash Unique hash for each stake request.
@@ -230,7 +230,7 @@ contract GatewayComposer {
     {
         StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
         require(
-            stakeRequests[_stakeRequestHash].stakeVT > uint256(0),
+            stakeRequest.stakeVT > uint256(0),
             "Stake request not found."
         );
 
@@ -264,6 +264,40 @@ contract GatewayComposer {
         );
 
         delete stakeRequests[_stakeRequestHash];
+    }
+
+    /**
+     * @notice Revokes stake request by calling BT.revokeStakeRequest() and
+     *         deleting information.
+     *
+     * @dev Function requires:
+     *          - stake request hash is valid
+     *          - BT.revokeStakeRequest() should return true
+     *
+     * @param _stakeRequestHash Stake request hash.
+     *
+     * @return success_ True on successful execution.
+     */
+    function revokeStakeRequest(
+        bytes32 _stakeRequestHash
+    )
+        external
+        onlyOwner
+        returns (bool success_)
+    {
+        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+        require(
+            stakeRequest.stakeVT > uint256(0),
+            "Stake request not found."
+        );
+        require(
+            BrandedToken(brandedToken).revokeStakeRequest(_stakeRequestHash),
+            "BT.revokeStakeRequest() returns false."
+        );
+
+        delete stakeRequests[_stakeRequestHash];
+
+        success_ = true;
     }
 
 }

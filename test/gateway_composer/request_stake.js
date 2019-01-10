@@ -23,6 +23,42 @@ contract('GatewayComposer::requestStake', async (accounts) => {
     describe('Negative Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
+        it('Fails when msg.sender is not owner.', async () => {
+            const {
+                valueToken,
+                gatewayComposer,
+                owner,
+                brandedToken,
+            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
+
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const gateway = accountProvider.get();
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            utils.expectRevert(gatewayComposer.requestStake(
+                0,
+                mintAmount,
+                gateway,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: accountProvider.get() },
+            ),
+            'Should revert because only owner can call requestStake.',
+            'Only owner can call the function.');
+        });
+
         it('Fails when stake amount is 0.', async () => {
             const {
                 valueToken,
@@ -162,6 +198,33 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             ),
             'Should revert because beneficiary address is null.',
             'Beneficiary address is null.');
+        });
+
+        it('Fails when gateway composer is not approved for staked value tokens.', async () => {
+            const {
+                gatewayComposer,
+                owner,
+                brandedToken,
+            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+            const stakeAmount = 1;
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const gateway = accountProvider.get();
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            utils.expectRevert(gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            ),
+            'Should revert because ValueToken.transferFrom() returns false.');
         });
     });
 

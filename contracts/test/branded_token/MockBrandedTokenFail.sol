@@ -105,4 +105,21 @@ contract MockBrandedTokenFail is BrandedToken {
         require(false, "BT.acceptStakeRequest() returns false.");
     }
 
+    /**
+     * @notice Mocks BT.revokeStakeRequest() function.
+     *
+     * @dev It takes below parameters in order:
+     *      - stake request hash
+     *
+     * @return False to replicate failure cases.
+     */
+    function revokeStakeRequest(
+        bytes32
+    )
+        external
+        returns (bool)
+    {
+        return false;
+    }
+
 }
