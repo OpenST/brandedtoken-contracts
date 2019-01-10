@@ -120,8 +120,8 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 hashLock,
                 { from: facilitator },
             ),
-            'Should revert as BT.acceptStakeRequest() returns false.',
-            'BT.acceptStakeRequest() returns false.');
+            'Should revert as BT.acceptStakeRequest() returned false.',
+            'BT.acceptStakeRequest() returned false.');
         });
 
         it('Fails when Gateway.stake() require fails.', async () => {

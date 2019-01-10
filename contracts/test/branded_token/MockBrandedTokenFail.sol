@@ -102,7 +102,7 @@ contract MockBrandedTokenFail is BrandedToken {
         external
         returns (bool)
     {
-        require(false, "BT.acceptStakeRequest() returns false.");
+        require(false, "BT.acceptStakeRequest() returned false.");
     }
 
     /**

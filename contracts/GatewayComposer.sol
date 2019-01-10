@@ -176,7 +176,7 @@ contract GatewayComposer {
         );
         require(
             valueToken.transferFrom(msg.sender, address(this), _stakeVT),
-            "ValueToken.transferFrom() returns false."
+            "ValueToken.transferFrom() returned false."
         );
 
         valueToken.approve(brandedToken, _stakeVT);
@@ -245,7 +245,7 @@ contract GatewayComposer {
                 _s,
                 _v
             ),
-            "BT.acceptStakeRequest() returns false."
+            "BT.acceptStakeRequest() returned false."
         );
 
         uint256 mintBT = BrandedToken(brandedToken).convertToBrandedTokens(
@@ -292,7 +292,7 @@ contract GatewayComposer {
         );
         require(
             BrandedToken(brandedToken).revokeStakeRequest(_stakeRequestHash),
-            "BT.revokeStakeRequest() returns false."
+            "BT.revokeStakeRequest() returned false."
         );
 
         delete stakeRequests[_stakeRequestHash];
