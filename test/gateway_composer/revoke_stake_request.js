@@ -52,7 +52,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             'Stake request not found.');
         });
 
-        it('Fails when BT.revokeStakeRequest() returned false.', async () => {
+        it('Fails when BrandedToken revokeStakeRequest returned false.', async () => {
             const {
                 gatewayComposer,
                 brandedToken,
@@ -103,8 +103,8 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 stakeRequestHash,
                 { from: owner },
             ),
-            'Should revert as BT.revokeStakeRequest() returned false.',
-            'BT.revokeStakeRequest() returned false.');
+            'Should revert as BrandedToken revokeStakeRequest returned false.',
+            'BrandedToken revokeStakeRequest returned false.');
         });
     });
 

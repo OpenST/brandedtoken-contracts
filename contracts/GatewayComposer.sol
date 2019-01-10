@@ -176,7 +176,7 @@ contract GatewayComposer {
         );
         require(
             valueToken.transferFrom(msg.sender, address(this), _stakeVT),
-            "ValueToken.transferFrom() returned false."
+            "ValueToken transferFrom returned false."
         );
 
         valueToken.approve(brandedToken, _stakeVT);
@@ -245,7 +245,7 @@ contract GatewayComposer {
                 _s,
                 _v
             ),
-            "BT.acceptStakeRequest() returned false."
+            "BrandedToken acceptStakeRequest returned false."
         );
 
         uint256 mintBT = BrandedToken(brandedToken).convertToBrandedTokens(
@@ -292,10 +292,81 @@ contract GatewayComposer {
         );
         require(
             BrandedToken(brandedToken).revokeStakeRequest(_stakeRequestHash),
-            "BT.revokeStakeRequest() returned false."
+            "BrandedToken revokeStakeRequest returned false."
         );
 
         delete stakeRequests[_stakeRequestHash];
+
+        success_ = true;
+    }
+
+    /**
+     * @notice Transfers EIP20 token to destination address.
+     *
+     * @dev Function requires:
+     *          - msg.sender should be owner.
+     *          - EIP20 token address should not be null.
+     *          - token.transfer() execution should be successful
+     *
+     * @param _token EIP20 token address.
+     * @param _to Address to which tokens are transferred.
+     * @param _value Amount of tokens to be transferred.
+     *
+     * @return success_ True on successful execution.
+     */
+    function transferToken(
+        EIP20Interface _token,
+        address _to,
+        uint256 _value
+    )
+        external
+        onlyOwner
+        returns (bool success_)
+    {
+        require(
+            address(_token) != address(0),
+            "EIP20 token address is null."
+        );
+        require(
+            _token.transfer(_to, _value),
+            "EIP20Token transfer returned false."
+        );
+
+        success_ = true;
+    }
+
+    /**
+     * @notice Approves EIP20 token to spender address.
+     *
+     * @dev Function requires:
+     *          - msg.sender should be owner
+     *          - EIP20 token address should not be null.
+     *          - token.approve() execution should be successful
+     *
+     * @param _token EIP20T token address.
+     * @param _spender Address authorized to spend from the function caller's
+     *                 address.
+     * @param _value Amount up to which spender is authorized to spend.
+     *
+     * @return success_ True on successful execution.
+     */
+    function approveToken(
+        EIP20Interface _token,
+        address _spender,
+        uint256 _value
+    )
+        external
+        onlyOwner
+        returns (bool success_)
+    {
+        require(
+            address(_token) != address(0),
+            "EIP20 token address is null."
+        );
+        require(
+            _token.approve(_spender, _value),
+            "EIP20token approve returned false."
+        );
 
         success_ = true;
     }

@@ -224,7 +224,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             ),
-            'Should revert because ValueToken.transferFrom() returned false.');
+            'Should revert because ValueToken transferFrom returned false.');
         });
     });
 
