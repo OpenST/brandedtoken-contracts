@@ -15,29 +15,30 @@
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
+
 const brandedTokenUtils = require('./utils');
 
-contract('BrandedToken::requestStake', async () => {
+contract('BrandedToken::rejectStakeRequest', async () => {
     // TODO: add negative tests
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        const staker = accountProvider.get();
-
-        it('Emits StakeRequested event.', async () => {
+        it('Emits StakeRequestRejected', async () => {
             const {
                 brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
+                staker,
+                stake,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
                 accountProvider,
             );
 
-            const stake = 1;
+            const worker = accountProvider.get();
 
-            const transactionResponse = await brandedToken.requestStake(
-                stake,
-                await brandedToken.convertToBrandedTokens(stake),
-                { from: staker },
+            const transactionResponse = await brandedToken.rejectStakeRequest(
+                stakeRequestHash,
+                { from: worker },
             );
 
             const events = Event.decodeTransactionResponse(
@@ -50,13 +51,11 @@ contract('BrandedToken::requestStake', async () => {
             );
 
             Event.assertEqual(events[0], {
-                name: 'StakeRequested',
+                name: 'StakeRequestRejected',
                 args: {
-                    _stakeRequestHash: await brandedToken.stakeRequestHashes(staker),
+                    _stakeRequestHash: stakeRequestHash,
                     _staker: staker,
                     _stake: new BN(stake),
-                    // global nonce is incremented after assignment to a stake request
-                    _nonce: (await brandedToken.nonce()).subn(1),
                 },
             });
         });

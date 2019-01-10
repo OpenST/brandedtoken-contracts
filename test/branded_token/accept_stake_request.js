@@ -21,34 +21,51 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::acceptStakeRequest', async () => {
+    // TODO: add negative tests
+
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Emits StakeRequestAccepted and Transfer events.', async () => {
+        it('Emits StakeRequestAccepted and Transfer events', async () => {
             const {
                 brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(accountProvider);
+                staker,
+                stake,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+            );
 
-            const stakeRequestHash = web3.utils.soliditySha3('test');
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('r');
             const v = 0;
+            const worker = accountProvider.get();
+
             const transactionResponse = await brandedToken.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,
                 v,
+                { from: worker },
             );
 
-            const events = Event.decodeTransactionResponse(transactionResponse);
+            const mint = await brandedToken.convertToBrandedTokens(stake);
 
-            assert.strictEqual(events.length, 2);
+            const events = Event.decodeTransactionResponse(
+                transactionResponse,
+            );
+
+            assert.strictEqual(
+                events.length,
+                2,
+            );
 
             Event.assertEqual(events[0], {
                 name: 'StakeRequestAccepted',
                 args: {
-                    _staker: utils.NULL_ADDRESS,
-                    _stake: new BN(0),
+                    _stakeRequestHash: stakeRequestHash,
+                    _staker: staker,
+                    _stake: new BN(stake),
                 },
             });
 
@@ -56,10 +73,64 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                 name: 'Transfer',
                 args: {
                     _from: utils.NULL_ADDRESS,
-                    _to: utils.NULL_ADDRESS,
-                    _value: new BN(0),
+                    _to: staker,
+                    _value: mint,
                 },
             });
+        });
+    });
+
+    contract('Storage', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Successfully mints branded tokens', async () => {
+            const {
+                brandedToken,
+                staker,
+                stake,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+            );
+
+            const r = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('r');
+            const v = 0;
+            const worker = accountProvider.get();
+
+            assert.isOk(
+                await brandedToken.acceptStakeRequest.call(
+                    stakeRequestHash,
+                    r,
+                    s,
+                    v,
+                    { from: worker },
+                ),
+            );
+
+            await brandedToken.acceptStakeRequest(
+                stakeRequestHash,
+                r,
+                s,
+                v,
+                { from: worker },
+            );
+
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+
+            assert.strictEqual(
+                mint.cmp(
+                    await brandedToken.balanceOf(staker),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                mint.cmp(
+                    await brandedToken.totalSupply(),
+                ),
+                0,
+            );
         });
     });
 });
