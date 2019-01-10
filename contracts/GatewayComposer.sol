@@ -52,7 +52,7 @@ contract GatewayComposer {
     * to create a value-backed token designed specifically for its
     * application's context.
     */
-    BrandedToken public brandedToken;
+    address public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
 
@@ -86,7 +86,7 @@ contract GatewayComposer {
     constructor(
         address _owner,
         EIP20Interface _valueToken,
-        BrandedToken _brandedToken
+        address _brandedToken
     )
         public
     {
@@ -99,7 +99,7 @@ contract GatewayComposer {
             "Value token address is null."
         );
         require(
-            address(_brandedToken) != address(0),
+            _brandedToken != address(0),
             "Branded token address is null."
         );
 
@@ -127,6 +127,10 @@ contract GatewayComposer {
      *      amount. This condition also helps in validation of in progress
      *      stake requests. See acceptStakeRequest for details.
      *
+     *      mintBT is not stored in StakeRequest struct as there was
+     *      significant gas cost difference between storage Vs dynamic
+     *      evaluation from BT convert function.
+     *
      * @param _stakeVT ValueToken amount which is staked.
      * @param _mintBT Amount of BT amount which will be minted.
      * @param _gateway Gateway contract address.
@@ -139,7 +143,6 @@ contract GatewayComposer {
      *
      * @return requestStakeHash_ Hash unique for each stake request.
      */
-    // TODO -ve test cases
     function requestStake(
         uint256 _stakeVT,
         uint256 _mintBT,
@@ -158,7 +161,9 @@ contract GatewayComposer {
             "Stake amount is zero."
         );
         require(
-            _mintBT == brandedToken.convertToBrandedTokens(_stakeVT),
+            _mintBT == BrandedToken(brandedToken).convertToBrandedTokens(
+                _stakeVT
+            ),
             "Minted BT should be equal to converted staked VT."
         );
         require(
@@ -171,12 +176,15 @@ contract GatewayComposer {
         );
         require(
             valueToken.transferFrom(msg.sender, address(this), _stakeVT),
-            "ValueToken.transferFrom returned false."
+            "ValueToken.transferFrom() returns false."
         );
 
-        valueToken.approve(address(brandedToken), _stakeVT);
+        valueToken.approve(brandedToken, _stakeVT);
 
-        requestStakeHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
+        requestStakeHash_ = BrandedToken(brandedToken).requestStake(
+            _stakeVT,
+            _mintBT
+        );
 
         stakeRequests[requestStakeHash_] = StakeRequest({
             stakeVT: _stakeVT,
@@ -196,7 +204,7 @@ contract GatewayComposer {
      *          - stake request hash is valid
      *          - BT.acceptStakeRequest execution is successful
      *
-     *      As per requirement bounty token is same as valueToken.
+     *      As per requirement bounty token currency is same as valueToken.
      *      Bounty flow:
      *          - Facilitator approves GC for base tokens as bounty
      *          - If bounty is greater than 0, it's transferred to GC
@@ -206,12 +214,10 @@ contract GatewayComposer {
      * @param _r R of the signature.
      * @param _s S of the signature.
      * @param _v V of the signature.
-     * @param _hashLock Hash Lock provided by the facilitator.
+     * @param _hashLock Hash lock provided by the facilitator.
      *
      * @return messageHash_ Message hash unique for each stake request.
      */
-    // TODO -ve test cases
-    // TODO Positive test case for bounty
     function acceptStakeRequest(
         bytes32 _stakeRequestHash,
         bytes32 _r,
@@ -229,17 +235,20 @@ contract GatewayComposer {
         );
 
         uint256 bounty = GatewayInterface(stakeRequest.gateway).bounty();
-        if (bounty > 0) {
-            valueToken.transferFrom(msg.sender, address(this), bounty);
-            valueToken.approve(stakeRequest.gateway, bounty);
-        }
+        valueToken.transferFrom(msg.sender, address(this), bounty);
+        valueToken.approve(stakeRequest.gateway, bounty);
 
         require(
-            brandedToken.acceptStakeRequest(_stakeRequestHash, _r, _s, _v),
-            "BT.acceptStakeRequest returned false."
+            BrandedToken(brandedToken).acceptStakeRequest(
+                _stakeRequestHash,
+                _r,
+                _s,
+                _v
+            ),
+            "BT.acceptStakeRequest() returns false."
         );
 
-        uint256 mintBT = brandedToken.convertToBrandedTokens(
+        uint256 mintBT = BrandedToken(brandedToken).convertToBrandedTokens(
             stakeRequest.stakeVT
         );
 

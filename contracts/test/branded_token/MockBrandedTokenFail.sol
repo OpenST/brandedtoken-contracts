@@ -18,11 +18,11 @@ import "./../../BrandedToken.sol";
 
 
 /**
- * @title MockBrandedTokenPass.
+ * @title MockBrandedTokenFail.
  *
- * @notice Supports testing of BrandedToken(BT) successful cases.
+ * @notice Supports testing of BrandedToken(BT) failure cases.
  */
-contract MockBrandedTokenPass is BrandedToken {
+contract MockBrandedTokenFail is BrandedToken {
 
     /* Special Functions */
 
@@ -85,15 +85,13 @@ contract MockBrandedTokenPass is BrandedToken {
     }
 
     /**
-     * @notice Mocks BT acceptStakeRequest function.
+     * @notice Mocks BT acceptStakeRequest function. It fails the execution.
      *
      * @dev It takes below parameters in order:
      *      - stake request hash
      *      - r is the actual signature
      *      - s is the second point on the curve in order to ecrecover
      *      - v selects the final public key
-     *
-     * @return True if execution is successful.
      */
     function acceptStakeRequest(
         bytes32,
@@ -104,7 +102,7 @@ contract MockBrandedTokenPass is BrandedToken {
         external
         returns (bool)
     {
-        return true;
+        require(false, "BT.acceptStakeRequest() returns false.");
     }
 
 }

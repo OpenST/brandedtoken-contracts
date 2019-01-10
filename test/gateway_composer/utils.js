@@ -15,16 +15,19 @@
 const BN = require('bn.js');
 
 const MockBrandedTokenPass = artifacts.require('MockBrandedTokenPass');
+const MockBrandedTokenFail = artifacts.require('MockBrandedTokenFail');
 const GatewayComposer = artifacts.require('GatewayComposer');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const MockGatewayPass = artifacts.require('MockGatewayPass');
+const MockGatewayFail = artifacts.require('MockGatewayFail');
 
-module.exports.setupGatewayComposer = async (accountProvider) => {
-    const symbol = 'Test';
-    const name = 'Test';
-    const decimals = 18;
-    const conversionRate = 1;
-    const conversionRateDecimals = 0;
+const symbol = 'Test';
+const name = 'Test';
+const decimals = 18;
+const conversionRate = 1;
+const conversionRateDecimals = 0;
+
+module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) => {
     const organization = accountProvider.get();
     const owner = accountProvider.get();
     const ownerBalance = new BN(1000);
@@ -43,15 +46,12 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
         0,
     );
 
-    const brandedToken = await MockBrandedTokenPass.new(
-        valueToken.address,
-        symbol,
-        name,
-        decimals,
-        conversionRate,
-        conversionRateDecimals,
-        organization,
-    );
+    let brandedToken;
+    if (useBTPass === true) {
+        brandedToken = await this.setupBrandedTokenPass(valueToken, organization);
+    } else {
+        brandedToken = await this.setupBrandedTokenFail(valueToken, organization);
+    }
 
     const gatewayComposer = await GatewayComposer.new(
         owner,
@@ -64,7 +64,36 @@ module.exports.setupGatewayComposer = async (accountProvider) => {
         brandedToken,
         gatewayComposer,
         owner,
+        organization,
     };
+};
+
+module.exports.setupBrandedTokenPass = async (valueToken, organization) => {
+    const brandedToken = await MockBrandedTokenPass.new(
+        valueToken.address,
+        symbol,
+        name,
+        decimals,
+        conversionRate,
+        conversionRateDecimals,
+        organization,
+    );
+
+    return brandedToken;
+};
+
+module.exports.setupBrandedTokenFail = async (valueToken, organization) => {
+    const brandedToken = await MockBrandedTokenFail.new(
+        valueToken.address,
+        symbol,
+        name,
+        decimals,
+        conversionRate,
+        conversionRateDecimals,
+        organization,
+    );
+
+    return brandedToken;
 };
 
 module.exports.setupGatewayComposerRequestStake = async (valueToken, gatewayComposer, owner) => {
@@ -81,11 +110,20 @@ module.exports.setupGatewayComposerRequestStake = async (valueToken, gatewayComp
     };
 };
 
-module.exports.setupGatewayComposerAcceptStake = async (accountProvider) => {
+module.exports.setupGatewayPass = async (accountProvider) => {
     const mockGatewayPass = await MockGatewayPass.new();
 
     return {
         facilitator: accountProvider.get(),
         gateway: mockGatewayPass,
+    };
+};
+
+module.exports.setupGatewayFail = async (accountProvider) => {
+    const mockGatewayFail = await MockGatewayFail.new();
+
+    return {
+        facilitator: accountProvider.get(),
+        gateway: mockGatewayFail,
     };
 };

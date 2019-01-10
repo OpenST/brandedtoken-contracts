@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const BN = require('bn.js');
 const utils = require('../test_lib/utils');
 const { AccountProvider } = require('../test_lib/utils.js');
 const web3 = require('../test_lib/web3.js');
@@ -29,7 +30,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
 
             const {
                 facilitator,
-            } = await gatewayComposerUtils.setupGatewayComposerAcceptStake(
+            } = await gatewayComposerUtils.setupGatewayPass(
                 accountProvider,
             );
 
@@ -46,7 +47,153 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 v,
                 hashLock,
                 { from: facilitator },
-            ));
+            ),
+            'Should revert as stake request not found.',
+            'Stake request not found.');
+        });
+
+        it('Fails when BT.acceptStakeRequest() require fails.', async () => {
+            const {
+                gatewayComposer,
+                valueToken,
+                brandedToken,
+                owner,
+            } = await gatewayComposerUtils.setupGatewayComposer(
+                accountProvider,
+                false,
+            );
+
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
+
+            const {
+                gateway,
+                facilitator,
+            } = await gatewayComposerUtils.setupGatewayPass(
+                accountProvider,
+            );
+
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            const stakeRequestHash = await gatewayComposer.requestStake.call(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            const transactionResponse = await gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            assert.strictEqual(transactionResponse.receipt.status, true);
+
+            const r = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
+            const v = 0;
+            const hashLock = web3.utils.soliditySha3('hl');
+
+            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+                stakeRequestHash,
+                r,
+                s,
+                v,
+                hashLock,
+                { from: facilitator },
+            ),
+            'Should revert as BT.acceptStakeRequest() returns false.',
+            'BT.acceptStakeRequest() returns false.');
+        });
+
+        it('Fails when Gateway.stake() require fails.', async () => {
+            const {
+                gatewayComposer,
+                valueToken,
+                brandedToken,
+                owner,
+            } = await gatewayComposerUtils.setupGatewayComposer(
+                accountProvider,
+                true,
+            );
+
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
+
+            const {
+                gateway,
+                facilitator,
+            } = await gatewayComposerUtils.setupGatewayFail(
+                accountProvider,
+            );
+
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            const stakeRequestHash = await gatewayComposer.requestStake.call(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            const transactionResponse = await gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            assert.strictEqual(transactionResponse.receipt.status, true);
+
+            const r = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
+            const v = 0;
+            const hashLock = web3.utils.soliditySha3('hl');
+
+            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+                stakeRequestHash,
+                r,
+                s,
+                v,
+                hashLock,
+                { from: facilitator },
+            ),
+            'Should revert as Gateway.stake() execution failed.',
+            'Gateway.stake() execution failed.');
         });
     });
 
@@ -56,8 +203,8 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
         it('Returns message hash.', async () => {
             const {
                 valueToken,
-                brandedToken,
                 gatewayComposer,
+                brandedToken,
                 owner,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
@@ -72,7 +219,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const {
                 gateway,
                 facilitator,
-            } = await gatewayComposerUtils.setupGatewayComposerAcceptStake(
+            } = await gatewayComposerUtils.setupGatewayPass(
                 accountProvider,
             );
 
@@ -129,6 +276,12 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             );
 
             assert.strictEqual(transactionResponse.receipt.status, true);
+
+            // Asserts stakeRequestHash hash been deleted
+            const stakeRequest = await gatewayComposer.stakeRequests.call(
+                stakeRequestHash,
+            );
+            assert.strictEqual(stakeRequest.stakeVT.cmp(new BN(0)), 0);
         });
     });
 });
