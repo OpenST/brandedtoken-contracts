@@ -43,11 +43,13 @@ contract BrandedToken is Organized, EIP20Token {
     );
 
     event StakeRequestAccepted(
+        bytes32 indexed _stakeRequestHash,
         address _staker,
         uint256 _stake
     );
 
     event StakeRequestRevoked(
+        bytes32 indexed _stakeRequestHash,
         address _staker,
         uint256 _stake
     );
@@ -58,6 +60,7 @@ contract BrandedToken is Organized, EIP20Token {
     );
 
     event StakeRequestRejected(
+        bytes32 indexed _stakeRequestHash,
         address _staker,
         uint256 _stake
     );
@@ -277,6 +280,7 @@ contract BrandedToken is Organized, EIP20Token {
         delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestAccepted(
+            _stakeRequestHash,
             stakeRequest.staker,
             stakeRequest.stake
         );
@@ -378,6 +382,7 @@ contract BrandedToken is Organized, EIP20Token {
         delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestRevoked(
+            _stakeRequestHash,
             msg.sender,
             stake
         );
@@ -458,7 +463,11 @@ contract BrandedToken is Organized, EIP20Token {
         delete stakeRequestHashes[stakeRequest.staker];
         delete stakeRequests[_stakeRequestHash];
 
-        emit StakeRequestRejected(stakeRequest.staker, stakeRequest.stake);
+        emit StakeRequestRejected(
+            _stakeRequestHash,
+            stakeRequest.staker,
+            stakeRequest.stake
+        );
 
         require(
             valueToken.transfer(stakeRequest.staker, stakeRequest.stake),

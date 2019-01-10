@@ -53,6 +53,7 @@ contract('BrandedToken::rejectStakeRequest', async () => {
             Event.assertEqual(events[0], {
                 name: 'StakeRequestRejected',
                 args: {
+                    _stakeRequestHash: stakeRequestHash,
                     _staker: staker,
                     _stake: new BN(stake),
                 },
