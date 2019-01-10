@@ -55,7 +55,8 @@ contract('BrandedToken::requestStake', async () => {
                     _stakeRequestHash: await brandedToken.stakeRequestHashes(staker),
                     _staker: staker,
                     _stake: new BN(stake),
-                    _nonce: await brandedToken.nonce(),
+                    // global nonce is incremented after assignment to a stake request
+                    _nonce: (await brandedToken.nonce()).subn(1),
                 },
             });
         });

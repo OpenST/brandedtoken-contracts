@@ -86,7 +86,7 @@ contract BrandedToken is Organized, EIP20Token {
     /** Number of digits to the right of the decimal point in conversionRate. */
     uint8 public conversionRateDecimals;
 
-    /** Global count of stake requests. */
+    /** Global nonce for stake requests. */
     uint256 public nonce;
 
     /** Flag indicating whether restrictions have been lifted for all actors. */
@@ -204,9 +204,6 @@ contract BrandedToken is Organized, EIP20Token {
             "Staker has a stake request hash."
         );
 
-        // TODO: confirm alignment with nonce updating in Gateway
-        nonce += 1;
-
         // TODO: update to calculate stakeRequestHash_ per EIP 712
         stakeRequestHash_ = keccak256(
             abi.encodePacked(
@@ -223,6 +220,8 @@ contract BrandedToken is Organized, EIP20Token {
         });
 
         StakeRequest memory stakeRequest = stakeRequests[stakeRequestHash_];
+
+        nonce += 1;
 
         emit StakeRequested(
             stakeRequestHash_,
