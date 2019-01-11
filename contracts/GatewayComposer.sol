@@ -252,7 +252,7 @@ contract GatewayComposer {
             stakeRequest.stakeVT
         );
 
-        valueToken.approve(stakeRequest.gateway, mintBT);
+        BrandedToken(brandedToken).approve(stakeRequest.gateway, mintBT);
 
         messageHash_ = GatewayInterface(stakeRequest.gateway).stake(
             mintBT,
@@ -273,6 +273,7 @@ contract GatewayComposer {
      * @dev Function requires:
      *          - stake request hash is valid
      *          - BT.revokeStakeRequest() should return true
+     *          - ValueToken.transfer() should return true
      *
      * @param _stakeRequestHash Stake request hash.
      *
@@ -293,6 +294,10 @@ contract GatewayComposer {
         require(
             BrandedToken(brandedToken).revokeStakeRequest(_stakeRequestHash),
             "BrandedToken revokeStakeRequest returned false."
+        );
+        require(
+            valueToken.transfer(owner, stakeRequest.stakeVT),
+            "ValueToken transfer returned false."
         );
 
         delete stakeRequests[_stakeRequestHash];
@@ -343,7 +348,7 @@ contract GatewayComposer {
      *          - EIP20 token address should not be null.
      *          - token.approve() execution should be successful
      *
-     * @param _token EIP20T token address.
+     * @param _token EIP20 token address.
      * @param _spender Address authorized to spend from the function caller's
      *                 address.
      * @param _value Amount up to which spender is authorized to spend.

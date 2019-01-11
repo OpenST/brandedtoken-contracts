@@ -117,6 +117,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 brandedToken,
                 valueToken,
                 owner,
+                ownerValueTokenBalance,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const {
@@ -173,6 +174,12 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             );
             assert.strictEqual(
                 (stakeRequest.stakeVT).cmp(new BN(0)),
+                0,
+            );
+
+            // Asserts owner balance
+            assert.strictEqual(
+                (await valueToken.balanceOf.call(owner)).cmp(ownerValueTokenBalance),
                 0,
             );
         });

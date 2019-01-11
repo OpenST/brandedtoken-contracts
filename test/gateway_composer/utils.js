@@ -30,7 +30,7 @@ const conversionRateDecimals = 0;
 module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) => {
     const organization = accountProvider.get();
     const owner = accountProvider.get();
-    const ownerBalance = new BN(1000);
+    const ownerValueTokenBalance = new BN(1000);
 
     const valueToken = await EIP20TokenMock.new(
         symbol,
@@ -39,10 +39,10 @@ module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) 
         { from: organization },
     );
 
-    await valueToken.setBalance(owner, ownerBalance);
+    await valueToken.setBalance(owner, ownerValueTokenBalance);
 
     assert.strictEqual(
-        (await valueToken.balanceOf.call(owner)).cmp(ownerBalance),
+        (await valueToken.balanceOf.call(owner)).cmp(ownerValueTokenBalance),
         0,
     );
 
@@ -65,6 +65,7 @@ module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) 
         gatewayComposer,
         owner,
         organization,
+        ownerValueTokenBalance,
     };
 };
 
