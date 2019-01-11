@@ -309,8 +309,8 @@ contract GatewayComposer {
      * @notice Transfers EIP20 token to destination address.
      *
      * @dev Function requires:
-     *          - msg.sender should be owner.
-     *          - EIP20 token address should not be null.
+     *          - msg.sender should be owner
+     *          - EIP20 token address should not be null
      *          - token.transfer() execution should be successful
      *
      * @param _token EIP20 token address.
@@ -345,7 +345,7 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - msg.sender should be owner
-     *          - EIP20 token address should not be null.
+     *          - EIP20 token address should not be null
      *          - token.approve() execution should be successful
      *
      * @param _token EIP20 token address.

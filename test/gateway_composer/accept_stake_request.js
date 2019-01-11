@@ -130,10 +130,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 valueToken,
                 brandedToken,
                 owner,
-            } = await gatewayComposerUtils.setupGatewayComposer(
-                accountProvider,
-                true,
-            );
+            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const {
                 stakeAmount,
@@ -262,8 +259,8 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 s,
                 v,
                 hashLock,
+                { from: facilitator },
             );
-
             assert.strictEqual(messageHash, utils.NULL_BYTES32);
 
             transactionResponse = await gatewayComposer.acceptStakeRequest(
@@ -274,14 +271,22 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 hashLock,
                 { from: facilitator },
             );
-
             assert.strictEqual(transactionResponse.receipt.status, true);
 
-            // Asserts stakeRequestHash hash been deleted
+            // Asserts stakeRequestHash hash been deleted.
             const stakeRequest = await gatewayComposer.stakeRequests.call(
                 stakeRequestHash,
             );
             assert.strictEqual(stakeRequest.stakeVT.cmp(new BN(0)), 0);
+
+            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
+            const btStakeRequest = await brandedToken.stakeRequests.call(
+                stakeRequestHash,
+            );
+            assert.strictEqual(
+                btStakeRequest.staker,
+                utils.NULL_ADDRESS,
+            );
         });
     });
 });

@@ -14,12 +14,13 @@
 
 const BN = require('bn.js');
 
-const MockBrandedTokenPass = artifacts.require('MockBrandedTokenPass');
+const BrandedToken = artifacts.require('BrandedToken');
 const MockBrandedTokenFail = artifacts.require('MockBrandedTokenFail');
 const GatewayComposer = artifacts.require('GatewayComposer');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const MockGatewayPass = artifacts.require('MockGatewayPass');
 const MockGatewayFail = artifacts.require('MockGatewayFail');
+const MockOrganization = artifacts.require('OrganizationMockPass');
 
 const symbol = 'Test';
 const name = 'Test';
@@ -28,7 +29,9 @@ const conversionRate = 1;
 const conversionRateDecimals = 0;
 
 module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) => {
-    const organization = accountProvider.get();
+    const organizationClass = await MockOrganization.new();
+    const organization = organizationClass.address;
+    const deployer = accountProvider.get();
     const owner = accountProvider.get();
     const ownerValueTokenBalance = new BN(1000);
 
@@ -36,7 +39,7 @@ module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) 
         symbol,
         name,
         decimals,
-        { from: organization },
+        { from: deployer },
     );
 
     await valueToken.setBalance(owner, ownerValueTokenBalance);
@@ -70,7 +73,7 @@ module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) 
 };
 
 module.exports.setupBrandedTokenPass = async (valueToken, organization) => {
-    const brandedToken = await MockBrandedTokenPass.new(
+    const brandedToken = await BrandedToken.new(
         valueToken.address,
         symbol,
         name,

@@ -264,7 +264,23 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            assert.strictEqual(stakeRequestHash, utils.NULL_BYTES32);
+            await gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
+            const stakeRequest = await brandedToken.stakeRequests.call(stakeRequestHash);
+            assert.strictEqual(
+                stakeRequest.staker,
+                gatewayComposer.address,
+            );
         });
 
         it('Validates storage of state variables.', async () => {
@@ -335,8 +351,16 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 0,
             );
             assert.strictEqual(
-                (stakeRequest.nonce).cmp(new BN(new BN(nonce))),
+                (stakeRequest.nonce).cmp(new BN(nonce)),
                 0,
+            );
+            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
+            const btStakeRequest = await brandedToken.stakeRequests.call(
+                stakeRequestHash,
+            );
+            assert.strictEqual(
+                btStakeRequest.staker,
+                gatewayComposer.address,
             );
         });
     });

@@ -177,10 +177,20 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 0,
             );
 
-            // Asserts owner balance
+            // Asserts owner balance.
             assert.strictEqual(
                 (await valueToken.balanceOf.call(owner)).cmp(ownerValueTokenBalance),
                 0,
+            );
+
+            // Sanity check in brandedToken.
+            // stakeRequestHash information is deleted in BT.
+            const btStakeRequest = await brandedToken.stakeRequests.call(
+                stakeRequestHash,
+            );
+            assert.strictEqual(
+                btStakeRequest.staker,
+                utils.NULL_ADDRESS,
             );
         });
     });
