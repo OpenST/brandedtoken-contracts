@@ -358,9 +358,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );
+            assert.strictEqual(btStakeRequest.staker, gatewayComposer.address);
+
+            // Validate BT valuetoken balance.
+            const btValueTokenBalance = await valueToken.balanceOf.call(brandedToken.address);
             assert.strictEqual(
-                btStakeRequest.staker,
-                gatewayComposer.address,
+                btValueTokenBalance.cmp(new BN(stakeAmount)),
+                0,
             );
         });
     });
