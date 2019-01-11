@@ -283,9 +283,15 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );
+            assert.strictEqual(btStakeRequest.staker, utils.NULL_ADDRESS);
+
+            const gatewayAllowance = await brandedToken.allowance.call(
+                gatewayComposer.address,
+                gateway.address,
+            );
             assert.strictEqual(
-                btStakeRequest.staker,
-                utils.NULL_ADDRESS,
+                gatewayAllowance.cmp(new BN(mintAmount)),
+                0,
             );
         });
     });
