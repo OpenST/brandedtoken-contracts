@@ -267,10 +267,13 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     /* Internal functions. */
 
     /**
-     * @notice Internal function to increases the total token supply.
+     * @notice Internal function to increases the total token supply. Adds
+     *          number of tokens to beneficiary balance and increases the total
+     *          token supply.
      *
-     * @dev Adds number of tokens to beneficiary balance and increases the
-     *      total token supply.
+     * @dev Function requires :-
+     *          - _beneficiary address should not be zero.
+     *          - _amount should be greater than zero.
      *
      * @param _beneficiary Account address for which the balance will be increased.
      * @param _amount Amount of tokens.
@@ -308,10 +311,12 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     }
 
     /**
-     * @notice Internal function to decreases the token supply.
+     * @notice Internal function to decreases the token supply. Decreases the
+     *         token balance from the msg.sender address and decreases the
+     *         total token supply count.
      *
-     * @dev Decreases the token balance from the msg.sender address and
-     *      decreases the total token supply count.
+     * @dev Function requires :-
+     *          - _amount should be greater than zero.
      *
      * @param _amount Amount of tokens.
      *
