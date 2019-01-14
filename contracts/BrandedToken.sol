@@ -65,6 +65,8 @@ contract BrandedToken is Organized, EIP20Token {
         uint256 _stake
     );
 
+    event NameSet(string _name);
+
 
     /* Structs */
 
@@ -472,6 +474,30 @@ contract BrandedToken is Organized, EIP20Token {
             valueToken.transfer(stakeRequest.staker, stakeRequest.stake),
             "ValueToken.transfer returned false."
         );
+
+        return true;
+    }
+
+    /**
+     * @notice Sets name.
+     *
+     * @dev Function requires:
+     *          - msg.sender is a worker
+     *
+     * @param _name The value to which name is set.
+     *
+     * @return success_ True.
+     */
+    function setName(
+        string calldata _name
+    )
+        external
+        onlyWorker
+        returns (bool success_)
+    {
+        tokenName = _name;
+
+        emit NameSet(tokenName);
 
         return true;
     }

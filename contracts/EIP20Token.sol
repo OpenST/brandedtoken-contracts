@@ -30,7 +30,7 @@ contract EIP20Token is EIP20Interface {
 
     /* Storage */
 
-    string private tokenName;
+    string internal tokenName;
     string private tokenSymbol;
     uint8  private tokenDecimals;
     uint256 internal totalTokenSupply;
