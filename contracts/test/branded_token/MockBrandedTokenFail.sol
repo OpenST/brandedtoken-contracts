@@ -65,7 +65,7 @@ contract MockBrandedTokenFail is BrandedToken {
     /* External Functions */
 
     /**
-     * @notice Mocks BT requestStake function.
+     * @notice Mocks BrandedToken requestStake function.
      *
      * @dev It takes below parameters in order:
      *      - amount to stake
@@ -85,7 +85,7 @@ contract MockBrandedTokenFail is BrandedToken {
     }
 
     /**
-     * @notice Mocks BT acceptStakeRequest function. It fails the execution.
+     * @notice Mocks BrandedToken acceptStakeRequest function. It fails the execution.
      *
      * @dev It takes below parameters in order:
      *      - stake request hash
@@ -106,7 +106,7 @@ contract MockBrandedTokenFail is BrandedToken {
     }
 
     /**
-     * @notice Mocks BT.revokeStakeRequest() function.
+     * @notice Mocks BrandedToken.revokeStakeRequest() function.
      *
      * @dev It takes below parameters in order:
      *      - stake request hash

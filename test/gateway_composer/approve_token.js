@@ -22,7 +22,7 @@ contract('GatewayComposer::approveToken', async (accounts) => {
     describe('Negative Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Should fail when owner is not the caller.', async () => {
+        it('Fails when owner is not the caller.', async () => {
             const {
                 gatewayComposer,
                 valueToken,
@@ -55,7 +55,7 @@ contract('GatewayComposer::approveToken', async (accounts) => {
                 { from: owner },
             ),
             'Should revert as token address is null.',
-            'EIP20 token address is null.');
+            'EIP20 token address is zero.');
         });
     });
 
@@ -70,7 +70,7 @@ contract('GatewayComposer::approveToken', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const amount = new BN(10);
-            // Set GC address balance.
+            // Set GatewayComposer address balance.
             await valueToken.setBalance(gatewayComposer.address, amount);
             const to = accountProvider.get();
             const executionStatus = await gatewayComposer.approveToken.call(
@@ -90,17 +90,15 @@ contract('GatewayComposer::approveToken', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const amount = new BN(10);
-            // Set GC address balance.
+            // Set GatewayComposer address balance.
             await valueToken.setBalance(gatewayComposer.address, amount);
             const to = accountProvider.get();
-            const transactionResponse = await gatewayComposer.approveToken(
+            await gatewayComposer.approveToken(
                 valueToken.address,
                 to,
                 amount,
                 { from: owner },
             );
-
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const toAllowanceAfter = await valueToken.allowance.call(
                 gatewayComposer.address,

@@ -44,7 +44,7 @@ contract TestGatewayComposer {
     /* External Functions */
 
     /**
-     * @notice Mocks GC requestStake method.
+     * @notice Mocks GatewayComposer requestStake method.
      *
      * @dev It takes below parameters in order:
      *      - stakeVT amount
@@ -74,7 +74,7 @@ contract TestGatewayComposer {
     }
 
     /**
-     * @notice Mocks GC acceptStakeRequest method.
+     * @notice Mocks GatewayComposer acceptStakeRequest method.
      *
      * @dev It takes below parameters in order:
      *      - stake request hash

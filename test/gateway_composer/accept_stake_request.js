@@ -23,7 +23,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
     describe('Negative Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Fails when requestHash is invalid.', async () => {
+        it('Fails when stake request is not found.', async () => {
             const {
                 gatewayComposer,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
@@ -52,7 +52,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             'Stake request not found.');
         });
 
-        it('Fails when BT.acceptStakeRequest() require fails.', async () => {
+        it('Fails when BrandedToken.acceptStakeRequest() fails.', async () => {
             const {
                 gatewayComposer,
                 valueToken,
@@ -65,7 +65,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -94,7 +94,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 { from: owner },
             );
 
-            const transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway.address,
@@ -104,8 +104,6 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('s');
@@ -134,7 +132,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -163,7 +161,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 { from: owner },
             );
 
-            const transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway.address,
@@ -173,8 +171,6 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('s');
@@ -207,7 +203,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -236,7 +232,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 { from: owner },
             );
 
-            let transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway.address,
@@ -246,8 +242,6 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const r = web3.utils.soliditySha3('r');
             const s = web3.utils.soliditySha3('s');
@@ -263,7 +257,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             );
             assert.strictEqual(messageHash, utils.NULL_BYTES32);
 
-            transactionResponse = await gatewayComposer.acceptStakeRequest(
+            await gatewayComposer.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,
@@ -271,7 +265,6 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
                 hashLock,
                 { from: facilitator },
             );
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             // Asserts stakeRequestHash hash been deleted.
             const stakeRequest = await gatewayComposer.stakeRequests.call(
@@ -279,7 +272,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             );
             assert.strictEqual(stakeRequest.stakeVT.cmp(new BN(0)), 0);
 
-            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
+            // Validated that stakeRequestHash is present in BrandedToken.stakeRequestHashes
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );

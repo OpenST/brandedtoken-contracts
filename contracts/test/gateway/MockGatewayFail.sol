@@ -22,14 +22,6 @@ pragma solidity ^0.5.0;
  */
 contract MockGatewayFail {
 
-
-    /* Special Functions */
-
-    constructor()
-        public
-    {}
-
-
     /* External Functions */
 
     /**
