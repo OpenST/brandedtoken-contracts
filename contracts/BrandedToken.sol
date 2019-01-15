@@ -96,6 +96,24 @@ contract BrandedToken is Organized, EIP20Token {
     /** Flag indicating whether restrictions have been lifted for all actors. */
     bool public allRestrictionsLifted;
 
+    /** Domain separator encoding per EIP 712. */
+    bytes32 public constant EIP712_DOMAIN_TYPEHASH = keccak256(
+        "EIP712Domain(address verifyingContract)"
+    );
+
+    /** StakeRequest struct type encoding per EIP 712. */
+    bytes32 public constant BT_STAKE_REQUEST_TYPEHASH = keccak256(
+        "StakeRequest(address staker,uint256 stake,uint256 nonce)"
+    );
+
+    /** Domain separator per EIP 712. */
+    bytes32 public DOMAIN_SEPARATOR = keccak256(
+        abi.encode(
+            EIP712_DOMAIN_TYPEHASH,
+            this
+        )
+    );
+
     /** Maps staker to stakeRequestHashes. */
     mapping(address => bytes32) public stakeRequestHashes;
 

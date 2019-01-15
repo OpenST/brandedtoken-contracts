@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 const BN = require('bn.js');
-const utils = require('../test_lib/utils.js');
 const { AccountProvider } = require('../test_lib/utils.js');
+
+const web3 = require('../test_lib/web3.js');
+const utils = require('../test_lib/utils');
+const brandedTokenUtils = require('./utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
 
@@ -108,6 +110,42 @@ contract('BrandedToken::constructor', async () => {
                     new BN(conversionRateDecimals),
                 ),
                 0,
+            );
+        });
+
+        it('Calculates EIP 712 type hashes and separator per specification', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const EIP712_DOMAIN_TYPEHASH = web3.utils.soliditySha3(
+                'EIP712Domain(address verifyingContract)',
+            );
+            const BT_STAKE_REQUEST_TYPEHASH = web3.utils.soliditySha3(
+                'StakeRequest(address staker,uint256 stake,uint256 nonce)',
+            );
+            const DOMAIN_SEPARATOR = web3.utils.soliditySha3(
+                web3.eth.abi.encodeParameters(
+                    ['bytes32', 'address'],
+                    [EIP712_DOMAIN_TYPEHASH, brandedToken.address],
+                ),
+            );
+
+            assert.strictEqual(
+                EIP712_DOMAIN_TYPEHASH,
+                await brandedToken.EIP712_DOMAIN_TYPEHASH(),
+            );
+
+            assert.strictEqual(
+                DOMAIN_SEPARATOR,
+                await brandedToken.DOMAIN_SEPARATOR(),
+            );
+
+            assert.strictEqual(
+                BT_STAKE_REQUEST_TYPEHASH,
+                await brandedToken.BT_STAKE_REQUEST_TYPEHASH(),
             );
         });
     });
