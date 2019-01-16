@@ -283,15 +283,13 @@ contract BrandedToken is Organized, EIP20Token {
             stakeRequests[_stakeRequestHash].staker != address(0),
             "Stake request not found."
         );
+
+        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+
         require(
-            organization.isWorker(ecrecover(_stakeRequestHash, _v, _r, _s)),
+            verifySigner(stakeRequest, _r, _s, _v),
             "Signer is not a worker."
         );
-
-        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
-
-        delete stakeRequestHashes[stakeRequest.staker];
-        delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestAccepted(
             _stakeRequestHash,
@@ -306,6 +304,9 @@ contract BrandedToken is Organized, EIP20Token {
 
         // Mint branded tokens
         emit Transfer(address(0), stakeRequest.staker, mint);
+
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
 
         return true;
     }
@@ -636,7 +637,7 @@ contract BrandedToken is Organized, EIP20Token {
     }
 
 
-    /* Internal Functions */
+    /* Private Functions */
 
     /**
      * @notice Calculates stakeRequestHash according to EIP 712.
@@ -660,5 +661,48 @@ contract BrandedToken is Organized, EIP20Token {
                 _stakeRequest.nonce
             )
         );
+    }
+
+    /**
+     * @notice Verifies whether signer of stakeRequestHash is a worker.
+     *
+     * @dev Signing the stakeRequestHash consistent with eth_signTypedData,
+     *      as specified by EIP 712, requires signing a hash of encoded data
+     *      comprising:
+     *          - an initial byte
+     *          - the version byte for structured data
+     *          - the domain separator
+     *          - the stakeRequestHash
+     *
+     *      See: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md
+     *
+     * @param _stakeRequest Stake request.
+     * @param _r R of the signature.
+     * @param _s S of the signature.
+     * @param _v V of the signature.
+     *
+     * @return bool True if signer is a worker, false if not.
+     */
+    function verifySigner(
+        StakeRequest storage _stakeRequest,
+        bytes32 _r,
+        bytes32 _s,
+        uint8 _v
+    )
+        private
+        view
+        returns (bool)
+    {
+        // See: https://github.com/ethereum/EIPs/blob/master/assets/eip-712/Example.sol
+        bytes32 typedData = keccak256(
+            abi.encodePacked(
+                byte(0x19), // the initial 0x19 byte
+                byte(0x01), // the version byte for structured data
+                DOMAIN_SEPARATOR,
+                hash(_stakeRequest)
+            )
+        );
+
+        return organization.isWorker(ecrecover(typedData, _v, _r, _s));
     }
 }

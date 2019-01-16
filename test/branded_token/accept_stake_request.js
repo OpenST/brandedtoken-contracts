@@ -13,12 +13,17 @@
 // limitations under the License.
 
 const BN = require('bn.js');
+const EthUtils = require('ethereumjs-util');
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
 
 const web3 = require('../test_lib/web3.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
+
+const BrandedToken = artifacts.require('BrandedToken');
+const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
+const OrganizationMockWorker = artifacts.require('OrganizationMockWorker');
 
 contract('BrandedToken::acceptStakeRequest', async () => {
     // TODO: add negative tests
@@ -37,7 +42,7 @@ contract('BrandedToken::acceptStakeRequest', async () => {
             );
 
             const r = web3.utils.soliditySha3('r');
-            const s = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
             const v = 0;
             const worker = accountProvider.get();
 
@@ -94,8 +99,9 @@ contract('BrandedToken::acceptStakeRequest', async () => {
             );
 
             const r = web3.utils.soliditySha3('r');
-            const s = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
             const v = 0;
+            // N.B.: anyone can call acceptStakeRequest
             const worker = accountProvider.get();
 
             assert.isOk(
@@ -130,6 +136,87 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                     await brandedToken.totalSupply(),
                 ),
                 0,
+            );
+        });
+
+        it('Verifies stake request hash signer', async () => {
+            // Setup organization
+            const organization = await OrganizationMockWorker.new();
+            const worker = accountProvider.get();
+
+            await organization.setWorker(worker, 0);
+
+            // Setup brandedToken
+            const brandedToken = await BrandedToken.new(
+                (await EIP20TokenMockPass.new()).address,
+                'BT',
+                'BrandedToken',
+                18,
+                35,
+                1,
+                organization.address,
+            );
+
+            // Request stake
+            const stake = 1;
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+            const staker = accountProvider.get();
+
+            await brandedToken.requestStake(
+                stake,
+                mint,
+                { from: staker },
+            );
+
+            const DOMAIN_SEPARATOR = await brandedToken.DOMAIN_SEPARATOR();
+            const stakeRequestHash = await brandedToken.stakeRequestHashes(staker);
+
+            // Prepare and sign typed data, for example see:
+            //      https://github.com/ethereum/EIPs/blob/master/assets/eip-712/Example.js
+            // N.B.: below differs from the example due to sha3's deprecation. See:
+            //      https://github.com/ethereumjs/ethereumjs-util/blob/master/CHANGELOG.md#600---2018-10-08
+            const typedDataToSign = EthUtils.keccak(
+                Buffer.concat(
+                    [
+                        Buffer.from('19', 'hex'),
+                        Buffer.from('01', 'hex'),
+                        EthUtils.toBuffer(DOMAIN_SEPARATOR),
+                        EthUtils.toBuffer(stakeRequestHash),
+                    ],
+                ),
+            );
+            const privateKey = EthUtils.keccak('signer');
+            const signer = EthUtils.privateToAddress(privateKey);
+            const signature = EthUtils.ecsign(
+                typedDataToSign,
+                privateKey,
+            );
+
+            // Set signer as a worker
+            await organization.setWorker(EthUtils.bufferToHex(signer), 0);
+
+            // Fails with incorrect signature components
+            await utils.expectRevert(
+                brandedToken.acceptStakeRequest(
+                    stakeRequestHash,
+                    signature.r, // correct
+                    signature.s, // correct
+                    0, // incorrect
+                    { from: worker },
+                ),
+                'Should revert as signer is not a worker.',
+                'Signer is not a worker.',
+            );
+
+            // Passes with correct signature components
+            assert.isOk(
+                await brandedToken.acceptStakeRequest.call(
+                    stakeRequestHash,
+                    signature.r,
+                    signature.s,
+                    signature.v,
+                    { from: worker },
+                ),
             );
         });
     });

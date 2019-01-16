@@ -94,7 +94,7 @@ module.exports.setupBrandedTokenAndAcceptedStakeRequest = async (accountProvider
     );
 
     const r = web3.utils.soliditySha3('r');
-    const s = web3.utils.soliditySha3('r');
+    const s = web3.utils.soliditySha3('s');
     const v = 0;
     const worker = accountProvider.get();
 
