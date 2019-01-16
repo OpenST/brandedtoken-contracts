@@ -390,14 +390,13 @@ contract GatewayComposer {
      *          - BrandedToken balance should be 0
      *          - There should not be any in progress stake requests
      *
-     * @return success_ True on successful execution.
+     *      BrandedToken contract has mapping stakeRequestHashes which stores
+     *      staker vs stakeRequestHash data. In progress stake requests are
+     *      validated by doing lookup into the stakeRequestHashes mapping.
      */
-    // TODO brandedToken.stakeRequestHashes is it the correct check for
-    // ongoing stakes? GatewayComposer can directly call Gateway.stake also
     function destroy()
         external
         onlyOwner
-        returns (bool success_)
     {
         require(
             valueToken.balanceOf(address(this)) == 0,
@@ -407,10 +406,12 @@ contract GatewayComposer {
             brandedToken.balanceOf(address(this)) == 0,
             "BrandedToken balance should be 0."
         );
+        require(
+            brandedToken.stakeRequestHashes(address(this)) == bytes32(0),
+            "In progress stake requests are present."
+        );
 
         selfdestruct(msg.sender);
-
-        success_ = true;
     }
 
 }
