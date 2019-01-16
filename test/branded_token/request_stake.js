@@ -15,6 +15,8 @@
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
+
+const web3 = require('../test_lib/web3.js');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::requestStake', async () => {
@@ -23,7 +25,6 @@ contract('BrandedToken::requestStake', async () => {
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
 
-        const staker = accountProvider.get();
 
         it('Emits StakeRequested event.', async () => {
             const {
@@ -33,10 +34,12 @@ contract('BrandedToken::requestStake', async () => {
             );
 
             const stake = 1;
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+            const staker = accountProvider.get();
 
             const transactionResponse = await brandedToken.requestStake(
                 stake,
-                await brandedToken.convertToBrandedTokens(stake),
+                mint,
                 { from: staker },
             );
 
@@ -62,5 +65,93 @@ contract('BrandedToken::requestStake', async () => {
         });
     });
 
-    // TODO: add storage tests
+    contract('Storage', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Successfully stores stake request data', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const stake = 1;
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+            const staker = accountProvider.get();
+
+            const stakeRequestHash = await brandedToken.requestStake.call(
+                stake,
+                mint,
+                { from: staker },
+            );
+
+            await brandedToken.requestStake(
+                stake,
+                mint,
+                { from: staker },
+            );
+
+            assert.strictEqual(
+                stakeRequestHash,
+                await brandedToken.stakeRequestHashes(staker),
+            );
+
+            const stakeRequest = await brandedToken.stakeRequests(stakeRequestHash);
+
+            assert.strictEqual(
+                stakeRequest.staker,
+                staker,
+            );
+
+            assert.strictEqual(
+                stakeRequest.stake.cmp(
+                    new BN(stake),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                stakeRequest.nonce.cmp(
+                    // global nonce is incremented after assignment to a stake request
+                    (await brandedToken.nonce()).subn(1),
+                ),
+                0,
+            );
+        });
+
+        it('Calculates stakeRequestHash per EIP 712', async () => {
+            const {
+                brandedToken,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+            );
+
+            const BT_STAKE_REQUEST_TYPEHASH = web3.utils.soliditySha3(
+                'StakeRequest(address staker,uint256 stake,uint256 nonce)',
+            );
+            const stakeRequest = await brandedToken.stakeRequests(stakeRequestHash);
+            const calculatedHash = web3.utils.soliditySha3(
+                web3.eth.abi.encodeParameters(
+                    [
+                        'bytes32',
+                        'address',
+                        'uint256',
+                        'uint256',
+                    ],
+                    [
+                        BT_STAKE_REQUEST_TYPEHASH,
+                        stakeRequest.staker,
+                        stakeRequest.stake.toNumber(),
+                        stakeRequest.nonce.toNumber(),
+                    ],
+                ),
+            );
+
+            assert.strictEqual(
+                calculatedHash,
+                stakeRequestHash,
+            );
+        });
+    });
 });

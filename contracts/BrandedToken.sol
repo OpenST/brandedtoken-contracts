@@ -226,22 +226,15 @@ contract BrandedToken is Organized, EIP20Token {
             "Staker has a stake request hash."
         );
 
-        // TODO: update to calculate stakeRequestHash_ per EIP 712
-        stakeRequestHash_ = keccak256(
-            abi.encodePacked(
-                "stakeRequestHash_",
-                nonce
-            )
-        );
-        stakeRequestHashes[msg.sender] = stakeRequestHash_;
-
-        stakeRequests[stakeRequestHash_] = StakeRequest({
+        StakeRequest memory stakeRequest = StakeRequest({
             staker: msg.sender,
             stake: _stake,
             nonce: nonce
         });
-
-        StakeRequest memory stakeRequest = stakeRequests[stakeRequestHash_];
+        // Calculates hash per EIP 712
+        stakeRequestHash_ = hash(stakeRequest);
+        stakeRequestHashes[msg.sender] = stakeRequestHash_;
+        stakeRequests[stakeRequestHash_] = stakeRequest;
 
         nonce += 1;
 
@@ -639,6 +632,33 @@ contract BrandedToken is Organized, EIP20Token {
             _brandedTokens
             .mul(10 ** uint256(conversionRateDecimals))
             .div(conversionRate)
+        );
+    }
+
+
+    /* Internal Functions */
+
+    /**
+     * @notice Calculates stakeRequestHash according to EIP 712.
+     *
+     * @param _stakeRequest StakeRequest instance to hash.
+     *
+     * @return bytes32 EIP 712 hash of _stakeRequest.
+     */
+    function hash(
+        StakeRequest memory _stakeRequest
+    )
+        private
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                BT_STAKE_REQUEST_TYPEHASH,
+                _stakeRequest.staker,
+                _stakeRequest.stake,
+                _stakeRequest.nonce
+            )
         );
     }
 }
