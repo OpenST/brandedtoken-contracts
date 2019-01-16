@@ -126,7 +126,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             ),
-            'Should revert because minted BrandedToken is not equal to converted staked VT.',
+            'Should revert because minted BrandedToken is not equal to '
+             + 'converted staked VT.',
             'Minted BrandedToken should be equal to converted staked VT.');
         });
 
@@ -270,8 +271,10 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             );
 
-            // Validated that stakeRequestHash is present in BrandedToken.stakeRequestHashes
-            const stakeRequest = await brandedToken.stakeRequests.call(stakeRequestHash);
+            // Validated that stakeRequestHash is present in
+            // BrandedToken.stakeRequestHashes
+            const stakeRequest = await brandedToken.stakeRequests
+                .call(stakeRequestHash);
             assert.strictEqual(
                 stakeRequest.staker,
                 gatewayComposer.address,
@@ -317,7 +320,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             );
 
-            const stakeRequest = await gatewayComposer.stakeRequests.call(stakeRequestHash);
+            const stakeRequest = await gatewayComposer.stakeRequests
+                .call(stakeRequestHash);
             assert.strictEqual(
                 (stakeRequest.stakeVT).cmp(new BN(stakeAmount)),
                 0,
@@ -349,7 +353,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             assert.strictEqual(btStakeRequest.staker, gatewayComposer.address);
 
             // Validate BrandedToken valuetoken balance.
-            const btValueTokenBalance = await valueToken.balanceOf.call(brandedToken.address);
+            const btValueTokenBalance = await valueToken.balanceOf
+                .call(brandedToken.address);
             assert.strictEqual(
                 btValueTokenBalance.cmp(new BN(stakeAmount)),
                 0,

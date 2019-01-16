@@ -272,7 +272,8 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             );
             assert.strictEqual(stakeRequest.stakeVT.cmp(new BN(0)), 0);
 
-            // Validated that stakeRequestHash is present in BrandedToken.stakeRequestHashes
+            // Validated that stakeRequestHash is present in
+            // BrandedToken.stakeRequestHashes
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );

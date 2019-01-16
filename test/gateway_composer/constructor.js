@@ -125,7 +125,10 @@ contract('GatewayComposer::constructor', async (accounts) => {
 
             assert.strictEqual(await gatewayComposer.owner.call(), owner);
             assert.strictEqual(await gatewayComposer.valueToken.call(), valueToken);
-            assert.strictEqual(await gatewayComposer.brandedToken.call(), brandedToken.address);
+            assert.strictEqual(
+                await gatewayComposer.brandedToken.call(),
+                brandedToken.address,
+            );
         });
     });
 });

@@ -117,8 +117,8 @@ contract GatewayComposer {
 
     /**
      * @notice Transfers value tokens from msg.sender to itself after staker
-     *         approves GatewayComposer, approves BrandedToken for value tokens and calls
-     *         BrandedToken.requestStake function.
+     *         approves GatewayComposer, approves BrandedToken for value tokens
+     *         and calls BrandedToken.requestStake function.
      *
      * @dev Function requires:
      *          - stakeVT can't be 0
