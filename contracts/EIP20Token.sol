@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -30,8 +30,8 @@ contract EIP20Token is EIP20Interface {
 
     /* Storage */
 
-    string private tokenName;
-    string private tokenSymbol;
+    string internal tokenName;
+    string internal tokenSymbol;
     uint8  private tokenDecimals;
     uint256 internal totalTokenSupply;
 
@@ -48,11 +48,16 @@ contract EIP20Token is EIP20Interface {
      *  @param _name Name of the token.
      *  @param _decimals Decimal places of the token.
      */
-    constructor(string _symbol, string _name, uint8 _decimals) public
+    constructor(
+        string memory _symbol,
+        string memory _name,
+        uint8 _decimals
+    )
+        public
     {
-        tokenSymbol      = _symbol;
-        tokenName        = _name;
-        tokenDecimals    = _decimals;
+        tokenSymbol = _symbol;
+        tokenName = _name;
+        tokenDecimals = _decimals;
         totalTokenSupply = 0;
     }
 
@@ -64,7 +69,7 @@ contract EIP20Token is EIP20Interface {
      *
      *  @return Name of the token.
      */
-    function name() public view returns (string) {
+    function name() public view returns (string memory) {
         return tokenName;
     }
 
@@ -73,7 +78,7 @@ contract EIP20Token is EIP20Interface {
      *
      *  @return Symbol of the token.
      */
-    function symbol() public view returns (string) {
+    function symbol() public view returns (string memory) {
         return tokenSymbol;
     }
 

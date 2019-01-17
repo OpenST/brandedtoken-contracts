@@ -1,6 +1,7 @@
 pragma solidity ^0.5.0;
 
-// Copyright 2018 OpenST Ltd.
+
+// Copyright 2019 OpenST Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,38 +17,37 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title MockCoGateway contract.
+ *  @title Mock Organization Fail.
  *
- *  @notice It contains utility token address.
+ *  @notice Mocks Organization functions as failing.
  */
-contract MockCoGateway {
+contract OrganizationMockFail {
 
-
-    /* Storage */
-
-    /** Address of utilityToken */
-    address private token;
-
-
-    /* Special functions */
-
-    constructor(address _token) public {
-
-        token = _token;
-
-    }
-
-
-    /* Public methods */
+    /* External Functions */
 
     /**
-     * @notice Get the utility token address.
+     * @notice Mocks failing isOrganization.
      *
-     * @return Address of utility token.
+     * @return bool False.
      */
-    function utilityToken() public view returns (address)
+    function isOrganization(address)
+        external
+        pure
+        returns (bool)
     {
-        return token;
+        return false;
     }
 
+    /**
+     * @notice Mocks failing isWorker.
+     *
+     * @return bool False.
+     */
+    function isWorker(address)
+        external
+        pure
+        returns (bool)
+    {
+        return false;
+    }
 }

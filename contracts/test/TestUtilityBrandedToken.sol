@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // Copyright 2018 OpenST Ltd.
 //
@@ -46,8 +46,8 @@ contract TestUtilityBrandedToken is UtilityBrandedToken {
      */
     constructor(
         EIP20Interface _token,
-        string _symbol,
-        string _name,
+        string memory _symbol,
+        string memory _name,
         uint8 _decimals,
         OrganizationInterface _organization
     )
