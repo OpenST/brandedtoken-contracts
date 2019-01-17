@@ -17,18 +17,21 @@ const web3 = require('../test_lib/web3.js');
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 const OrganizationMockPass = artifacts.require('OrganizationMockPass');
+const OrganizationMockFail = artifacts.require('OrganizationMockFail');
 
 /**
  * Sets up a BrandedToken.
  */
-module.exports.setupBrandedToken = async () => {
+module.exports.setupBrandedToken = async (accountProvider, useOrganizationMockPass = true) => {
     const valueToken = await EIP20TokenMockPass.new();
-    const symbol = 'BrandedToken';
-    const name = 'BT';
+    const symbol = 'BT';
+    const name = 'BrandedToken';
     const decimals = 18;
     const conversionRate = 35;
     const conversionRateDecimals = 1;
-    const organization = await OrganizationMockPass.new();
+    const organization = await (
+        useOrganizationMockPass ? OrganizationMockPass.new() : OrganizationMockFail.new()
+    );
 
     const brandedToken = await BrandedToken.new(
         valueToken.address,

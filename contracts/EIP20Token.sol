@@ -30,8 +30,8 @@ contract EIP20Token is EIP20Interface {
 
     /* Storage */
 
-    string private tokenName;
-    string private tokenSymbol;
+    string internal tokenName;
+    string internal tokenSymbol;
     uint8  private tokenDecimals;
     uint256 internal totalTokenSupply;
 
@@ -48,11 +48,16 @@ contract EIP20Token is EIP20Interface {
      *  @param _name Name of the token.
      *  @param _decimals Decimal places of the token.
      */
-    constructor(string memory _symbol, string memory _name, uint8 _decimals) public
+    constructor(
+        string memory _symbol,
+        string memory _name,
+        uint8 _decimals
+    )
+        public
     {
-        tokenSymbol      = _symbol;
-        tokenName        = _name;
-        tokenDecimals    = _decimals;
+        tokenSymbol = _symbol;
+        tokenName = _name;
+        tokenDecimals = _decimals;
         totalTokenSupply = 0;
     }
 
