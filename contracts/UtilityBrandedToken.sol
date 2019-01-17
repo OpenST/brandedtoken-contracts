@@ -103,7 +103,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      *         and _amount should not be zero. This check is added in function
      *         increaseSupplyInternal.
      *
-     * @dev Function requires it should only be called by coGateway address.
+     * @dev Function requires:
+     *          - it should only be called by coGateway address
      *
      * @param _beneficiary Account address for which the balance will be increased.
      * @param _amount Amount of tokens.
@@ -129,9 +130,9 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @notice Sets the CoGateway contract address.
      *
      * @dev Function requires:
-     *          - Caller must be a whitelisted worker.
-     *          - coGateway is required to be address(0).
-     *          - coGateway.utilityToken must be equal to this contract address.
+     *          - Caller must be a whitelisted worker
+     *          - coGateway is required to be address(0)
+     *          - coGateway.utilityToken must be equal to this contract address
      *
      * @param _coGateway CoGateway contract address.
      */
@@ -167,7 +168,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @notice Decreases the token supply.The parameters _amount should not be
      *         zero. This check is added in function decreaseSupplyInternal.
      *
-     * @dev Function requires it should only be called by coGateway address.
+     * @dev Function requires:
+     *         - it should only be called by coGateway address
      *
      * @param _amount Amount of tokens.
      *
@@ -189,7 +191,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     /**
      * @notice Public function transfer.
      *
-     * @dev Function requires that _to address is an internal actor.
+     * @dev Function requires:
+     *         - _to address is an internal actor
      *
      * @param _to Address to which BT needs to transfer.
      * @param _value Number of BTs that needs to transfer.
@@ -214,7 +217,8 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     /**
      * @notice Public function transferFrom.
      *
-     * @dev Function requires that _to address is an internal actor.
+     * @dev Function requires:
+     *         - _to address is an internal actor
      *
      * @param _from Address from which BT needs to transfer.
      * @param _to Address to which BT needs to transfer.
@@ -267,10 +271,13 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     /* Internal functions. */
 
     /**
-     * @notice Internal function to increases the total token supply.
+     * @notice Internal function to increases the total token supply. Adds
+     *          number of tokens to beneficiary balance and increases the total
+     *          token supply.
      *
-     * @dev Adds number of tokens to beneficiary balance and increases the
-     *      total token supply.
+     * @dev Function requires:
+     *          - _beneficiary address should not be zero
+     *          - _amount should be greater than zero
      *
      * @param _beneficiary Account address for which the balance will be increased.
      * @param _amount Amount of tokens.
@@ -308,10 +315,12 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     }
 
     /**
-     * @notice Internal function to decreases the token supply.
+     * @notice Internal function to decreases the token supply. Decreases the
+     *         token balance from the msg.sender address and decreases the
+     *         total token supply count.
      *
-     * @dev Decreases the token balance from the msg.sender address and
-     *      decreases the total token supply count.
+     * @dev Function requires:
+     *          - _amount should be greater than zero
      *
      * @param _amount Amount of tokens.
      *
