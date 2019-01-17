@@ -128,6 +128,7 @@ contract BrandedToken is Organized, EIP20Token {
      *      Constructor requires:
      *          - valueToken address is not zero
      *          - conversionRate is not zero
+     *          - conversionRateDecimals is not greater than 5
      *
      * @param _valueToken The value to which valueToken is set.
      * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
@@ -162,6 +163,10 @@ contract BrandedToken is Organized, EIP20Token {
         require(
             _conversionRate != 0,
             "ConversionRate is zero."
+        );
+        require(
+            _conversionRateDecimals <= 5,
+            "ConversionRateDecimals is greater than 5."
         );
 
         valueToken = _valueToken;
