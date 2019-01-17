@@ -17,18 +17,18 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title Mock EIP20 Token Pass.
+ *  @title Mock EIP20 Token Fail.
  *
- *  @notice Mocks EIP20 token functions as passing.
+ *  @notice Mocks EIP20 token functions as failing.
  */
-contract EIP20TokenMockPass {
+contract EIP20TokenMockFail {
 
     /* External Functions */
 
     /**
-     * @notice Mocks passing transferFrom.
+     * @notice Mocks failing transferFrom.
      *
-     * @return bool True.
+     * @return bool False.
      */
     function transferFrom(
         address,
@@ -39,13 +39,13 @@ contract EIP20TokenMockPass {
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 
     /**
-     * @notice Mocks passing transfer.
+     * @notice Mocks failing transfer.
      *
-     * @return bool True.
+     * @return bool False.
      */
     function transfer(
         address,
@@ -55,6 +55,6 @@ contract EIP20TokenMockPass {
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 }

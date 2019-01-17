@@ -20,7 +20,28 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::redeem', async () => {
-    // TODO: add negative tests
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Fails if valueToken.transfer returns false', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+                true,
+                false,
+            );
+
+            await utils.expectRevert(
+                brandedToken.redeem(
+                    0,
+                    { from: accountProvider.get() },
+                ),
+                'Should revert as valueToken.transfer returned false.',
+                'ValueToken.transfer returned false.',
+            );
+        });
+    });
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
