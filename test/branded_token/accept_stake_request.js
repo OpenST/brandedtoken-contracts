@@ -168,7 +168,15 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                 { from: staker },
             );
 
-            const DOMAIN_SEPARATOR = await brandedToken.DOMAIN_SEPARATOR();
+            const EIP712_DOMAIN_TYPEHASH = web3.utils.soliditySha3(
+                'EIP712Domain(address verifyingContract)',
+            );
+            const DOMAIN_SEPARATOR = web3.utils.soliditySha3(
+                web3.eth.abi.encodeParameters(
+                    ['bytes32', 'address'],
+                    [EIP712_DOMAIN_TYPEHASH, brandedToken.address],
+                ),
+            );
             const stakeRequestHash = await brandedToken.stakeRequestHashes(staker);
 
             // Prepare and sign typed data, for example see:
