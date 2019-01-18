@@ -127,8 +127,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             ),
             'Should revert because minted BrandedToken is not equal to '
-             + 'converted staked VT.',
-            'Minted BrandedToken should be equal to converted staked VT.');
+             + 'converted staked ValueToken.',
+            'Minted BrandedToken should match converted staked ValueToken.');
         });
 
         it('Fails when gateway address is zero.', async () => {
