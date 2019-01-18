@@ -96,6 +96,24 @@ contract BrandedToken is Organized, EIP20Token {
     /** Flag indicating whether restrictions have been lifted for all actors. */
     bool public allRestrictionsLifted;
 
+    /** Domain separator encoding per EIP 712. */
+    bytes32 private constant EIP712_DOMAIN_TYPEHASH = keccak256(
+        "EIP712Domain(address verifyingContract)"
+    );
+
+    /** StakeRequest struct type encoding per EIP 712. */
+    bytes32 private constant BT_STAKE_REQUEST_TYPEHASH = keccak256(
+        "StakeRequest(address staker,uint256 stake,uint256 nonce)"
+    );
+
+    /** Domain separator per EIP 712. */
+    bytes32 private DOMAIN_SEPARATOR = keccak256(
+        abi.encode(
+            EIP712_DOMAIN_TYPEHASH,
+            this
+        )
+    );
+
     /** Maps staker to stakeRequestHashes. */
     mapping(address => bytes32) public stakeRequestHashes;
 
@@ -208,22 +226,15 @@ contract BrandedToken is Organized, EIP20Token {
             "Staker has a stake request hash."
         );
 
-        // TODO: update to calculate stakeRequestHash_ per EIP 712
-        stakeRequestHash_ = keccak256(
-            abi.encodePacked(
-                "stakeRequestHash_",
-                nonce
-            )
-        );
-        stakeRequestHashes[msg.sender] = stakeRequestHash_;
-
-        stakeRequests[stakeRequestHash_] = StakeRequest({
+        StakeRequest memory stakeRequest = StakeRequest({
             staker: msg.sender,
             stake: _stake,
             nonce: nonce
         });
-
-        StakeRequest memory stakeRequest = stakeRequests[stakeRequestHash_];
+        // Calculates hash per EIP 712
+        stakeRequestHash_ = hash(stakeRequest);
+        stakeRequestHashes[msg.sender] = stakeRequestHash_;
+        stakeRequests[stakeRequestHash_] = stakeRequest;
 
         nonce += 1;
 
@@ -272,15 +283,13 @@ contract BrandedToken is Organized, EIP20Token {
             stakeRequests[_stakeRequestHash].staker != address(0),
             "Stake request not found."
         );
+
+        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+
         require(
-            organization.isWorker(ecrecover(_stakeRequestHash, _v, _r, _s)),
+            verifySigner(stakeRequest, _r, _s, _v),
             "Signer is not a worker."
         );
-
-        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
-
-        delete stakeRequestHashes[stakeRequest.staker];
-        delete stakeRequests[_stakeRequestHash];
 
         emit StakeRequestAccepted(
             _stakeRequestHash,
@@ -295,6 +304,9 @@ contract BrandedToken is Organized, EIP20Token {
 
         // Mint branded tokens
         emit Transfer(address(0), stakeRequest.staker, mint);
+
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
 
         return true;
     }
@@ -622,5 +634,75 @@ contract BrandedToken is Organized, EIP20Token {
             .mul(10 ** uint256(conversionRateDecimals))
             .div(conversionRate)
         );
+    }
+
+
+    /* Private Functions */
+
+    /**
+     * @notice Calculates stakeRequestHash according to EIP 712.
+     *
+     * @param _stakeRequest StakeRequest instance to hash.
+     *
+     * @return bytes32 EIP 712 hash of _stakeRequest.
+     */
+    function hash(
+        StakeRequest memory _stakeRequest
+    )
+        private
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                BT_STAKE_REQUEST_TYPEHASH,
+                _stakeRequest.staker,
+                _stakeRequest.stake,
+                _stakeRequest.nonce
+            )
+        );
+    }
+
+    /**
+     * @notice Verifies whether signer of stakeRequestHash is a worker.
+     *
+     * @dev Signing the stakeRequestHash consistent with eth_signTypedData,
+     *      as specified by EIP 712, requires signing a hash of encoded data
+     *      comprising:
+     *          - an initial byte
+     *          - the version byte for structured data
+     *          - the domain separator
+     *          - the stakeRequestHash
+     *
+     *      See: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md
+     *
+     * @param _stakeRequest Stake request.
+     * @param _r R of the signature.
+     * @param _s S of the signature.
+     * @param _v V of the signature.
+     *
+     * @return bool True if signer is a worker, false if not.
+     */
+    function verifySigner(
+        StakeRequest storage _stakeRequest,
+        bytes32 _r,
+        bytes32 _s,
+        uint8 _v
+    )
+        private
+        view
+        returns (bool)
+    {
+        // See: https://github.com/ethereum/EIPs/blob/master/assets/eip-712/Example.sol
+        bytes32 typedData = keccak256(
+            abi.encodePacked(
+                byte(0x19), // the initial 0x19 byte
+                byte(0x01), // the version byte for structured data
+                DOMAIN_SEPARATOR,
+                hash(_stakeRequest)
+            )
+        );
+
+        return organization.isWorker(ecrecover(typedData, _v, _r, _s));
     }
 }

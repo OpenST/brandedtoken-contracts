@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 const BN = require('bn.js');
-const utils = require('../test_lib/utils.js');
 const { AccountProvider } = require('../test_lib/utils.js');
+
+const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
 
