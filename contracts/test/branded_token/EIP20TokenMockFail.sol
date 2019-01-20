@@ -17,37 +17,44 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title Organization Mock Pass.
+ *  @title Mock EIP20 Token Fail.
  *
- *  @notice Mocks Organization functions as passing.
+ *  @notice Mocks EIP20 token functions as failing.
  */
-contract OrganizationMockPass {
+contract EIP20TokenMockFail {
 
     /* External Functions */
 
     /**
-     * @notice Mocks passing isOrganization.
+     * @notice Mocks failing transferFrom.
      *
-     * @return bool True.
+     * @return bool False.
      */
-    function isOrganization(address)
+    function transferFrom(
+        address,
+        address,
+        uint256
+    )
         external
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 
     /**
-     * @notice Mocks passing isWorker.
+     * @notice Mocks failing transfer.
      *
-     * @return bool True.
+     * @return bool False.
      */
-    function isWorker(address)
+    function transfer(
+        address,
+        uint256
+    )
         external
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 }

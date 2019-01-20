@@ -14,9 +14,9 @@ pragma solidity ^0.5.0;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import "./UtilityBrandedToken.sol";
-import "./EIP20Interface.sol";
-import "./OrganizationInterface.sol";
+import "../UtilityBrandedToken.sol";
+import "../EIP20Interface.sol";
+import "../OrganizationInterface.sol";
 
 
 /**

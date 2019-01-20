@@ -27,7 +27,6 @@ import "./Organized.sol";
  */
 contract Internal is Organized {
 
-
     /* Events */
 
     event InternalActorRegistered(
@@ -38,10 +37,7 @@ contract Internal is Organized {
 
     /* Storage */
 
-    /**
-     * Variable is defined private to highlight that even derived contracts
-     * are not able to modify the internal actors.
-     */
+    /** Mapping stores addresses which are registered as internal actor. */
     mapping (address /* internal actor */ => bool) public isInternalActor;
 
 

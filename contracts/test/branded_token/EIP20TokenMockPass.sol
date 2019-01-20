@@ -45,7 +45,7 @@ contract EIP20TokenMockPass {
     /**
      * @notice Mocks passing transfer.
      *
-     * @return bool true.
+     * @return bool True.
      */
     function transfer(
         address,

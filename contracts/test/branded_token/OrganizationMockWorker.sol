@@ -17,37 +17,42 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title Organization Mock Pass.
+ *  @title Organization Mock Worker.
  *
- *  @notice Mocks Organization functions as passing.
+ *  @notice Mocks Organization setWorker and isWorker functions.
  */
-contract OrganizationMockPass {
+contract OrganizationMockWorker {
+
+    address public worker;
 
     /* External Functions */
 
     /**
-     * @notice Mocks passing isOrganization.
+     * @notice Mocks setWorker.
      *
-     * @return bool True.
+     * @param _worker The value to which worker is set.
      */
-    function isOrganization(address)
+    function setWorker(
+        address _worker,
+        uint256
+    )
         external
-        pure
-        returns (bool)
     {
-        return true;
+        worker = _worker;
     }
 
     /**
-     * @notice Mocks passing isWorker.
+     * @notice Mocks isWorker.
      *
-     * @return bool True.
+     * @return bool True if worker == _worker, false if not.
      */
-    function isWorker(address)
+    function isWorker(
+        address _worker
+    )
         external
-        pure
+        view
         returns (bool)
     {
-        return true;
+        return worker == _worker;
     }
 }

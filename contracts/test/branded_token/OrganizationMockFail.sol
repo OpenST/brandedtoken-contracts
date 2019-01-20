@@ -17,37 +17,37 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title Organization Mock Pass.
+ *  @title Mock Organization Fail.
  *
- *  @notice Mocks Organization functions as passing.
+ *  @notice Mocks Organization functions as failing.
  */
-contract OrganizationMockPass {
+contract OrganizationMockFail {
 
     /* External Functions */
 
     /**
-     * @notice Mocks passing isOrganization.
+     * @notice Mocks failing isOrganization.
      *
-     * @return bool True.
+     * @return bool False.
      */
     function isOrganization(address)
         external
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 
     /**
-     * @notice Mocks passing isWorker.
+     * @notice Mocks failing isWorker.
      *
-     * @return bool True.
+     * @return bool False.
      */
     function isWorker(address)
         external
         pure
         returns (bool)
     {
-        return true;
+        return false;
     }
 }

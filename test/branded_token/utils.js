@@ -16,19 +16,29 @@ const web3 = require('../test_lib/web3.js');
 
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
+const EIP20TokenMockFail = artifacts.require('EIP20TokenMockFail');
 const OrganizationMockPass = artifacts.require('OrganizationMockPass');
+const OrganizationMockFail = artifacts.require('OrganizationMockFail');
 
 /**
  * Sets up a BrandedToken.
  */
-module.exports.setupBrandedToken = async () => {
-    const valueToken = await EIP20TokenMockPass.new();
-    const symbol = 'BrandedToken';
-    const name = 'BT';
+module.exports.setupBrandedToken = async (
+    accountProvider,
+    useOrganizationMockPass = true,
+    useEIP20TokenMockPass = true,
+) => {
+    const valueToken = await (
+        useEIP20TokenMockPass ? EIP20TokenMockPass.new() : EIP20TokenMockFail.new()
+    );
+    const symbol = 'BT';
+    const name = 'BrandedToken';
     const decimals = 18;
     const conversionRate = 35;
     const conversionRateDecimals = 1;
-    const organization = await OrganizationMockPass.new();
+    const organization = await (
+        useOrganizationMockPass ? OrganizationMockPass.new() : OrganizationMockFail.new()
+    );
 
     const brandedToken = await BrandedToken.new(
         valueToken.address,
@@ -91,7 +101,7 @@ module.exports.setupBrandedTokenAndAcceptedStakeRequest = async (accountProvider
     );
 
     const r = web3.utils.soliditySha3('r');
-    const s = web3.utils.soliditySha3('r');
+    const s = web3.utils.soliditySha3('s');
     const v = 0;
     const worker = accountProvider.get();
 

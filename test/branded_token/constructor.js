@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 const BN = require('bn.js');
-const utils = require('../test_lib/utils.js');
 const { AccountProvider } = require('../test_lib/utils.js');
+
+const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
 
@@ -26,12 +26,12 @@ contract('BrandedToken::constructor', async () => {
         const symbol = 'BT';
         const name = 'BrandedToken';
         const decimals = 18;
-        const conversionRateDecimals = 1;
         const organization = accountProvider.get();
 
         it('Reverts if valueToken is zero', async () => {
             const valueToken = utils.NULL_ADDRESS;
             const conversionRate = 35;
+            const conversionRateDecimals = 1;
 
             await utils.expectRevert(
                 BrandedToken.new(
@@ -51,6 +51,7 @@ contract('BrandedToken::constructor', async () => {
         it('Reverts if conversionRate is zero', async () => {
             const valueToken = accountProvider.get();
             const conversionRate = 0;
+            const conversionRateDecimals = 1;
 
             await utils.expectRevert(
                 BrandedToken.new(
@@ -64,6 +65,26 @@ contract('BrandedToken::constructor', async () => {
                 ),
                 'Should revert as conversionRate is zero.',
                 'ConversionRate is zero.',
+            );
+        });
+
+        it('Reverts if conversionRateDecimals is greater than 5', async () => {
+            const valueToken = accountProvider.get();
+            const conversionRate = 35;
+            const conversionRateDecimals = 6;
+
+            await utils.expectRevert(
+                BrandedToken.new(
+                    valueToken,
+                    symbol,
+                    name,
+                    decimals,
+                    conversionRate,
+                    conversionRateDecimals,
+                    organization,
+                ),
+                'Should revert as conversionRateDecimals is greater than 5.',
+                'ConversionRateDecimals is greater than 5.',
             );
         });
     });

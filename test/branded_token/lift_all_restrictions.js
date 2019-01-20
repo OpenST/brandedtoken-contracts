@@ -18,7 +18,28 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::liftAllRestrictions', async () => {
-    // TODO: add negative tests
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Reverts if msg.sender is not the organization', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+                false,
+            );
+
+            const nonOrganization = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.liftAllRestrictions(
+                    { from: nonOrganization },
+                ),
+                'Should revert as msg.sender is not the organization.',
+                'Only the organization is allowed to call this method.',
+            );
+        });
+    });
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);

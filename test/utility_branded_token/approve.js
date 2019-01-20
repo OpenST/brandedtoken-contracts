@@ -12,87 +12,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const utils = require('../test_lib/utils'),
-  UtilityBrandedTokenUtils = require('./utils'),
-  AccountProvider =  utils.AccountProvider;
+const utils = require('../test_lib/utils');
+const web3 = require('../test_lib/web3');
+const UtilityBrandedTokenUtils = require('./utils');
 
 contract('UtilityBrandedToken::approve', async (accounts) => {
+    let testUtilityBrandedToken;
+    let internalActors;
+    let tokenHolder1;
+    let tokenHolder2;
+    let worker;
+    let accountProvider;
 
-  let testUtilityBrandedToken,
-    internalActors,
-    tokenHolder1,
-    tokenHolder2,
-    worker,
-    accountProvider,
-    approvalAmount = 50,
-    tokenHolder1Balance = 100;
+    const approvalAmount = 50;
+    const tokenHolder1Balance = 100;
 
-  beforeEach(async function() {
+    beforeEach(async () => {
+        accountProvider = new utils.AccountProvider(accounts);
+        tokenHolder1 = accountProvider.get();
+        tokenHolder2 = accountProvider.get();
 
-    accountProvider = new AccountProvider(accounts);
-    tokenHolder1 = accountProvider.get();
-    tokenHolder2 = accountProvider.get();
+        internalActors = [];
+        internalActors.push(tokenHolder1);
 
-    internalActors = [];
-    internalActors.push(tokenHolder1);
+        ({
+            testUtilityBrandedToken,
+            worker,
+        } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+            accountProvider, internalActors,
+        ));
 
-    ({
-      testUtilityBrandedToken,
-      worker,
-    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
-      accountProvider, internalActors
-    ));
-
-    await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
-
-  });
-
-  describe('Negative Tests', async () => {
-
-    it('Reverts if spender address is not registered internal actor', async () => {
-
-      await utils.expectRevert(testUtilityBrandedToken.approve(
-        tokenHolder2,
-        approvalAmount,
-        { from: tokenHolder1 },
-        ),
-        'Approval to be given to should be registered internal actor',
-        'Spender is not an internal actor.',
-      );
-
+        await testUtilityBrandedToken.setBalance(tokenHolder1, tokenHolder1Balance);
     });
 
-  });
-
-  describe('Storage', async () => {
-
-    it('Approval to registered internal actor', async () => {
-
-      internalActors.push(tokenHolder2);
-      await testUtilityBrandedToken.registerInternalActor(
-        internalActors,
-        { from: worker },
-      );
-
-      assert.equal(await testUtilityBrandedToken.allowance(
-        tokenHolder1,
-        tokenHolder2,
-        ),
-        0,
-      );
-
-      await testUtilityBrandedToken.approve(
-        tokenHolder2,
-        approvalAmount,
-        { from: tokenHolder1 },
-      );
-
-      assert.equal(await testUtilityBrandedToken.allowance(
-        tokenHolder1,
-        tokenHolder2),
-        approvalAmount,
-      );
-
+    describe('Negative Tests', async () => {
+        it('Reverts if spender address is not registered internal actor', async () => {
+            await utils.expectRevert(testUtilityBrandedToken.approve(
+                tokenHolder2,
+                approvalAmount,
+                { from: tokenHolder1 },
+            ),
+            'Approval to be given to should be registered internal actor',
+            'Spender is not an internal actor.');
+        });
     });
-  });
+
+    describe('Storage', async () => {
+        it('Approval to registered internal actor', async () => {
+            internalActors.push(tokenHolder2);
+            await testUtilityBrandedToken.registerInternalActor(
+                internalActors,
+                { from: worker },
+            );
+
+            assert.strictEqual((await testUtilityBrandedToken.allowance(
+                tokenHolder1,
+                tokenHolder2,
+            )).cmp(web3.utils.toBN(0)),
+            0,
+            'Allowance should be 0');
+
+            await testUtilityBrandedToken.approve(
+                tokenHolder2,
+                approvalAmount,
+                { from: tokenHolder1 },
+            );
+
+            assert.strictEqual((await testUtilityBrandedToken.allowance(
+                tokenHolder1,
+                tokenHolder2,
+            )).cmp(web3.utils.toBN(approvalAmount)),
+            0,
+            `Allowance should be equal to ${approvalAmount}`);
+        });
+    });
 });
