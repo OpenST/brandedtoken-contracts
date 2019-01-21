@@ -58,10 +58,18 @@ module.exports.setupBrandedToken = async (
 /**
  * Sets up a BrandedToken and a stake request.
  */
-module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
+module.exports.setupBrandedTokenAndStakeRequest = async (
+    accountProvider,
+    useOrganizationMockPass = true,
+    useEIP20TokenMockPass = true,
+) => {
     const {
         brandedToken,
-    } = await this.setupBrandedToken();
+    } = await this.setupBrandedToken(
+        accountProvider,
+        useOrganizationMockPass,
+        useEIP20TokenMockPass,
+    );
 
     const staker = accountProvider.get();
     const stake = 2;

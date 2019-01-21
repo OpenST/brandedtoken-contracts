@@ -42,6 +42,27 @@ contract('BrandedToken::revokeStakeRequest', async () => {
                 'Msg.sender is not staker.',
             );
         });
+
+        it('Reverts if valueToken.transfer returns false', async () => {
+            const {
+                brandedToken,
+                staker,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+                true,
+                false,
+            );
+
+            await utils.expectRevert(
+                brandedToken.revokeStakeRequest(
+                    stakeRequestHash,
+                    { from: staker },
+                ),
+                'Should revert as valueToken.transfer returned false.',
+                'ValueToken.transfer returned false.',
+            );
+        });
     });
 
     contract('Event', async (accounts) => {
