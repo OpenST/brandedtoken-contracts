@@ -29,8 +29,8 @@ const conversionRate = 1;
 const conversionRateDecimals = 0;
 
 module.exports.setupGatewayComposer = async (accountProvider, useBTPass = true) => {
-    const organizationClass = await MockOrganization.new();
-    const organization = organizationClass.address;
+    const organizationInstance = await MockOrganization.new();
+    const organization = organizationInstance.address;
     const deployer = accountProvider.get();
     const owner = accountProvider.get();
     const ownerValueTokenBalance = new BN(1000);
@@ -100,7 +100,7 @@ module.exports.setupBrandedTokenFail = async (valueToken, organization) => {
     return brandedToken;
 };
 
-module.exports.setupGatewayComposerRequestStake = async (valueToken, gatewayComposer, owner) => {
+module.exports.approveGatewayComposer = async (valueToken, gatewayComposer, owner) => {
     const stakeAmount = 1;
 
     await valueToken.approve(

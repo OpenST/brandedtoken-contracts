@@ -22,7 +22,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
     describe('Negative Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
 
-        it('Should Fail when owner is not the caller.', async () => {
+        it('Fails when owner is not the caller.', async () => {
             const {
                 gatewayComposer,
                 valueToken,
@@ -40,7 +40,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
             'Only owner can call the function.');
         });
 
-        it('Should fail when EIP20 token address is invalid.', async () => {
+        it('Fails when EIP20 token address is invalid.', async () => {
             const {
                 gatewayComposer,
                 owner,
@@ -55,17 +55,17 @@ contract('GatewayComposer::transferToken', async (accounts) => {
                 { from: owner },
             ),
             'Should revert as token address is null.',
-            'EIP20 token address is null.');
+            'EIP20 token address is zero.');
         });
 
-        it('Should fail when owner balance is not sufficient.', async () => {
+        it('Fails when ValueToken transfer returned false.', async () => {
             const {
                 gatewayComposer,
                 valueToken,
                 owner,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
-            // Set GC address balance to 0.
+            // Set GatewayComposer address balance to 0.
             await valueToken.setBalance(gatewayComposer.address, new BN(0));
 
             const to = accountProvider.get();
@@ -91,7 +91,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const amount = new BN(10);
-            // Set GC address balance.
+            // Set GatewayComposer address balance.
             await valueToken.setBalance(gatewayComposer.address, amount);
             const to = accountProvider.get();
             const executionStatus = await gatewayComposer.transferToken.call(
@@ -111,18 +111,16 @@ contract('GatewayComposer::transferToken', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const amount = new BN(10);
-            // Set GC address balance.
+            // Set GatewayComposer address balance.
             await valueToken.setBalance(gatewayComposer.address, amount);
             const to = accountProvider.get();
             const toBalanceBefore = await valueToken.balanceOf.call(to);
-            const transactionResponse = await gatewayComposer.transferToken(
+            await gatewayComposer.transferToken(
                 valueToken.address,
                 to,
                 amount,
                 { from: owner },
             );
-
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const toBalanceAfter = await valueToken.balanceOf.call(to);
             assert.strictEqual(

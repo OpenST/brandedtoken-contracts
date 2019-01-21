@@ -52,7 +52,7 @@ contract GatewayComposer {
     * to create a value-backed token designed specifically for its
     * application's context.
     */
-    address public brandedToken;
+    BrandedToken public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
 
@@ -75,9 +75,9 @@ contract GatewayComposer {
      * @notice Contract constructor.
      *
      * @dev Function requires:
-     *          - owner address should not be null
-     *          - valueToken address should not be null
-     *          - brandedToken address should not be null
+     *          - owner address should not be zero
+     *          - ValueToken address should not be zero
+     *          - BrandedToken address should not be zero
      *
      * @param _owner Address of the staker on the value chain.
      * @param _valueToken EIP20Token which is staked.
@@ -86,21 +86,25 @@ contract GatewayComposer {
     constructor(
         address _owner,
         EIP20Interface _valueToken,
-        address _brandedToken
+        BrandedToken _brandedToken
     )
         public
     {
         require(
             _owner != address(0),
-            "Owner address is null."
+            "Owner address is zero."
         );
         require(
             address(_valueToken) != address(0),
-            "Value token address is null."
+            "ValueToken address is zero."
         );
         require(
-            _brandedToken != address(0),
-            "Branded token address is null."
+            address(_brandedToken) != address(0),
+            "BrandedToken address is zero."
+        );
+        require(
+            address(_valueToken) == address(_brandedToken.valueToken()),
+            "ValueToken should match BrandedToken.valueToken."
         );
 
         owner = _owner;
@@ -113,14 +117,14 @@ contract GatewayComposer {
 
     /**
      * @notice Transfers value tokens from msg.sender to itself after staker
-     *         approves GC, approves BT for value tokens and calls
-     *         BT.requestStake function.
+     *         approves GatewayComposer, approves BrandedToken for value tokens
+     *         and calls BrandedToken.requestStake function.
      *
      * @dev Function requires:
      *          - stakeVT can't be 0
      *          - mintBT amount and converted stakeVT amount should be equal
-     *          - gateway address can't be null
-     *          - beneficiary address can't be null
+     *          - gateway address can't be zero
+     *          - beneficiary address can't be zero
      *          - successful execution of ValueToken transfer
      *
      *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
@@ -128,20 +132,21 @@ contract GatewayComposer {
      *      stake requests. See acceptStakeRequest for details.
      *
      *      mintBT is not stored in StakeRequest struct as there was
-     *      significant gas cost difference between storage Vs dynamic
-     *      evaluation from BT convert function.
+     *      significant gas cost difference between storage vs dynamic
+     *      evaluation from BrandedToken convert function.
      *
      * @param _stakeVT ValueToken amount which is staked.
-     * @param _mintBT Amount of BT amount which will be minted.
+     * @param _mintBT Amount of BrandedToken amount which will be minted.
      * @param _gateway Gateway contract address.
      * @param _beneficiary The address in the auxiliary chain where the utility
-     *                     tokens will be minted..
+     *                     tokens will be minted.
      * @param _gasPrice Gas price that staker is ready to pay to get the stake
-     *                  and mint process done..
+     *                  and mint process done.
      * @param _gasLimit Gas limit that staker is ready to pay.
-     * @param _nonce Nonce of the staker address.
+     * @param _nonce Nonce of the staker address. It can be obtained from
+     *               Gateway.getNonce() method.
      *
-     * @return requestStakeHash_ Hash unique for each stake request.
+     * @return stakeRequestHash_ Hash unique for each stake request.
      */
     function requestStake(
         uint256 _stakeVT,
@@ -154,39 +159,34 @@ contract GatewayComposer {
     )
         external
         onlyOwner
-        returns (bytes32 requestStakeHash_)
+        returns (bytes32 stakeRequestHash_)
     {
         require(
             _stakeVT > uint256(0),
             "Stake amount is zero."
         );
         require(
-            _mintBT == BrandedToken(brandedToken).convertToBrandedTokens(
-                _stakeVT
-            ),
-            "Minted BT should be equal to converted staked VT."
+            _mintBT == brandedToken.convertToBrandedTokens(_stakeVT),
+            "_mintBT should match converted _stakeVT."
         );
         require(
             _gateway != address(0),
-            "Gateway address is null."
+            "Gateway address is zero."
         );
         require(
             _beneficiary != address(0),
-            "Beneficiary address is null."
+            "Beneficiary address is zero."
         );
         require(
             valueToken.transferFrom(msg.sender, address(this), _stakeVT),
             "ValueToken transferFrom returned false."
         );
 
-        valueToken.approve(brandedToken, _stakeVT);
+        valueToken.approve(address(brandedToken), _stakeVT);
 
-        requestStakeHash_ = BrandedToken(brandedToken).requestStake(
-            _stakeVT,
-            _mintBT
-        );
+        stakeRequestHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
 
-        stakeRequests[requestStakeHash_] = StakeRequest({
+        stakeRequests[stakeRequestHash_] = StakeRequest({
             stakeVT: _stakeVT,
             gateway: _gateway,
             beneficiary: _beneficiary,
@@ -198,17 +198,16 @@ contract GatewayComposer {
 
     /**
      * @notice Approves Gateway for the minted BTs, calls Gateway.stake after
-     *         BT.acceptStakeRequest execution is successful.
+     *         BrandedToken.acceptStakeRequest execution is successful.
      *
      * @dev Function requires:
      *          - stake request hash is valid
-     *          - BT.acceptStakeRequest execution is successful
+     *          - BrandedToken.acceptStakeRequest execution is successful
      *
      *      As per requirement bounty token currency is same as valueToken.
      *      Bounty flow:
-     *          - facilitator approves GC for base tokens as bounty
-     *          - if bounty is greater than 0, it's transferred to GC
-     *          - GC approves Gateway for the bounty
+     *          - facilitator approves GatewayComposer for base tokens as bounty
+     *          - GatewayComposer approves Gateway for the bounty
      *
      * @param _stakeRequestHash Unique hash for each stake request.
      * @param _r R of the signature.
@@ -239,7 +238,7 @@ contract GatewayComposer {
         valueToken.approve(stakeRequest.gateway, bounty);
 
         require(
-            BrandedToken(brandedToken).acceptStakeRequest(
+            brandedToken.acceptStakeRequest(
                 _stakeRequestHash,
                 _r,
                 _s,
@@ -248,11 +247,11 @@ contract GatewayComposer {
             "BrandedToken acceptStakeRequest returned false."
         );
 
-        uint256 mintBT = BrandedToken(brandedToken).convertToBrandedTokens(
+        uint256 mintBT = brandedToken.convertToBrandedTokens(
             stakeRequest.stakeVT
         );
 
-        BrandedToken(brandedToken).approve(stakeRequest.gateway, mintBT);
+        brandedToken.approve(stakeRequest.gateway, mintBT);
 
         messageHash_ = GatewayInterface(stakeRequest.gateway).stake(
             mintBT,
@@ -267,13 +266,18 @@ contract GatewayComposer {
     }
 
     /**
-     * @notice Revokes stake request by calling BT.revokeStakeRequest() and
+     * @notice Revokes stake request by calling BrandedToken.revokeStakeRequest() and
      *         deleting information.
      *
      * @dev Function requires:
      *          - stake request hash is valid
-     *          - BT.revokeStakeRequest() should return true
+     *          - BrandedToken.revokeStakeRequest() should return true
      *          - ValueToken.transfer() should return true
+     *
+     *      The method is called after calling requestStake. In this flow
+     *      locked ValueToken is transferred to owner. Transfer is done for
+     *      convenience. This way extra step of calling transferToken is
+     *      avoided.
      *
      * @param _stakeRequestHash Stake request hash.
      *
@@ -292,7 +296,7 @@ contract GatewayComposer {
             "Stake request not found."
         );
         require(
-            BrandedToken(brandedToken).revokeStakeRequest(_stakeRequestHash),
+            brandedToken.revokeStakeRequest(_stakeRequestHash),
             "BrandedToken revokeStakeRequest returned false."
         );
         require(
@@ -310,7 +314,7 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - msg.sender should be owner
-     *          - EIP20 token address should not be null
+     *          - EIP20 token address should not be zero
      *          - token.transfer() execution should be successful
      *
      * @param _token EIP20 token address.
@@ -330,7 +334,7 @@ contract GatewayComposer {
     {
         require(
             address(_token) != address(0),
-            "EIP20 token address is null."
+            "EIP20 token address is zero."
         );
         require(
             _token.transfer(_to, _value),
@@ -345,7 +349,7 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - msg.sender should be owner
-     *          - EIP20 token address should not be null
+     *          - EIP20 token address should not be zero
      *          - token.approve() execution should be successful
      *
      * @param _token EIP20 token address.
@@ -366,7 +370,7 @@ contract GatewayComposer {
     {
         require(
             address(_token) != address(0),
-            "EIP20 token address is null."
+            "EIP20 token address is zero."
         );
         require(
             _token.approve(_spender, _value),
@@ -374,6 +378,38 @@ contract GatewayComposer {
         );
 
         success_ = true;
+    }
+
+    /**
+     * @notice Remove storage & code from blockchain.
+     *
+     * @dev Function requires:
+     *          - ValueToken balance should be 0
+     *          - BrandedToken balance should be 0
+     *          - There should not be any in progress stake requests
+     *
+     *      BrandedToken contract has mapping stakeRequestHashes which stores
+     *      staker vs stakeRequestHash data. In progress stake requests are
+     *      validated by doing lookup into the stakeRequestHashes mapping.
+     */
+    function destroy()
+        external
+        onlyOwner
+    {
+        require(
+            valueToken.balanceOf(address(this)) == 0,
+            "ValueToken balance should be 0."
+        );
+        require(
+            brandedToken.balanceOf(address(this)) == 0,
+            "BrandedToken balance should be 0."
+        );
+        require(
+            brandedToken.stakeRequestHashes(address(this)) == bytes32(0),
+            "In progress stake requests are present."
+        );
+
+        selfdestruct(msg.sender);
     }
 
 }

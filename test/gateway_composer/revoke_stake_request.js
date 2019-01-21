@@ -37,7 +37,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             'Only owner can call the function.');
         });
 
-        it('Fails when requestHash is invalid.', async () => {
+        it('Fails when stake request is not found.', async () => {
             const {
                 gatewayComposer,
                 owner,
@@ -52,7 +52,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             'Stake request not found.');
         });
 
-        it('Fails when BrandedToken revokeStakeRequest returned false.', async () => {
+        it('Fails when BrandedToken.revokeStakeRequest returned false.', async () => {
             const {
                 gatewayComposer,
                 brandedToken,
@@ -65,7 +65,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -87,7 +87,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            const transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway,
@@ -97,7 +97,6 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             utils.expectRevert(gatewayComposer.revokeStakeRequest(
                 stakeRequestHash,
@@ -122,7 +121,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -144,7 +143,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            let transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway,
@@ -154,7 +153,6 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             const executionStatus = await gatewayComposer.revokeStakeRequest.call(
                 stakeRequestHash,
@@ -162,11 +160,10 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             );
             assert.strictEqual(executionStatus, true);
 
-            transactionResponse = await gatewayComposer.revokeStakeRequest(
+            await gatewayComposer.revokeStakeRequest(
                 stakeRequestHash,
                 { from: owner },
             );
-            assert.strictEqual(transactionResponse.receipt.status, true);
 
             // stakeRequestHash information is deleted
             const stakeRequest = await gatewayComposer.stakeRequests.call(
@@ -184,7 +181,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             );
 
             // Sanity check in brandedToken.
-            // stakeRequestHash information is deleted in BT.
+            // stakeRequestHash information is deleted in BrandedToken.
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );

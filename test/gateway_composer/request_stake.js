@@ -22,6 +22,19 @@ const gatewayComposerUtils = require('./utils');
 contract('GatewayComposer::requestStake', async (accounts) => {
     describe('Negative Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
+        let gasPrice;
+        let gasLimit;
+        let gateway;
+        let beneficiary;
+        let nonce;
+
+        beforeEach(async () => {
+            gateway = accountProvider.get();
+            beneficiary = accountProvider.get();
+            gasPrice = 1;
+            gasLimit = 1;
+            nonce = 1;
+        });
 
         it('Fails when msg.sender is not owner.', async () => {
             const {
@@ -33,18 +46,15 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
+
+
             utils.expectRevert(gatewayComposer.requestStake(
                 0,
                 mintAmount,
@@ -69,18 +79,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             utils.expectRevert(gatewayComposer.requestStake(
                 0,
                 mintAmount,
@@ -104,18 +109,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const invalidMintAmount = 0;
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 invalidMintAmount,
@@ -126,11 +126,12 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             ),
-            'Should revert because minted BT is not equal to converted staked VT.',
-            'Minted BT should be equal to converted staked VT.');
+            'Should revert because minted BrandedToken is not equal to '
+             + 'converted staked ValueToken.',
+            '_mintBT should match converted _stakeVT.');
         });
 
-        it('Fails when gateway address is null.', async () => {
+        it('Fails when gateway address is zero.', async () => {
             const {
                 valueToken,
                 gatewayComposer,
@@ -140,17 +141,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
@@ -161,11 +158,11 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             ),
-            'Should revert because gateway address is null.',
-            'Gateway address is null.');
+            'Should revert because gateway address is zero.',
+            'Gateway address is zero.');
         });
 
-        it('Fails when beneficiary address is null.', async () => {
+        it('Fails when beneficiary address is zero.', async () => {
             const {
                 valueToken,
                 gatewayComposer,
@@ -175,17 +172,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
@@ -196,8 +189,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 nonce,
                 { from: owner },
             ),
-            'Should revert because beneficiary address is null.',
-            'Beneficiary address is null.');
+            'Should revert because beneficiary address is zero.',
+            'Beneficiary address is zero.');
         });
 
         it('Fails when gateway composer is not approved for staked value tokens.', async () => {
@@ -209,11 +202,6 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const stakeAmount = 1;
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
@@ -230,6 +218,19 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
     describe('Positive Tests', async () => {
         const accountProvider = new AccountProvider(accounts);
+        let gasPrice;
+        let gasLimit;
+        let gateway;
+        let beneficiary;
+        let nonce;
+
+        beforeEach(async () => {
+            gateway = accountProvider.get();
+            beneficiary = accountProvider.get();
+            gasPrice = 1;
+            gasLimit = 1;
+            nonce = 1;
+        });
 
         it('Returns stake request hash.', async () => {
             const {
@@ -240,7 +241,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
@@ -249,11 +250,6 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             const mintAmount = await brandedToken.convertToBrandedTokens(
                 stakeAmount,
             );
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             const stakeRequestHash = await gatewayComposer.requestStake.call(
                 stakeAmount,
                 mintAmount,
@@ -275,15 +271,17 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             );
 
-            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
-            const stakeRequest = await brandedToken.stakeRequests.call(stakeRequestHash);
+            // Validated that stakeRequestHash is present in
+            // BrandedToken.stakeRequestHashes
+            const stakeRequest = await brandedToken.stakeRequests
+                .call(stakeRequestHash);
             assert.strictEqual(
                 stakeRequest.staker,
                 gatewayComposer.address,
             );
         });
 
-        it('Validates storage of state variables.', async () => {
+        it('Sets passed arguments correctly.', async () => {
             const {
                 valueToken,
                 gatewayComposer,
@@ -293,18 +291,13 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const {
                 stakeAmount,
-            } = await gatewayComposerUtils.setupGatewayComposerRequestStake(
+            } = await gatewayComposerUtils.approveGatewayComposer(
                 valueToken,
                 gatewayComposer,
                 owner,
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
             const stakeRequestHash = await gatewayComposer.requestStake.call(
                 stakeAmount,
                 mintAmount,
@@ -316,7 +309,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             );
 
-            const transactionResponse = await gatewayComposer.requestStake(
+            await gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway,
@@ -327,9 +320,8 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 { from: owner },
             );
 
-            assert.strictEqual(transactionResponse.receipt.status, true);
-
-            const stakeRequest = await gatewayComposer.stakeRequests.call(stakeRequestHash);
+            const stakeRequest = await gatewayComposer.stakeRequests
+                .call(stakeRequestHash);
             assert.strictEqual(
                 (stakeRequest.stakeVT).cmp(new BN(stakeAmount)),
                 0,
@@ -354,14 +346,15 @@ contract('GatewayComposer::requestStake', async (accounts) => {
                 (stakeRequest.nonce).cmp(new BN(nonce)),
                 0,
             );
-            // Validated that stakeRequestHash is present in BT.stakeRequestHashes
+            // Validated that stakeRequestHash is present in BrandedToken.stakeRequestHashes
             const btStakeRequest = await brandedToken.stakeRequests.call(
                 stakeRequestHash,
             );
             assert.strictEqual(btStakeRequest.staker, gatewayComposer.address);
 
-            // Validate BT valuetoken balance.
-            const btValueTokenBalance = await valueToken.balanceOf.call(brandedToken.address);
+            // Validate BrandedToken valuetoken balance.
+            const btValueTokenBalance = await valueToken.balanceOf
+                .call(brandedToken.address);
             assert.strictEqual(
                 btValueTokenBalance.cmp(new BN(stakeAmount)),
                 0,
