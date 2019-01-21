@@ -103,5 +103,55 @@ contract('BrandedToken::revokeStakeRequest', async () => {
         });
     });
 
-    // TODO: add storage tests
+    contract('Storage', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Successfully revokes stake request', async () => {
+            const {
+                brandedToken,
+                staker,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+            );
+
+            assert.isOk(
+                await brandedToken.revokeStakeRequest.call(
+                    stakeRequestHash,
+                    { from: staker },
+                ),
+            );
+
+            await brandedToken.revokeStakeRequest(
+                stakeRequestHash,
+                { from: staker },
+            );
+
+            assert.strictEqual(
+                await brandedToken.stakeRequestHashes(staker),
+                utils.NULL_BYTES32,
+            );
+
+            const stakeRequest = await brandedToken.stakeRequests(stakeRequestHash);
+
+            assert.strictEqual(
+                stakeRequest.staker,
+                utils.NULL_ADDRESS,
+            );
+
+            assert.strictEqual(
+                stakeRequest.stake.cmp(
+                    new BN(0),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                stakeRequest.nonce.cmp(
+                    new BN(0),
+                ),
+                0,
+            );
+        });
+    });
 });
