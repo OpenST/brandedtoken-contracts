@@ -167,7 +167,7 @@ contract GatewayComposer {
         );
         require(
             _mintBT == brandedToken.convertToBrandedTokens(_stakeVT),
-            "Minted BrandedToken should match converted staked ValueToken."
+            "_mintBT should match converted _stakeVT."
         );
         require(
             _gateway != address(0),
