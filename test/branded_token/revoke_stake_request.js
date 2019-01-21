@@ -51,7 +51,7 @@ contract('BrandedToken::revokeStakeRequest', async () => {
             } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
                 accountProvider,
                 true,
-                false,
+                false, // Use EIP20TokenMockPassFail
             );
 
             await utils.expectRevert(

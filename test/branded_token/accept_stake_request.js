@@ -26,7 +26,60 @@ const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
 const OrganizationMockWorker = artifacts.require('OrganizationMockWorker');
 
 contract('BrandedToken::acceptStakeRequest', async () => {
-    // TODO: add negative tests
+    const r = web3.utils.soliditySha3('r');
+    const s = web3.utils.soliditySha3('s');
+    const v = 0;
+
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Reverts if stake request not found', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const worker = accountProvider.get();
+            const stakeRequestHash = web3.utils.utf8ToHex('stakeRequestHash');
+
+            await utils.expectRevert(
+                brandedToken.acceptStakeRequest(
+                    stakeRequestHash,
+                    r,
+                    s,
+                    v,
+                    { from: worker },
+                ),
+                'Should revert as stake request not found.',
+                'Stake request not found.',
+            );
+        });
+
+        it('Reverts if signer is not a worker', async () => {
+            const {
+                brandedToken,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+                false, // Use OrganizationMockFail
+            );
+
+            const worker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.acceptStakeRequest(
+                    stakeRequestHash,
+                    r,
+                    s,
+                    v,
+                    { from: worker },
+                ),
+                'Should revert as signer is not a worker.',
+                'Signer is not a worker.',
+            );
+        });
+    });
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
@@ -41,9 +94,6 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                 accountProvider,
             );
 
-            const r = web3.utils.soliditySha3('r');
-            const s = web3.utils.soliditySha3('s');
-            const v = 0;
             const worker = accountProvider.get();
 
             const transactionResponse = await brandedToken.acceptStakeRequest(
@@ -98,12 +148,13 @@ contract('BrandedToken::acceptStakeRequest', async () => {
                 accountProvider,
             );
 
-            const r = web3.utils.soliditySha3('r');
-            const s = web3.utils.soliditySha3('s');
-            const v = 0;
             // N.B.: anyone can call acceptStakeRequest
             const worker = accountProvider.get();
 
+            // Contract does not confirm that address returned from ecrecover
+            //      is not a 0 address. Consequently, signature components
+            //      that return a 0 address are OK so long as
+            //      Organization.isWorker returns true for a 0 address
             assert.isOk(
                 await brandedToken.acceptStakeRequest.call(
                     stakeRequestHash,

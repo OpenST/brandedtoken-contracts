@@ -29,7 +29,7 @@ contract('BrandedToken::redeem', async () => {
             } = await brandedTokenUtils.setupBrandedToken(
                 accountProvider,
                 true,
-                false,
+                false, // Use EIP20TokenMockPassFail
             );
 
             await utils.expectRevert(
