@@ -110,7 +110,7 @@ contract BrandedToken is Organized, EIP20Token {
     bytes32 private DOMAIN_SEPARATOR = keccak256(
         abi.encode(
             EIP712_DOMAIN_TYPEHASH,
-            this
+            address(this)
         )
     );
 
