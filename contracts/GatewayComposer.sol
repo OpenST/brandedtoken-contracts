@@ -412,4 +412,52 @@ contract GatewayComposer {
         selfdestruct(msg.sender);
     }
 
+    /**
+     * @notice Transfers value tokens to itself to pay the revert penalty,
+     *         approves Gateway to transfer the value tokens for the penalty,
+     *         and calls Gateway.revertStake.
+     *
+     * @dev Function requires:
+     *          - msg.sender is owner
+     *          - gateway address can't be zero
+     *          - successful execution of ValueToken transferFrom
+     *          - successful execution of ValueToken approve
+     *
+     *      As per requirement, penalty is paid in valueToken.
+     *      Penalty flow:
+     *          - staker approves GatewayComposer for value tokens as penalty
+     *          - GatewayComposer approves Gateway for the penalty
+     *
+     * @param _gateway Gateway contract address.
+     * @param _penalty Amount to pay to revert stake.
+     * @param _messageHash Message hash unique for each stake request.
+     *
+     * @return success_ True on successful execution.
+     */
+    function revertStake(
+        address _gateway,
+        uint256 _penalty,
+        bytes32 _messageHash
+    )
+        external
+        onlyOwner
+        returns (bool success_)
+    {
+        require(
+            _gateway != address(0),
+            "Gateway address is zero."
+        );
+        require(
+            valueToken.transferFrom(msg.sender, address(this), _penalty),
+            "ValueToken transferFrom returned false."
+        );
+        require(
+            valueToken.approve(_gateway, _penalty),
+            "ValueToken approve returned false."
+        );
+
+        GatewayInterface(_gateway).revertStake(_messageHash);
+
+        return true;
+    }
 }

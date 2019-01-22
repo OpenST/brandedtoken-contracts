@@ -62,4 +62,28 @@ interface GatewayInterface {
         external
         returns (bytes32 messageHash_);
 
+    /**
+     * @notice Revert stake process and get the stake
+     *         amount back. Only staker can revert stake by providing
+     *         penalty i.e. 1.5 times of bounty amount. On progress revert stake
+     *         penalty and facilitator bounty will be burned.
+     *
+     * @dev To revert the the sender must sign the sha3(messageHash, nonce+1)
+     *
+     * @param _messageHash Message hash.
+     *
+     * @return staker_ Staker address
+     * @return stakerNonce_ Staker nonce
+     * @return amount_ Stake amount
+     */
+    function revertStake(
+        bytes32 _messageHash
+    )
+        external
+        returns
+    (
+        address staker_,
+        uint256 stakerNonce_,
+        uint256 amount_
+    );
 }
