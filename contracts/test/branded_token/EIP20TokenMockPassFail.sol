@@ -17,21 +17,43 @@ pragma solidity ^0.5.0;
 
 
 /**
- *  @title Mock EIP20 Token Fail.
+ *  @title Mock EIP20 Token Pass Fail.
  *
- *  @notice Mocks EIP20 token functions as failing.
+ *  @notice Mocks EIP20 token transferFrom as passing and transfer as failing.
+ *          Passing transferFrom but failing transfer enables testing
+ *          functions that invoke transfer but can only be successfully
+ *          called after successfully invoking transferFrom.
  */
-contract EIP20TokenMockFail {
+contract EIP20TokenMockPassFail {
 
     /* External Functions */
 
     /**
-     * @notice Mocks failing transferFrom.
+     * @notice Mocks passing transferFrom.
      *
-     * @return bool False.
+     * @dev Passing transferFrom enable 
+     *      the signature of a worker, as defined in Organization.
+     *
+     * @return bool True.
      */
     function transferFrom(
         address,
+        address,
+        uint256
+    )
+        external
+        pure
+        returns (bool)
+    {
+        return true;
+    }
+
+    /**
+     * @notice Mocks failing transfer.
+     *
+     * @return bool False.
+     */
+    function transfer(
         address,
         uint256
     )

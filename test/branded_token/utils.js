@@ -16,7 +16,7 @@ const web3 = require('../test_lib/web3.js');
 
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
-const EIP20TokenMockFail = artifacts.require('EIP20TokenMockFail');
+const EIP20TokenMockPassFail = artifacts.require('EIP20TokenMockPassFail');
 const OrganizationMockPass = artifacts.require('OrganizationMockPass');
 const OrganizationMockFail = artifacts.require('OrganizationMockFail');
 
@@ -29,7 +29,7 @@ module.exports.setupBrandedToken = async (
     useEIP20TokenMockPass = true,
 ) => {
     const valueToken = await (
-        useEIP20TokenMockPass ? EIP20TokenMockPass.new() : EIP20TokenMockFail.new()
+        useEIP20TokenMockPass ? EIP20TokenMockPass.new() : EIP20TokenMockPassFail.new()
     );
     const symbol = 'BT';
     const name = 'BrandedToken';
@@ -58,10 +58,18 @@ module.exports.setupBrandedToken = async (
 /**
  * Sets up a BrandedToken and a stake request.
  */
-module.exports.setupBrandedTokenAndStakeRequest = async (accountProvider) => {
+module.exports.setupBrandedTokenAndStakeRequest = async (
+    accountProvider,
+    useOrganizationMockPass = true,
+    useEIP20TokenMockPass = true,
+) => {
     const {
         brandedToken,
-    } = await this.setupBrandedToken();
+    } = await this.setupBrandedToken(
+        accountProvider,
+        useOrganizationMockPass,
+        useEIP20TokenMockPass,
+    );
 
     const staker = accountProvider.get();
     const stake = 2;

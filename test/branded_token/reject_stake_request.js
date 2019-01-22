@@ -16,10 +16,77 @@ const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
 
+const web3 = require('../test_lib/web3.js');
+const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::rejectStakeRequest', async () => {
-    // TODO: add negative tests
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Reverts if msg.sender is not a worker', async () => {
+            const {
+                brandedToken,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+                false, // Use OrganizationMockFail
+            );
+
+            const nonWorker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.rejectStakeRequest(
+                    stakeRequestHash,
+                    { from: nonWorker },
+                ),
+                'Should revert as msg.sender is not a worker.',
+                'Only whitelisted workers are allowed to call this method.',
+            );
+        });
+
+        it('Reverts if stake request not found', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const worker = accountProvider.get();
+            const stakeRequestHash = web3.utils.utf8ToHex('stakeRequestHash');
+
+            await utils.expectRevert(
+                brandedToken.rejectStakeRequest(
+                    stakeRequestHash,
+                    { from: worker },
+                ),
+                'Should revert as stake request not found.',
+                'Stake request not found.',
+            );
+        });
+
+        it('Reverts if valueToken.transfer returns false', async () => {
+            const {
+                brandedToken,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+                true,
+                false, // Use EIP20TokenMockPassFail
+            );
+
+            const worker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.rejectStakeRequest(
+                    stakeRequestHash,
+                    { from: worker },
+                ),
+                'Should revert as valueToken.transfer returned false.',
+                'ValueToken.transfer returned false.',
+            );
+        });
+    });
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
@@ -61,5 +128,57 @@ contract('BrandedToken::rejectStakeRequest', async () => {
         });
     });
 
-    // TODO: add storage tests
+    contract('Storage', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Successfully revokes stake request', async () => {
+            const {
+                brandedToken,
+                staker,
+                stakeRequestHash,
+            } = await brandedTokenUtils.setupBrandedTokenAndStakeRequest(
+                accountProvider,
+            );
+
+            const worker = accountProvider.get();
+
+            assert.isOk(
+                await brandedToken.rejectStakeRequest.call(
+                    stakeRequestHash,
+                    { from: worker },
+                ),
+            );
+
+            await brandedToken.rejectStakeRequest(
+                stakeRequestHash,
+                { from: worker },
+            );
+
+            assert.strictEqual(
+                await brandedToken.stakeRequestHashes(staker),
+                utils.NULL_BYTES32,
+            );
+
+            const stakeRequest = await brandedToken.stakeRequests(stakeRequestHash);
+
+            assert.strictEqual(
+                stakeRequest.staker,
+                utils.NULL_ADDRESS,
+            );
+
+            assert.strictEqual(
+                stakeRequest.stake.cmp(
+                    new BN(0),
+                ),
+                0,
+            );
+
+            assert.strictEqual(
+                stakeRequest.nonce.cmp(
+                    new BN(0),
+                ),
+                0,
+            );
+        });
+    });
 });

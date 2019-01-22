@@ -13,10 +13,35 @@
 // limitations under the License.
 
 const { AccountProvider } = require('../test_lib/utils.js');
+
+const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::liftRestriction', async () => {
-    // TODO: add negative tests
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Reverts if msg.sender is not a worker', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+                false,
+            );
+
+            const restrictionLifted = [accountProvider.get()];
+            const nonWorker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.liftRestriction(
+                    restrictionLifted,
+                    { from: nonWorker },
+                ),
+                'Should revert as msg.sender is not a worker.',
+                'Only whitelisted workers are allowed to call this method.',
+            );
+        });
+    });
 
     contract('Storage', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);

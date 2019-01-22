@@ -17,10 +17,94 @@ const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
 
 const web3 = require('../test_lib/web3.js');
+const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
+const BrandedToken = artifacts.require('BrandedToken');
+const EIP20TokenMockFail = artifacts.require('EIP20TokenMockFail');
+
 contract('BrandedToken::requestStake', async () => {
-    // TODO: add negative tests
+    contract('Negative Tests', async (accounts) => {
+        const accountProvider = new AccountProvider(accounts);
+
+        it('Reverts if mint is not equivalent to stake', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const stake = 1;
+            const mint = 0;
+            const staker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.requestStake(
+                    stake,
+                    mint,
+                    { from: staker },
+                ),
+                'Should revert as mint is not equivalent to stake.',
+                'Mint is not equivalent to stake.',
+            );
+        });
+
+        it('Reverts if staker has a stake request hash', async () => {
+            const {
+                brandedToken,
+            } = await brandedTokenUtils.setupBrandedToken(
+                accountProvider,
+            );
+
+            const stake = 1;
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+            const staker = accountProvider.get();
+
+            await brandedToken.requestStake(
+                stake,
+                mint,
+                { from: staker },
+            );
+
+            await utils.expectRevert(
+                brandedToken.requestStake(
+                    stake,
+                    mint,
+                    { from: staker },
+                ),
+                'Should revert as staker has a stake request hash.',
+                'Staker has a stake request hash.',
+            );
+        });
+
+        it('Reverts if valueToken.transferFrom returns false', async () => {
+            const valueToken = await EIP20TokenMockFail.new();
+
+            const brandedToken = await BrandedToken.new(
+                valueToken.address,
+                'BT',
+                'BrandedToken',
+                18,
+                35,
+                1,
+                await accountProvider.get(),
+            );
+
+            const stake = 1;
+            const mint = await brandedToken.convertToBrandedTokens(stake);
+            const staker = accountProvider.get();
+
+            await utils.expectRevert(
+                brandedToken.requestStake(
+                    stake,
+                    mint,
+                    { from: staker },
+                ),
+                'Should revert as valueToken.transferFrom returned false.',
+                'ValueToken.transferFrom returned false.',
+            );
+        });
+    });
 
     contract('Event', async (accounts) => {
         const accountProvider = new AccountProvider(accounts);
