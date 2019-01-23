@@ -37,7 +37,7 @@ contract('GatewayComposer::constructor', async (accounts) => {
         });
 
         it('Reverts if owner address is zero.', async () => {
-            utils.expectRevert(GatewayComposer.new(
+            await utils.expectRevert(GatewayComposer.new(
                 utils.NULL_ADDRESS,
                 valueToken,
                 brandedToken,
@@ -48,7 +48,7 @@ contract('GatewayComposer::constructor', async (accounts) => {
         });
 
         it('Reverts if ValueToken address is zero.', async () => {
-            utils.expectRevert(GatewayComposer.new(
+            await utils.expectRevert(GatewayComposer.new(
                 owner,
                 utils.NULL_ADDRESS,
                 brandedToken,
@@ -59,7 +59,7 @@ contract('GatewayComposer::constructor', async (accounts) => {
         });
 
         it('Reverts if branded token address is zero.', async () => {
-            utils.expectRevert(GatewayComposer.new(
+            await utils.expectRevert(GatewayComposer.new(
                 owner,
                 valueToken,
                 utils.NULL_ADDRESS,
@@ -80,7 +80,7 @@ contract('GatewayComposer::constructor', async (accounts) => {
                 accountProvider.get(),
                 { from: deployer },
             );
-            utils.expectRevert(GatewayComposer.new(
+            await utils.expectRevert(GatewayComposer.new(
                 owner,
                 valueToken,
                 brandedToken.address,

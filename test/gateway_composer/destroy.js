@@ -31,7 +31,7 @@ contract('GatewayComposer::destroy', async (accounts) => {
                 owner,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
             await valueToken.setBalance(gatewayComposer.address, new BN(10));
-            utils.expectRevert(
+            await utils.expectRevert(
                 gatewayComposer.destroy({ from: owner }),
                 'It should revert as ValueToken balance is not 0.',
                 'ValueToken balance should be 0.',
@@ -44,7 +44,7 @@ contract('GatewayComposer::destroy', async (accounts) => {
                 gatewayComposer,
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
             await valueToken.setBalance(gatewayComposer.address, new BN(10));
-            utils.expectRevert(
+            await utils.expectRevert(
                 gatewayComposer.destroy({ from: accountProvider.get() }),
                 'It should revert as only owner can call the function.',
                 'Only owner can call the function.',
@@ -83,7 +83,7 @@ contract('GatewayComposer::destroy', async (accounts) => {
                 nonce,
                 { from: owner },
             );
-            utils.expectRevert(
+            await utils.expectRevert(
                 gatewayComposer.destroy({ from: owner }),
                 'It should revert as there are ongoing stake requests.',
                 'In progress stake requests are present.',

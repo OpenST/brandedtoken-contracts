@@ -29,7 +29,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const stakeRequestHash = web3.utils.soliditySha3('hash');
-            utils.expectRevert(gatewayComposer.revokeStakeRequest(
+            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
                 stakeRequestHash,
                 { from: accountProvider.get() },
             ),
@@ -44,7 +44,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
             } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
             const invalidStakeRequestHash = web3.utils.soliditySha3('invalid');
-            utils.expectRevert(gatewayComposer.revokeStakeRequest(
+            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
                 invalidStakeRequestHash,
                 { from: owner },
             ),
@@ -98,7 +98,7 @@ contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
                 { from: owner },
             );
 
-            utils.expectRevert(gatewayComposer.revokeStakeRequest(
+            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
                 stakeRequestHash,
                 { from: owner },
             ),

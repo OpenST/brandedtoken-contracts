@@ -30,7 +30,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
 
             const to = accountProvider.get();
             const amount = new BN(10);
-            utils.expectRevert(gatewayComposer.transferToken(
+            await utils.expectRevert(gatewayComposer.transferToken(
                 valueToken.address,
                 to,
                 amount,
@@ -48,7 +48,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
 
             const to = accountProvider.get();
             const amount = new BN(10);
-            utils.expectRevert(gatewayComposer.transferToken(
+            await utils.expectRevert(gatewayComposer.transferToken(
                 utils.NULL_ADDRESS,
                 to,
                 amount,
@@ -70,7 +70,7 @@ contract('GatewayComposer::transferToken', async (accounts) => {
 
             const to = accountProvider.get();
             const amount = new BN(10);
-            utils.expectRevert(gatewayComposer.transferToken(
+            await utils.expectRevert(gatewayComposer.transferToken(
                 valueToken.address,
                 to,
                 amount,

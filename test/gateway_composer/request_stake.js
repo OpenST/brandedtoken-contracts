@@ -55,7 +55,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
 
 
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 0,
                 mintAmount,
                 gateway,
@@ -86,7 +86,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 0,
                 mintAmount,
                 gateway,
@@ -116,7 +116,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             );
 
             const invalidMintAmount = 0;
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 invalidMintAmount,
                 gateway,
@@ -148,7 +148,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 utils.NULL_ADDRESS,
@@ -179,7 +179,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
             );
 
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway,
@@ -202,7 +202,7 @@ contract('GatewayComposer::requestStake', async (accounts) => {
 
             const stakeAmount = 1;
             const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            utils.expectRevert(gatewayComposer.requestStake(
+            await utils.expectRevert(gatewayComposer.requestStake(
                 stakeAmount,
                 mintAmount,
                 gateway,
