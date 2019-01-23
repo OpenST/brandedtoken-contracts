@@ -39,7 +39,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
     describe('Negative Tests', async () => {
         it('Reverts if null address is passed as organization', async () => {
-            utils.expectRevert(UtilityBrandedToken.new(
+            await utils.expectRevert(UtilityBrandedToken.new(
                 utils.NULL_ADDRESS,
                 SYMBOL,
                 NAME,

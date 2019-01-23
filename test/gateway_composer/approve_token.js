@@ -30,7 +30,7 @@ contract('GatewayComposer::approveToken', async (accounts) => {
 
             const spender = accountProvider.get();
             const amount = new BN(10);
-            utils.expectRevert(gatewayComposer.approveToken(
+            await utils.expectRevert(gatewayComposer.approveToken(
                 valueToken.address,
                 spender,
                 amount,
@@ -48,7 +48,7 @@ contract('GatewayComposer::approveToken', async (accounts) => {
 
             const to = accountProvider.get();
             const amount = new BN(10);
-            utils.expectRevert(gatewayComposer.approveToken(
+            await utils.expectRevert(gatewayComposer.approveToken(
                 utils.NULL_ADDRESS,
                 to,
                 amount,

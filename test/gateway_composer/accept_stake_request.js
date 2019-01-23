@@ -40,7 +40,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const hashLock = web3.utils.soliditySha3('hl');
 
             const invalidStakeRequestHash = web3.utils.soliditySha3('invalid');
-            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+            await utils.expectRevert(gatewayComposer.acceptStakeRequest(
                 invalidStakeRequestHash,
                 r,
                 s,
@@ -110,7 +110,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const v = 0;
             const hashLock = web3.utils.soliditySha3('hl');
 
-            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+            await utils.expectRevert(gatewayComposer.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,
@@ -177,7 +177,7 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const v = 0;
             const hashLock = web3.utils.soliditySha3('hl');
 
-            utils.expectRevert(gatewayComposer.acceptStakeRequest(
+            await utils.expectRevert(gatewayComposer.acceptStakeRequest(
                 stakeRequestHash,
                 r,
                 s,
