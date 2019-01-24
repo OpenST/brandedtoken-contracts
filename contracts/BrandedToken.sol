@@ -273,7 +273,7 @@ contract BrandedToken is Organized, EIP20Token {
      * @param _s S of the signature.
      * @param _v V of the signature.
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function acceptStakeRequest(
         bytes32 _stakeRequestHash,
@@ -324,7 +324,7 @@ contract BrandedToken is Organized, EIP20Token {
      *
      * @param _restrictionLifted Addresses for which to lift restrictions.
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function liftRestriction(
         address[] calldata _restrictionLifted
@@ -361,7 +361,7 @@ contract BrandedToken is Organized, EIP20Token {
      * @dev Function requires:
      *          - msg.sender is organization
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function liftAllRestrictions()
         external
@@ -383,7 +383,7 @@ contract BrandedToken is Organized, EIP20Token {
      *
      * @param _stakeRequestHash Stake request hash.
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function revokeStakeRequest(
         bytes32 _stakeRequestHash
@@ -428,7 +428,7 @@ contract BrandedToken is Organized, EIP20Token {
      *
      * @param _brandedTokens Amount of branded tokens to redeem.
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function redeem(
         uint256 _brandedTokens
@@ -464,7 +464,7 @@ contract BrandedToken is Organized, EIP20Token {
      *
      * @param _stakeRequestHash Stake request hash.
      *
-     * @return success_ Success.
+     * @return success_ True.
      */
     function rejectStakeRequest(
         bytes32 _stakeRequestHash
@@ -555,7 +555,7 @@ contract BrandedToken is Organized, EIP20Token {
      * @param _to Address to which tokens are transferred.
      * @param _value Amount of tokens to be transferred.
      *
-     * @return success_ Success.
+     * @return success_ Result from EIP20Token transfer.
      */
     function transfer(
         address _to,
@@ -576,7 +576,7 @@ contract BrandedToken is Organized, EIP20Token {
      * @param _to Address to which tokens are transferred.
      * @param _value Amount of tokens transferred.
      *
-     * @return success_ Success.
+     * @return success_ Result from EIP20Token transferFrom.
      */
     function transferFrom(
         address _from,
