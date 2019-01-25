@@ -30,18 +30,59 @@ contract('BrandedToken::convertToValueTokens', async () => {
 
             const conversionRate = await brandedToken.conversionRate();
             const conversionRateDecimals = await brandedToken.conversionRateDecimals();
-            const brandedTokens = new BN(35);
-            const valueTokens = await brandedToken.convertToValueTokens(brandedTokens);
 
-            // TODO: test to reflect the potential for loss in conversion
-            // TODO: test to reflect actual expected number and
-            //       not just operations (as in test below)
+            // Conversion without loss
+            //      An amount equal to multiples of the conversionRate
+            //      converts without loss; e.g., when conversion is 1:3.5
+            //      - conversionRate == 35
+            //      - conversionRateDecimals == 1
+            //      - 35 --> 10
+            const brandedTokensLossless = conversionRate;
+            const valueTokensLossless = await brandedToken.convertToValueTokens(brandedTokensLossless);
+
             assert.strictEqual(
-                valueTokens.cmp(
-                    brandedTokens.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                valueTokensLossless.cmp(
+                    brandedTokensLossless.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
                 ),
                 0,
             );
+
+            assert.strictEqual(
+                valueTokensLossless.cmp(
+                    new BN(10),
+                ),
+                0,
+            );
+
+            // Conversion with loss
+            //      At other amounts of branded tokens there will be loss
+            //      due to Solidity not supportin fixed or floating point
+            //      math; e.g., when conversion is 1:3.5
+            //      - conversionRate == 35
+            //      - conversionRateDecimals == 1
+            //      - 36 --> 10 value tokens, not 10.2
+            const brandedTokensLoss = conversionRate.addn(1);
+            const valueTokensLoss = await brandedToken.convertToValueTokens(brandedTokensLoss);
+
+            assert.strictEqual(
+                valueTokensLoss.cmp(
+                    brandedTokensLoss.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                ),
+                0,
+            );
+
+            // 36 also converts into 10 so there is a loss in the conversion
+            assert.strictEqual(
+                valueTokensLoss.cmp(
+                    new BN(10),
+                ),
+                0,
+            );
+
+            // N.B.: values above are miniscule, because the
+            //       decimals for the test tokens are 18; consequently,
+            //       the potential for and degree of loss
+            //       as indicated above is considered acceptable
         });
     });
 });
