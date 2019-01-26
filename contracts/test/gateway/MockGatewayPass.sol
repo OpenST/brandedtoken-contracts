@@ -61,11 +61,33 @@ contract MockGatewayPass {
         uint256,
         bytes32
     )
-        pure
         external
+        pure
         returns (bytes32)
     {
         return bytes32(0);
     }
 
+    /**
+     * @notice Revert stake process and get the stake
+     *         amount back. Only staker can revert stake by providing
+     *         penalty i.e. 1.5 times of bounty amount. On progress revert stake
+     *         penalty and facilitator bounty will be burned.
+     *
+     * @dev The only parameter is _messageHash.
+     *
+     *      Returns are in below order:
+     *      - staker_
+     *      - stakerNonce_
+     *      - amount_
+     */
+    function revertStake(
+        bytes32
+    )
+        external
+        pure
+        returns (address, uint256, uint256)
+    {
+        return (address(0), uint256(0), uint256(0));
+    }
 }
