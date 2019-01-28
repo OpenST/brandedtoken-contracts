@@ -126,6 +126,7 @@ contract GatewayComposer {
      *          - gateway address can't be zero
      *          - beneficiary address can't be zero
      *          - successful execution of ValueToken transfer
+     *          - successful execution of ValueToken approve
      *
      *      stakeVT can't be 0 because gateway.stake also doesn't allow 0 stake
      *      amount. This condition also helps in validation of in progress
@@ -181,8 +182,10 @@ contract GatewayComposer {
             valueToken.transferFrom(msg.sender, address(this), _stakeVT),
             "ValueToken transferFrom returned false."
         );
-
-        valueToken.approve(address(brandedToken), _stakeVT);
+        require(
+            valueToken.approve(address(brandedToken), _stakeVT),
+            "ValueToken approve returned false."
+        );
 
         stakeRequestHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
 
@@ -202,7 +205,10 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - stake request hash is valid
+     *          - successful execution of ValueToken transferFrom
+     *          - successful execution of ValueToken approve
      *          - BrandedToken.acceptStakeRequest execution is successful
+     *          - successful execution of BrandedToken approve
      *
      *      As per requirement bounty token currency is same as valueToken.
      *      Bounty flow:
@@ -234,8 +240,14 @@ contract GatewayComposer {
         );
 
         uint256 bounty = GatewayInterface(stakeRequest.gateway).bounty();
-        valueToken.transferFrom(msg.sender, address(this), bounty);
-        valueToken.approve(stakeRequest.gateway, bounty);
+        require(
+            valueToken.transferFrom(msg.sender, address(this), bounty),
+            "ValueToken transferFrom returned false."
+        );
+        require(
+            valueToken.approve(stakeRequest.gateway, bounty),
+            "ValueToken approve returned false."
+        );
 
         require(
             brandedToken.acceptStakeRequest(
@@ -251,7 +263,10 @@ contract GatewayComposer {
             stakeRequest.stakeVT
         );
 
-        brandedToken.approve(stakeRequest.gateway, mintBT);
+        require(
+            brandedToken.approve(stakeRequest.gateway, mintBT),
+            "BrandedToken approve returned false."
+        );
 
         messageHash_ = GatewayInterface(stakeRequest.gateway).stake(
             mintBT,
@@ -266,8 +281,8 @@ contract GatewayComposer {
     }
 
     /**
-     * @notice Revokes stake request by calling BrandedToken.revokeStakeRequest() and
-     *         deleting information.
+     * @notice Revokes stake request by calling BrandedToken.revokeStakeRequest()
+     *         and deleting information.
      *
      * @dev Function requires:
      *          - stake request hash is valid

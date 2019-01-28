@@ -177,6 +177,13 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             const v = 0;
             const hashLock = web3.utils.soliditySha3('hl');
 
+            const bounty = await gateway.bounty.call();
+            await valueToken.setBalance(facilitator, bounty);
+            await valueToken.approve(
+                gatewayComposer.address,
+                bounty,
+                { from: facilitator },
+            );
             await utils.expectRevert(gatewayComposer.acceptStakeRequest(
                 stakeRequestHash,
                 r,
@@ -187,6 +194,73 @@ contract('GatewayComposer::acceptStakeRequest', async (accounts) => {
             ),
             'Should revert as Gateway.stake() execution failed.',
             'Gateway.stake() execution failed.');
+        });
+
+        it('Fails when facilitator does not have sufficient bounty amount.', async () => {
+            const {
+                gatewayComposer,
+                valueToken,
+                brandedToken,
+                owner,
+            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+            const {
+                stakeAmount,
+            } = await gatewayComposerUtils.approveGatewayComposer(
+                valueToken,
+                gatewayComposer,
+                owner,
+            );
+
+            const {
+                gateway,
+                facilitator,
+            } = await gatewayComposerUtils.setupGatewayFail(
+                accountProvider,
+            );
+
+            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+            const beneficiary = accountProvider.get();
+            const gasPrice = 1;
+            const gasLimit = 1;
+            const nonce = 1;
+            const stakeRequestHash = await gatewayComposer.requestStake.call(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            await gatewayComposer.requestStake(
+                stakeAmount,
+                mintAmount,
+                gateway.address,
+                beneficiary,
+                gasPrice,
+                gasLimit,
+                nonce,
+                { from: owner },
+            );
+
+            const r = web3.utils.soliditySha3('r');
+            const s = web3.utils.soliditySha3('s');
+            const v = 0;
+            const hashLock = web3.utils.soliditySha3('hl');
+
+            await utils.expectRevert(gatewayComposer.acceptStakeRequest(
+                stakeRequestHash,
+                r,
+                s,
+                v,
+                hashLock,
+                { from: facilitator },
+            ),
+            'Should revert as facilitator does not have sufficient bounty amount.',
+            'VM Exception while processing transaction.');
         });
     });
 

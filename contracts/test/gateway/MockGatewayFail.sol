@@ -34,7 +34,7 @@ contract MockGatewayFail {
         pure
         returns (uint256)
     {
-        return 0;
+        return 10;
     }
 
     /**
