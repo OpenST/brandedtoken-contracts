@@ -19,18 +19,18 @@ const MockOrganization = artifacts.require('MockOrganization');
  * Creates an instance of Internal contract and sets worker.
  */
 module.exports.setupInternal = async (accountProvider) => {
-    const worker = accountProvider.get();
-    const organization = accountProvider.get();
-    const admin = accountProvider.get();
-    const mockOrganization = await MockOrganization.new(
-        organization,
-        admin,
-        [worker],
-    );
-    const internal = await Internal.new(mockOrganization.address);
+  const worker = accountProvider.get();
+  const organization = accountProvider.get();
+  const admin = accountProvider.get();
+  const mockOrganization = await MockOrganization.new(
+    organization,
+    admin,
+    [worker],
+  );
+  const internal = await Internal.new(mockOrganization.address);
 
-    const organizationAddress = mockOrganization.address;
-    await mockOrganization.setWorker(worker);
+  const organizationAddress = mockOrganization.address;
+  await mockOrganization.setWorker(worker);
 
-    return { internal, worker, organizationAddress };
+  return { internal, worker, organizationAddress };
 };

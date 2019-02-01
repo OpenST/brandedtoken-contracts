@@ -18,76 +18,76 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::liftAllRestrictions', async () => {
-    contract('Negative Tests', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Negative Tests', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Reverts if msg.sender is not the organization', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-                false,
-            );
+    it('Reverts if msg.sender is not the organization', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+        false,
+      );
 
-            const nonOrganization = accountProvider.get();
+      const nonOrganization = accountProvider.get();
 
-            await utils.expectRevert(
-                brandedToken.liftAllRestrictions(
-                    { from: nonOrganization },
-                ),
-                'Should revert as msg.sender is not the organization.',
-                'Only the organization is allowed to call this method.',
-            );
-        });
+      await utils.expectRevert(
+        brandedToken.liftAllRestrictions(
+          { from: nonOrganization },
+        ),
+        'Should revert as msg.sender is not the organization.',
+        'Only the organization is allowed to call this method.',
+      );
     });
+  });
 
-    contract('Storage', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Storage', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Successfully lifts all restrictions', async () => {
-            const {
-                brandedToken,
-                staker,
-                worker,
-            } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
-                accountProvider,
-            );
+    it('Successfully lifts all restrictions', async () => {
+      const {
+        brandedToken,
+        staker,
+        worker,
+      } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
+        accountProvider,
+      );
 
-            const to = accountProvider.get();
-            const brandedTokens = 1;
+      const to = accountProvider.get();
+      const brandedTokens = 1;
 
-            await utils.expectRevert(
-                brandedToken.transfer(
-                    to,
-                    brandedTokens,
-                    { from: staker },
-                ),
-                'Should revert as msg.sender is restricted.',
-                'Msg.sender is restricted.',
-            );
+      await utils.expectRevert(
+        brandedToken.transfer(
+          to,
+          brandedTokens,
+          { from: staker },
+        ),
+        'Should revert as msg.sender is restricted.',
+        'Msg.sender is restricted.',
+      );
 
-            assert.isOk(
-                await brandedToken.liftAllRestrictions.call(
-                    { from: worker },
-                ),
-            );
+      assert.isOk(
+        await brandedToken.liftAllRestrictions.call(
+          { from: worker },
+        ),
+      );
 
-            await brandedToken.liftAllRestrictions(
-                { from: worker },
-            );
+      await brandedToken.liftAllRestrictions(
+        { from: worker },
+      );
 
-            assert.isNotOk(
-                await brandedToken.isUnrestricted(
-                    staker,
-                    { from: worker },
-                ),
-            );
+      assert.isNotOk(
+        await brandedToken.isUnrestricted(
+          staker,
+          { from: worker },
+        ),
+      );
 
-            await brandedToken.transfer(
-                to,
-                brandedTokens,
-                { from: staker },
-            );
-        });
+      await brandedToken.transfer(
+        to,
+        brandedTokens,
+        { from: staker },
+      );
     });
+  });
 });

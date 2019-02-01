@@ -19,95 +19,95 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::setName', async () => {
-    const newName = 'New BrandedToken';
+  const newName = 'New BrandedToken';
 
-    contract('Negative Tests', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Negative Tests', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Reverts if msg.sender is not a worker', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-                false,
-            );
+    it('Reverts if msg.sender is not a worker', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+        false,
+      );
 
-            const nonWorker = accountProvider.get();
+      const nonWorker = accountProvider.get();
 
-            await utils.expectRevert(
-                brandedToken.setName(
-                    newName,
-                    { from: nonWorker },
-                ),
-                'Should revert as msg.sender is not a worker.',
-                'Only whitelisted workers are allowed to call this method.',
-            );
-        });
+      await utils.expectRevert(
+        brandedToken.setName(
+          newName,
+          { from: nonWorker },
+        ),
+        'Should revert as msg.sender is not a worker.',
+        'Only whitelisted workers are allowed to call this method.',
+      );
     });
+  });
 
-    contract('Event', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Event', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Emits NameSet event', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-            );
+    it('Emits NameSet event', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+      );
 
-            const worker = accountProvider.get();
+      const worker = accountProvider.get();
 
-            const transactionResponse = await brandedToken.setName(
-                newName,
-                { from: worker },
-            );
+      const transactionResponse = await brandedToken.setName(
+        newName,
+        { from: worker },
+      );
 
-            const events = Event.decodeTransactionResponse(
-                transactionResponse,
-            );
+      const events = Event.decodeTransactionResponse(
+        transactionResponse,
+      );
 
-            assert.strictEqual(
-                events.length,
-                1,
-            );
+      assert.strictEqual(
+        events.length,
+        1,
+      );
 
-            Event.assertEqual(events[0], {
-                name: 'NameSet',
-                args: {
-                    _name: newName,
-                },
-            });
-        });
+      Event.assertEqual(events[0], {
+        name: 'NameSet',
+        args: {
+          _name: newName,
+        },
+      });
     });
+  });
 
-    contract('Storage', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Storage', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Successfully sets name', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-            );
+    it('Successfully sets name', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+      );
 
-            const worker = accountProvider.get();
+      const worker = accountProvider.get();
 
-            assert.isOk(
-                await brandedToken.setName.call(
-                    newName,
-                    { from: worker },
-                ),
-            );
+      assert.isOk(
+        await brandedToken.setName.call(
+          newName,
+          { from: worker },
+        ),
+      );
 
-            await brandedToken.setName(
-                newName,
-                { from: worker },
-            );
+      await brandedToken.setName(
+        newName,
+        { from: worker },
+      );
 
-            assert.strictEqual(
-                newName,
-                await brandedToken.name(),
-            );
-        });
+      assert.strictEqual(
+        newName,
+        await brandedToken.name(),
+      );
     });
+  });
 });

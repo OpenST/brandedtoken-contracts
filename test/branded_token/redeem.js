@@ -20,122 +20,122 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::redeem', async () => {
-    contract('Negative Tests', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Negative Tests', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Fails if valueToken.transfer returns false', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-                true,
-                false, // Use EIP20TokenMockPassFail
-            );
+    it('Fails if valueToken.transfer returns false', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+        true,
+        false, // Use EIP20TokenMockPassFail
+      );
 
-            await utils.expectRevert(
-                brandedToken.redeem(
-                    0,
-                    { from: accountProvider.get() },
-                ),
-                'Should revert as valueToken.transfer returned false.',
-                'ValueToken.transfer returned false.',
-            );
-        });
+      await utils.expectRevert(
+        brandedToken.redeem(
+          0,
+          { from: accountProvider.get() },
+        ),
+        'Should revert as valueToken.transfer returned false.',
+        'ValueToken.transfer returned false.',
+      );
     });
+  });
 
-    contract('Event', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Event', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Emits Redeemed and Transfer events', async () => {
-            const {
-                brandedToken,
-                staker,
-            } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
-                accountProvider,
-            );
+    it('Emits Redeemed and Transfer events', async () => {
+      const {
+        brandedToken,
+        staker,
+      } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
+        accountProvider,
+      );
 
-            // At a conversion rate of 3.5, 4 branded tokens (least divisible unit)
-            // evaluates to 1 value token (least divisible unit)
-            const brandedTokens = 4;
+      // At a conversion rate of 3.5, 4 branded tokens (least divisible unit)
+      // evaluates to 1 value token (least divisible unit)
+      const brandedTokens = 4;
 
-            const transactionResponse = await brandedToken.redeem(
-                brandedTokens,
-                { from: staker },
-            );
+      const transactionResponse = await brandedToken.redeem(
+        brandedTokens,
+        { from: staker },
+      );
 
-            const events = Event.decodeTransactionResponse(
-                transactionResponse,
-            );
+      const events = Event.decodeTransactionResponse(
+        transactionResponse,
+      );
 
-            assert.strictEqual(
-                events.length,
-                2,
-            );
+      assert.strictEqual(
+        events.length,
+        2,
+      );
 
-            Event.assertEqual(events[0], {
-                name: 'Redeemed',
-                args: {
-                    _redeemer: staker,
-                    _valueTokens: await brandedToken.convertToValueTokens(brandedTokens),
-                },
-            });
+      Event.assertEqual(events[0], {
+        name: 'Redeemed',
+        args: {
+          _redeemer: staker,
+          _valueTokens: await brandedToken.convertToValueTokens(brandedTokens),
+        },
+      });
 
-            Event.assertEqual(events[1], {
-                name: 'Transfer',
-                args: {
-                    _from: staker,
-                    _to: utils.NULL_ADDRESS,
-                    _value: new BN(brandedTokens),
-                },
-            });
-        });
+      Event.assertEqual(events[1], {
+        name: 'Transfer',
+        args: {
+          _from: staker,
+          _to: utils.NULL_ADDRESS,
+          _value: new BN(brandedTokens),
+        },
+      });
     });
+  });
 
-    contract('Storage', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Storage', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Successfully redeems branded tokens', async () => {
-            const {
-                brandedToken,
-                staker,
-            } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
-                accountProvider,
-            );
+    it('Successfully redeems branded tokens', async () => {
+      const {
+        brandedToken,
+        staker,
+      } = await brandedTokenUtils.setupBrandedTokenAndAcceptedStakeRequest(
+        accountProvider,
+      );
 
-            // At a conversion rate of 3.5, 4 branded tokens (least divisible unit)
-            // evaluates to 1 value token (least divisible unit)
-            const brandedTokens = 4;
-            const totalSupplyBefore = await brandedToken.totalSupply();
-            const balanceBefore = await brandedToken.balanceOf(staker);
+      // At a conversion rate of 3.5, 4 branded tokens (least divisible unit)
+      // evaluates to 1 value token (least divisible unit)
+      const brandedTokens = 4;
+      const totalSupplyBefore = await brandedToken.totalSupply();
+      const balanceBefore = await brandedToken.balanceOf(staker);
 
-            assert.isOk(
-                await brandedToken.redeem.call(
-                    brandedTokens,
-                    { from: staker },
-                ),
-            );
+      assert.isOk(
+        await brandedToken.redeem.call(
+          brandedTokens,
+          { from: staker },
+        ),
+      );
 
-            await brandedToken.redeem(
-                brandedTokens,
-                { from: staker },
-            );
+      await brandedToken.redeem(
+        brandedTokens,
+        { from: staker },
+      );
 
-            const totalSupplyAfter = await brandedToken.totalSupply();
-            const balanceAfter = await brandedToken.balanceOf(staker);
+      const totalSupplyAfter = await brandedToken.totalSupply();
+      const balanceAfter = await brandedToken.balanceOf(staker);
 
-            assert.strictEqual(
-                totalSupplyAfter.cmp(
-                    totalSupplyBefore.subn(brandedTokens),
-                ),
-                0,
-            );
+      assert.strictEqual(
+        totalSupplyAfter.cmp(
+          totalSupplyBefore.subn(brandedTokens),
+        ),
+        0,
+      );
 
-            assert.strictEqual(
-                balanceAfter.cmp(
-                    balanceBefore.subn(brandedTokens),
-                ),
-                0,
-            );
-        });
+      assert.strictEqual(
+        balanceAfter.cmp(
+          balanceBefore.subn(brandedTokens),
+        ),
+        0,
+      );
     });
+  });
 });

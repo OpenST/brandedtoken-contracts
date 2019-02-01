@@ -18,23 +18,23 @@ const utils = require('../test_lib/utils');
 const SafeMathTest = artifacts.require('SafeMathTest');
 
 contract('SafeMath::div', async () => {
-    it('Checks that that division works correctly.', async () => {
-        const SafeMath = await SafeMathTest.new();
+  it('Checks that that division works correctly.', async () => {
+    const SafeMath = await SafeMathTest.new();
 
-        const a = new BN(5678);
-        const b = new BN(5678);
+    const a = new BN(5678);
+    const b = new BN(5678);
 
-        const result = await SafeMath.div.call(a, b);
+    const result = await SafeMath.div.call(a, b);
 
-        assert(result.eq(a.div(b)));
-    });
+    assert(result.eq(a.div(b)));
+  });
 
-    it('Checks that division throws on zero division.', async () => {
-        const SafeMath = await SafeMathTest.new();
+  it('Checks that division throws on zero division.', async () => {
+    const SafeMath = await SafeMathTest.new();
 
-        const a = new BN(5678);
-        const b = new BN(0);
+    const a = new BN(5678);
+    const b = new BN(0);
 
-        await utils.expectRevert(SafeMath.div(a, b));
-    });
+    await utils.expectRevert(SafeMath.div(a, b));
+  });
 });

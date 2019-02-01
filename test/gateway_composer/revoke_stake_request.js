@@ -20,175 +20,175 @@ const web3 = require('../test_lib/web3.js');
 const gatewayComposerUtils = require('./utils');
 
 contract('GatewayComposer::revokeStakeRequest', async (accounts) => {
-    describe('Negative Tests', async () => {
-        const accountProvider = new AccountProvider(accounts);
+  describe('Negative Tests', async () => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Fails when owner is not the caller.', async () => {
-            const {
-                gatewayComposer,
-            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+    it('Fails when owner is not the caller.', async () => {
+      const {
+        gatewayComposer,
+      } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
-            const stakeRequestHash = web3.utils.soliditySha3('hash');
-            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
-                stakeRequestHash,
-                { from: accountProvider.get() },
-            ),
-            'Should revert as msg.sender is not the owner.',
-            'Only owner can call the function.');
-        });
-
-        it('Fails when stake request is not found.', async () => {
-            const {
-                gatewayComposer,
-                owner,
-            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
-
-            const invalidStakeRequestHash = web3.utils.soliditySha3('invalid');
-            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
-                invalidStakeRequestHash,
-                { from: owner },
-            ),
-            'Should revert as stake request not found.',
-            'Stake request not found.');
-        });
-
-        it('Fails when BrandedToken.revokeStakeRequest returned false.', async () => {
-            const {
-                gatewayComposer,
-                brandedToken,
-                valueToken,
-                owner,
-            } = await gatewayComposerUtils.setupGatewayComposer(
-                accountProvider,
-                false,
-            );
-
-            const {
-                stakeAmount,
-            } = await gatewayComposerUtils.approveGatewayComposer(
-                valueToken,
-                gatewayComposer,
-                owner,
-            );
-
-            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
-            const stakeRequestHash = await gatewayComposer.requestStake.call(
-                stakeAmount,
-                mintAmount,
-                gateway,
-                beneficiary,
-                gasPrice,
-                gasLimit,
-                nonce,
-                { from: owner },
-            );
-            await gatewayComposer.requestStake(
-                stakeAmount,
-                mintAmount,
-                gateway,
-                beneficiary,
-                gasPrice,
-                gasLimit,
-                nonce,
-                { from: owner },
-            );
-
-            await utils.expectRevert(gatewayComposer.revokeStakeRequest(
-                stakeRequestHash,
-                { from: owner },
-            ),
-            'Should revert as BrandedToken revokeStakeRequest returned false.',
-            'BrandedToken revokeStakeRequest returned false.');
-        });
+      const stakeRequestHash = web3.utils.soliditySha3('hash');
+      await utils.expectRevert(gatewayComposer.revokeStakeRequest(
+        stakeRequestHash,
+        { from: accountProvider.get() },
+      ),
+      'Should revert as msg.sender is not the owner.',
+      'Only owner can call the function.');
     });
 
-    describe('Positive Tests', async () => {
-        const accountProvider = new AccountProvider(accounts);
+    it('Fails when stake request is not found.', async () => {
+      const {
+        gatewayComposer,
+        owner,
+      } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
 
-        it('Returns true on successful execution.', async () => {
-            const {
-                gatewayComposer,
-                brandedToken,
-                valueToken,
-                owner,
-                ownerValueTokenBalance,
-            } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
-
-            const {
-                stakeAmount,
-            } = await gatewayComposerUtils.approveGatewayComposer(
-                valueToken,
-                gatewayComposer,
-                owner,
-            );
-
-            const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
-            const gateway = accountProvider.get();
-            const beneficiary = accountProvider.get();
-            const gasPrice = 1;
-            const gasLimit = 1;
-            const nonce = 1;
-            const stakeRequestHash = await gatewayComposer.requestStake.call(
-                stakeAmount,
-                mintAmount,
-                gateway,
-                beneficiary,
-                gasPrice,
-                gasLimit,
-                nonce,
-                { from: owner },
-            );
-            await gatewayComposer.requestStake(
-                stakeAmount,
-                mintAmount,
-                gateway,
-                beneficiary,
-                gasPrice,
-                gasLimit,
-                nonce,
-                { from: owner },
-            );
-
-            const executionStatus = await gatewayComposer.revokeStakeRequest.call(
-                stakeRequestHash,
-                { from: owner },
-            );
-            assert.strictEqual(executionStatus, true);
-
-            await gatewayComposer.revokeStakeRequest(
-                stakeRequestHash,
-                { from: owner },
-            );
-
-            // stakeRequestHash information is deleted
-            const stakeRequest = await gatewayComposer.stakeRequests.call(
-                stakeRequestHash,
-            );
-            assert.strictEqual(
-                (stakeRequest.stakeVT).cmp(new BN(0)),
-                0,
-            );
-
-            // Asserts owner balance.
-            assert.strictEqual(
-                (await valueToken.balanceOf.call(owner)).cmp(ownerValueTokenBalance),
-                0,
-            );
-
-            // Sanity check in brandedToken.
-            // stakeRequestHash information is deleted in BrandedToken.
-            const btStakeRequest = await brandedToken.stakeRequests.call(
-                stakeRequestHash,
-            );
-            assert.strictEqual(
-                btStakeRequest.staker,
-                utils.NULL_ADDRESS,
-            );
-        });
+      const invalidStakeRequestHash = web3.utils.soliditySha3('invalid');
+      await utils.expectRevert(gatewayComposer.revokeStakeRequest(
+        invalidStakeRequestHash,
+        { from: owner },
+      ),
+      'Should revert as stake request not found.',
+      'Stake request not found.');
     });
+
+    it('Fails when BrandedToken.revokeStakeRequest returned false.', async () => {
+      const {
+        gatewayComposer,
+        brandedToken,
+        valueToken,
+        owner,
+      } = await gatewayComposerUtils.setupGatewayComposer(
+        accountProvider,
+        false,
+      );
+
+      const {
+        stakeAmount,
+      } = await gatewayComposerUtils.approveGatewayComposer(
+        valueToken,
+        gatewayComposer,
+        owner,
+      );
+
+      const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+      const gateway = accountProvider.get();
+      const beneficiary = accountProvider.get();
+      const gasPrice = 1;
+      const gasLimit = 1;
+      const nonce = 1;
+      const stakeRequestHash = await gatewayComposer.requestStake.call(
+        stakeAmount,
+        mintAmount,
+        gateway,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        { from: owner },
+      );
+      await gatewayComposer.requestStake(
+        stakeAmount,
+        mintAmount,
+        gateway,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        { from: owner },
+      );
+
+      await utils.expectRevert(gatewayComposer.revokeStakeRequest(
+        stakeRequestHash,
+        { from: owner },
+      ),
+      'Should revert as BrandedToken revokeStakeRequest returned false.',
+      'BrandedToken revokeStakeRequest returned false.');
+    });
+  });
+
+  describe('Positive Tests', async () => {
+    const accountProvider = new AccountProvider(accounts);
+
+    it('Returns true on successful execution.', async () => {
+      const {
+        gatewayComposer,
+        brandedToken,
+        valueToken,
+        owner,
+        ownerValueTokenBalance,
+      } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+      const {
+        stakeAmount,
+      } = await gatewayComposerUtils.approveGatewayComposer(
+        valueToken,
+        gatewayComposer,
+        owner,
+      );
+
+      const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+      const gateway = accountProvider.get();
+      const beneficiary = accountProvider.get();
+      const gasPrice = 1;
+      const gasLimit = 1;
+      const nonce = 1;
+      const stakeRequestHash = await gatewayComposer.requestStake.call(
+        stakeAmount,
+        mintAmount,
+        gateway,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        { from: owner },
+      );
+      await gatewayComposer.requestStake(
+        stakeAmount,
+        mintAmount,
+        gateway,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        { from: owner },
+      );
+
+      const executionStatus = await gatewayComposer.revokeStakeRequest.call(
+        stakeRequestHash,
+        { from: owner },
+      );
+      assert.strictEqual(executionStatus, true);
+
+      await gatewayComposer.revokeStakeRequest(
+        stakeRequestHash,
+        { from: owner },
+      );
+
+      // stakeRequestHash information is deleted
+      const stakeRequest = await gatewayComposer.stakeRequests.call(
+        stakeRequestHash,
+      );
+      assert.strictEqual(
+        (stakeRequest.stakeVT).cmp(new BN(0)),
+        0,
+      );
+
+      // Asserts owner balance.
+      assert.strictEqual(
+        (await valueToken.balanceOf.call(owner)).cmp(ownerValueTokenBalance),
+        0,
+      );
+
+      // Sanity check in brandedToken.
+      // stakeRequestHash information is deleted in BrandedToken.
+      const btStakeRequest = await brandedToken.stakeRequests.call(
+        stakeRequestHash,
+      );
+      assert.strictEqual(
+        btStakeRequest.staker,
+        utils.NULL_ADDRESS,
+      );
+    });
+  });
 });
