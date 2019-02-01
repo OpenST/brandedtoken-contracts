@@ -69,21 +69,15 @@ module.exports.expectRevert = async (
     assert(false, displayMessage);
 };
 
-module.exports.advanceBlock = () => new Promise((resolve, reject) => {
-    web3.currentProvider.send({
-        jsonrpc: '2.0',
-        method: 'evm_mine',
-        id: new Date().getTime(),
+module.exports.advanceBlock = async () => {
+    await web3.currentProvider.send({
+      jsonrpc: '2.0',
+      method: 'evm_mine',
+      id: new Date().getTime(),
     }, (err) => {
-        if (err) {
-            return reject(err);
-        }
-
-        const newBlockHash = web3.eth.getBlock('latest').hash;
-
-        return resolve(newBlockHash);
+      assert.strictEqual(err, null);
     });
-});
+};
 
 /** Receives accounts list and gives away each time one. */
 module.exports.AccountProvider = class AccountProvider {

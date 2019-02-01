@@ -68,7 +68,6 @@ class Event {
             this.assertEqual(actual, expected);
         }
     }
-    
 }
 
 module.exports = {
