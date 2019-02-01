@@ -17,7 +17,7 @@ const BN = require('bn.js');
 const utils = require('../test_lib/utils');
 const gatewayComposerUtils = require('./utils');
 
-const AccountProvider = utils.AccountProvider;
+const { AccountProvider } = require('../test_lib/utils.js');
 const web3 = require('../test_lib/web3.js');
 
 contract('GatewayComposer::destroy', async (accounts) => {

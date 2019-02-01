@@ -17,7 +17,7 @@ const GatewayComposer = artifacts.require('GatewayComposer');
 const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
-const AccountProvider = utils.AccountProvider;
+const { AccountProvider } = require('../test_lib/utils.js');
 
 
 contract('GatewayComposer::constructor', async (accounts) => {
