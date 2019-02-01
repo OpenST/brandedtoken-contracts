@@ -97,7 +97,7 @@ contract('BrandedToken::constructor', async () => {
         const decimals = 18;
         const organization = accountProvider.get();
 
-        it('Successfully sets the constructor arguments', async () => {
+        it('Successfully sets state variables', async () => {
             const valueToken = accountProvider.get();
             const conversionRate = 35;
             const conversionRateDecimals = 1;

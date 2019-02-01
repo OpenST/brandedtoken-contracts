@@ -58,7 +58,7 @@ contract('UtilityBrandedToken::approve', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Approval to registered internal actor', async () => {
+        it('Successfully approves registered internal actor', async () => {
             internalActors.push(tokenHolder2);
             await testUtilityBrandedToken.registerInternalActor(
                 internalActors,

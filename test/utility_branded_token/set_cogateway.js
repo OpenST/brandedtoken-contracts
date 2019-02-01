@@ -112,7 +112,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Validate the cogateway address', async () => {
+        it('Successfully sets the cogateway address', async () => {
             await testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
                 { from: admin },
@@ -127,7 +127,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     });
 
     describe('Events', async () => {
-        it('Verify CoGatewaySet event', async () => {
+        it('Emits a CoGatewaySet event', async () => {
             const transactionResponse = await testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
                 { from: admin },

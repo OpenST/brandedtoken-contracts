@@ -116,7 +116,7 @@ contract('Internal::registerInternalActor', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Verifies registered internal actors', async () => {
+        it('Successfully registers internal actors', async () => {
             const internalActors = [];
             internalActors.push(accountProvider.get());
             internalActors.push(accountProvider.get());
