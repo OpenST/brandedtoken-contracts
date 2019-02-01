@@ -16,7 +16,7 @@ const utils = require('../test_lib/utils');
 const { Event } = require('../test_lib/event_decoder');
 const InternalUtils = require('./utils');
 
-contract('Internal::registerinternalactor', async (accounts) => {
+contract('Internal::registerInternalActor', async (accounts) => {
     let internal;
     let organization;
     let accountProvider;
