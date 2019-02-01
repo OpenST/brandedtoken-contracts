@@ -120,7 +120,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         returns (bool success_)
     {
         require(
-            (isInternalActor[_beneficiary]),
+            isInternalActor[_beneficiary],
             "Beneficiary is not an internal actor."
         );
         success_ = increaseSupplyInternal(_beneficiary, _amount);
