@@ -1,4 +1,8 @@
-## 0.10.0
+# Branded Token Contracts Change Log
+
+Below is a list of notable changes implemented in this repository.
+
+## [v0.10.0](https://github.com/OpenSTFoundation/brandedtoken-contracts/releases/tag/v0.10.0) <release date: DD MM YYYY>
 
 Tests: Fix negative tests with unresolved promises ([#118](https://github.com/OpenSTFoundation/brandedtoken-contracts/pull/118))
 Tests: Complete testing of various BrandedToken functions ([#114](https://github.com/OpenSTFoundation/brandedtoken-contracts/pull/114))
