@@ -1525,41 +1525,39 @@ All documentations starts with capital letter and end with `'.'` (dot).
 `Good`
 
 ```solidity
-/**
  * @notice Returns storage root at the specified block height.
- *
- * @param _blockHeight Block height to return storage root.
- *
- * @return bytes32(0) if a storage root for specified block height was not
- *          verified otherwise saved storage root.
- */
-function getStorageRoot(uint256 _blockHeight)
-    public
-    view
-    returns (bytes32)
-{
-    ...
-}
 ```
 
 `Bad`
 
 ```solidity
-/**
- * @notice returns storage root at the specified block height.
- *
- * @param _blockHeight Block height to return storage root
- *
- * @return bytes32(0) If a storage root for specified block height was not
- *          verified otherwise saved storage root.
- */
-function getStorageRoot(uint256 _blockHeight)
-    public
-    view
-    returns (bytes32)
-{
-    ...
-}
+ * @notice returns storage root at the specified block height
+```
+
+When documenting a list, _in general_, items should not be formatted like an English sentence—the first word should only start with a capital letter if that would also be true were the word not first, and the item should not end with punctuation. However, English sentence formatting is OK if it improves readability and comprehension, such as in the case of very long list items.
+
+`Good`
+
+```solidity
+ * @dev Function requires:
+ *          - msg.sender is owner
+ *          - amount is not zero
+```
+
+```solidity
+ * @dev Function requires:
+ *          - The economy token address is not null.
+ *          - The base currency code is not empty.
+ *          - Conversion rate from the base currency to the token is not 0.
+ *          - The economy token rules address is not null.
+```
+
+`Bad`
+
+```solidity
+ * @dev Function requires:
+ *          - Msg.sender is owner
+ *          - amount is not zero.
 ```
 
 ### Grouping
