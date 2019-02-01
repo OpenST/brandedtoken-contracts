@@ -21,7 +21,9 @@
   "bugs": {
     "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts/issues"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "truffle test"
+  },
   "devDependencies": {
     "abi-decoder": "1.2.0",
     "assert": "1.4.1",

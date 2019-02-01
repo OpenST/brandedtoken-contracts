@@ -22,6 +22,6 @@ install:
 before_script:
   - nohup sh tools/runGanacheCli.sh </dev/null >/dev/null 2>&1 &
 script:
-  - truffle test
+  - npm run test
 after_script:
   - kill $(ps aux | grep 'testrpc' | awk '{print $2}')
