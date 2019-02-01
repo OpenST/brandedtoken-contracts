@@ -38,11 +38,14 @@ contract('BrandedToken::convertToBrandedTokens', async () => {
             //      - conversionRateDecimals == 1
             //      - 2 --> 7
             const valueTokensLossless = new BN(2);
-            const brandedTokensLossless = await brandedToken.convertToBrandedTokens(valueTokensLossless);
+            const brandedTokensLossless = await brandedToken
+                .convertToBrandedTokens(valueTokensLossless);
 
             assert.strictEqual(
                 brandedTokensLossless.cmp(
-                    valueTokensLossless.mul(conversionRate).div(new BN(10).pow(conversionRateDecimals)),
+                    valueTokensLossless
+                    .mul(conversionRate)
+                    .div(new BN(10).pow(conversionRateDecimals)),
                 ),
                 0,
             );
@@ -62,11 +65,14 @@ contract('BrandedToken::convertToBrandedTokens', async () => {
             //      - conversionRateDecimals == 1
             //      - 1 --> 3, not 3.5
             const valueTokensLoss = new BN(1);
-            const brandedTokensLoss = await brandedToken.convertToBrandedTokens(valueTokensLoss);
+            const brandedTokensLoss = await brandedToken
+                .convertToBrandedTokens(valueTokensLoss);
 
             assert.strictEqual(
                 brandedTokensLoss.cmp(
-                    valueTokensLoss.mul(conversionRate).div(new BN(10).pow(conversionRateDecimals)),
+                    valueTokensLoss
+                    .mul(conversionRate)
+                    .div(new BN(10).pow(conversionRateDecimals)),
                 ),
                 0,
             );
@@ -83,7 +89,6 @@ contract('BrandedToken::convertToBrandedTokens', async () => {
             //       decimals for the test tokens are 18; consequently,
             //       the potential for and degree of loss
             //       as indicated above is considered acceptable
-
         });
     });
 });

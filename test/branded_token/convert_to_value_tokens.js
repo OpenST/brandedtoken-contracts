@@ -38,11 +38,14 @@ contract('BrandedToken::convertToValueTokens', async () => {
             //      - conversionRateDecimals == 1
             //      - 35 --> 10
             const brandedTokensLossless = conversionRate;
-            const valueTokensLossless = await brandedToken.convertToValueTokens(brandedTokensLossless);
+            const valueTokensLossless = await brandedToken
+                .convertToValueTokens(brandedTokensLossless);
 
             assert.strictEqual(
                 valueTokensLossless.cmp(
-                    brandedTokensLossless.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                    brandedTokensLossless
+                    .mul(new BN(10).pow(conversionRateDecimals))
+                    .div(conversionRate),
                 ),
                 0,
             );
@@ -62,11 +65,14 @@ contract('BrandedToken::convertToValueTokens', async () => {
             //      - conversionRateDecimals == 1
             //      - 36 --> 10 value tokens, not 10.2
             const brandedTokensLoss = conversionRate.addn(1);
-            const valueTokensLoss = await brandedToken.convertToValueTokens(brandedTokensLoss);
+            const valueTokensLoss = await brandedToken
+                .convertToValueTokens(brandedTokensLoss);
 
             assert.strictEqual(
                 valueTokensLoss.cmp(
-                    brandedTokensLoss.mul(new BN(10).pow(conversionRateDecimals)).div(conversionRate),
+                    brandedTokensLoss
+                    .mul(new BN(10).pow(conversionRateDecimals))
+                    .div(conversionRate),
                 ),
                 0,
             );
