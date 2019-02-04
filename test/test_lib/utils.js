@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const BN = require('bn.js');
+
 const assert = require('assert');
 const web3 = require('web3');
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NULL_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const MAX_UINT256 = new BN(2).pow(new BN(256)).sub(new BN(1));
 
 module.exports.NULL_ADDRESS = NULL_ADDRESS;
 module.exports.NULL_BYTES32 = NULL_BYTES32;
+module.exports.MAX_UINT256 = MAX_UINT256;
 
 module.exports.isNullAddress = address => address === NULL_ADDRESS;
 
