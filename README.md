@@ -1,6 +1,6 @@
 <h1 align="center">Branded Tokens - Tokenizing Mainstream Applications</h1>
 
-[![Discourse: JOIN DISCUSSION](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)](https://discuss.openst.org/)
+[![Discourse: JOIN DISCUSSION](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)](https://discuss.openst.org/) [![Travis CI: DEVELOP](https://img.shields.io/travis/OpenSTFoundation/brandedtoken-contracts/develop.svg?style=flat)](https://travis-ci.org/OpenSTFoundation/brandedtoken-contracts)
 
 A Branded Token allows a mainstream application to create a value-backed token designed specifically for its application's context. A Branded Token implements the required and optional [EIP-20 Standard Token interface](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md).
 
