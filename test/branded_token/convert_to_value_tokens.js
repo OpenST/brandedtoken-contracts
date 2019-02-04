@@ -13,6 +13,8 @@
 // limitations under the License.
 
 
+'use strict';
+
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 const BrandedTokenUtils = require('./utils.js');

@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const MockOrganization = artifacts.require('MockOrganization');

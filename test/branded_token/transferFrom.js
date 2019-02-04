@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const { AccountProvider } = require('../test_lib/utils.js');
 
 const utils = require('../test_lib/utils');

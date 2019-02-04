@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const utils = require('../test_lib/utils');
 const { Event } = require('../test_lib/event_decoder');
 const InternalUtils = require('./utils');

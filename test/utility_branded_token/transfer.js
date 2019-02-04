@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const utils = require('../test_lib/utils');
 const UtilityBrandedTokenUtils = require('./utils');
 const web3 = require('../test_lib/web3');
