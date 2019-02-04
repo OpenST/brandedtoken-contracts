@@ -85,7 +85,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Validate the increase in supply of tokens', async () => {
+        it('Correctly increases the supply of tokens', async () => {
             // Before increase in supply
             assert.strictEqual(
                 (await testUtilityBrandedToken.balanceOf(tokenHolder3)).cmp(
@@ -127,7 +127,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
     });
 
     describe('Events', async () => {
-        it('Verify Transfer event', async () => {
+        it('Emits a Transfer event', async () => {
             const transactionResponse = await testUtilityBrandedToken.increaseSupply(
                 tokenHolder3,
                 amount,

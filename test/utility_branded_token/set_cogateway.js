@@ -54,7 +54,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     });
 
     describe('Negative Tests', async () => {
-        it('Reverts if non-owner address sets the cogateway', async () => {
+        it('Reverts if non-owner address sets the coGateway', async () => {
             const nonOrganization = accountProvider.get();
             await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
@@ -64,7 +64,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
             'Only the organization is allowed to call this method.');
         });
 
-        it('Reverts if cogateway address is zero', async () => {
+        it('Reverts if coGateway address is zero', async () => {
             await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
                 utils.NULL_ADDRESS,
                 { from: admin },
@@ -87,7 +87,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
                 mockCoGateway2.address,
                 { from: admin },
             ),
-            'Cogateway address cannot be set again.',
+            'CoGateway address cannot be set again.',
             'CoGateway address already set.');
         });
 
@@ -112,7 +112,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Validate the cogateway address', async () => {
+        it('Successfully sets the coGateway address', async () => {
             await testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
                 { from: admin },
@@ -121,13 +121,13 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
             assert.strictEqual(
                 await testUtilityBrandedToken.coGateway.call(),
                 mockCoGateway.address,
-                'Cogateway address is incorrect',
+                'CoGateway address is incorrect',
             );
         });
     });
 
     describe('Events', async () => {
-        it('Verify CoGatewaySet event', async () => {
+        it('Emits a CoGatewaySet event', async () => {
             const transactionResponse = await testUtilityBrandedToken.setCoGateway(
                 mockCoGateway.address,
                 { from: admin },

@@ -53,7 +53,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
     });
 
     describe('Storage', async () => {
-        it('Checks the branded token address', async () => {
+        it('Successfully sets state variables', async () => {
             const utilityBrandedToken = await UtilityBrandedToken.new(
                 brandedToken.address,
                 SYMBOL,
