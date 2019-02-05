@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const BN = require('bn.js');
 
 const assert = require('assert');
@@ -37,65 +40,59 @@ module.exports.isNullAddress = address => address === NULL_ADDRESS;
  * @throws Will fail an assertion if the call or transaction is not reverted.
  */
 module.exports.expectRevert = async (
-    promise, displayMessage, expectedRevertMessage,
+  promise, displayMessage, expectedRevertMessage,
 ) => {
-    try {
-        await promise;
-    } catch (error) {
+  try {
+    await promise;
+  } catch (error) {
+    assert(
+      error.message.search('revert') > -1,
+      `The contract should revert. Instead: ${error.message}`,
+    );
+
+    if (expectedRevertMessage !== undefined) {
+      if (error.reason !== undefined) {
         assert(
-            error.message.search('revert') > -1,
-            `The contract should revert. Instead: ${error.message}`,
-        );
-
-        if (expectedRevertMessage !== undefined) {
-            if (error.reason !== undefined) {
-                assert(
-                    expectedRevertMessage === error.reason,
-                    `\nThe contract should revert with:\n\t"${expectedRevertMessage}" `
+          expectedRevertMessage === error.reason,
+          `\nThe contract should revert with:\n\t"${expectedRevertMessage}" `
                     + `\ninstead received:\n\t"${error.reason}"\n`,
-                );
-            } else {
-                assert(
-                    error.message.search(expectedRevertMessage) > -1,
-                    `\nThe contract should revert with:\n\t"${expectedRevertMessage}" `
+        );
+      } else {
+        assert(
+          error.message.search(expectedRevertMessage) > -1,
+          `\nThe contract should revert with:\n\t"${expectedRevertMessage}" `
                     + `\ninstead received:\n\t"${error.message}"\n`,
-                );
-            }
-        }
-
-        return;
+        );
+      }
     }
 
-    assert(false, displayMessage);
+    return;
+  }
+
+  assert(false, displayMessage);
 };
 
-module.exports.advanceBlock = () => new Promise((resolve, reject) => {
-    web3.currentProvider.send({
-        jsonrpc: '2.0',
-        method: 'evm_mine',
-        id: new Date().getTime(),
-    }, (err) => {
-        if (err) {
-            return reject(err);
-        }
-
-        const newBlockHash = web3.eth.getBlock('latest').hash;
-
-        return resolve(newBlockHash);
-    });
-});
+module.exports.advanceBlock = async () => {
+  await web3.currentProvider.send({
+    jsonrpc: '2.0',
+    method: 'evm_mine',
+    id: new Date().getTime(),
+  }, (err) => {
+    assert.strictEqual(err, null);
+  });
+};
 
 /** Receives accounts list and gives away each time one. */
 module.exports.AccountProvider = class AccountProvider {
-    constructor(accounts) {
-        this.accounts = accounts;
-        this.index = 0;
-    }
+  constructor(accounts) {
+    this.accounts = accounts;
+    this.index = 0;
+  }
 
-    get() {
-        assert(this.index < this.accounts.length);
-        const account = this.accounts[this.index];
-        this.index += 1;
-        return account;
-    }
+  get() {
+    assert(this.index < this.accounts.length);
+    const account = this.accounts[this.index];
+    this.index += 1;
+    return account;
+  }
 };

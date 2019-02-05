@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
+'use strict';
+
 const { AccountProvider } = require('../test_lib/utils.js');
 const { Event } = require('../test_lib/event_decoder.js');
 
@@ -19,95 +22,95 @@ const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
 
 contract('BrandedToken::setSymbol', async () => {
-    const newSymbol = 'NBT';
+  const newSymbol = 'NBT';
 
-    contract('Negative Tests', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Negative Tests', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Reverts if msg.sender is not a worker', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-                false,
-            );
+    it('Reverts if msg.sender is not a worker', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+        false,
+      );
 
-            const nonWorker = accountProvider.get();
+      const nonWorker = accountProvider.get();
 
-            await utils.expectRevert(
-                brandedToken.setSymbol(
-                    newSymbol,
-                    { from: nonWorker },
-                ),
-                'Should revert as msg.sender is not a worker.',
-                'Only whitelisted workers are allowed to call this method.',
-            );
-        });
+      await utils.expectRevert(
+        brandedToken.setSymbol(
+          newSymbol,
+          { from: nonWorker },
+        ),
+        'Should revert as msg.sender is not a worker.',
+        'Only whitelisted workers are allowed to call this method.',
+      );
     });
+  });
 
-    contract('Event', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Event', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Emits SymbolSet event', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-            );
+    it('Emits SymbolSet event', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+      );
 
-            const worker = accountProvider.get();
+      const worker = accountProvider.get();
 
-            const transactionResponse = await brandedToken.setSymbol(
-                newSymbol,
-                { from: worker },
-            );
+      const transactionResponse = await brandedToken.setSymbol(
+        newSymbol,
+        { from: worker },
+      );
 
-            const events = Event.decodeTransactionResponse(
-                transactionResponse,
-            );
+      const events = Event.decodeTransactionResponse(
+        transactionResponse,
+      );
 
-            assert.strictEqual(
-                events.length,
-                1,
-            );
+      assert.strictEqual(
+        events.length,
+        1,
+      );
 
-            Event.assertEqual(events[0], {
-                name: 'SymbolSet',
-                args: {
-                    _symbol: newSymbol,
-                },
-            });
-        });
+      Event.assertEqual(events[0], {
+        name: 'SymbolSet',
+        args: {
+          _symbol: newSymbol,
+        },
+      });
     });
+  });
 
-    contract('Storage', async (accounts) => {
-        const accountProvider = new AccountProvider(accounts);
+  contract('Storage', async (accounts) => {
+    const accountProvider = new AccountProvider(accounts);
 
-        it('Successfully sets symbol', async () => {
-            const {
-                brandedToken,
-            } = await brandedTokenUtils.setupBrandedToken(
-                accountProvider,
-            );
+    it('Successfully sets symbol', async () => {
+      const {
+        brandedToken,
+      } = await brandedTokenUtils.setupBrandedToken(
+        accountProvider,
+      );
 
-            const worker = accountProvider.get();
+      const worker = accountProvider.get();
 
-            assert.isOk(
-                await brandedToken.setSymbol.call(
-                    newSymbol,
-                    { from: worker },
-                ),
-            );
+      assert.isOk(
+        await brandedToken.setSymbol.call(
+          newSymbol,
+          { from: worker },
+        ),
+      );
 
-            await brandedToken.setSymbol(
-                newSymbol,
-                { from: worker },
-            );
+      await brandedToken.setSymbol(
+        newSymbol,
+        { from: worker },
+      );
 
-            assert.strictEqual(
-                newSymbol,
-                await brandedToken.symbol(),
-            );
-        });
+      assert.strictEqual(
+        newSymbol,
+        await brandedToken.symbol(),
+      );
     });
+  });
 });
