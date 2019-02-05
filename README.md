@@ -8,7 +8,7 @@ Holders of branded tokens must be able to redeem the value that backs those bran
 
 A Utility Branded Token, which also implements the EIP-20 Standard Token interface, is the utility token representation of the Branded Token on a sidechain. This representation is orchestrated via a gateway, comprising a Gateway contract on the same chain as the Branded Token, and a CoGateway contract on the sidechain with the Utility Branded Token.
 
-A Gateway Composer facilitate's staking value for branded tokens and minting a utility representation of those branded tokens with a Utility Branded Token through a gateway for use within the given application.
+A composer is a contract that can be used to optimize the transactions required to perform an action. A Gateway Composer, a type of composer, facilitate's staking value for branded tokens and minting a utility representation of those branded tokens with a Utility Branded Token through a gateway for use within the given application, thereby reducing both the number of transactions to execute and the number of contracts to call in order to stake and mint.
 
 The complete Branded Token specification is in a draft proposal and subject to change. For more information on the specification, please consult [OIP-0001](https://github.com/OpenST/OIPs/blob/master/OIPS/oip-0001.md) in the OpenST Improvement Proposals repository.
 
