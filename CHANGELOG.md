@@ -2,7 +2,8 @@
 
 Below is a list of notable changes implemented in this repository.
 
-## 0.10.0 <release date: DD MM YYYY>
+## 0.10.0
+<!-- [**0.10.0, (<release date: DD MM YYYY>)**](https://github.com/OpenSTFoundation/brandedtoken-contracts/releases/tag/0.10.0) -->
 
 * Contracts: update and test SafeMath ([#127](https://github.com/OpenSTFoundation/brandedtoken-contracts/pull/127))
 * Tests: Fix negative tests with unresolved promises ([#118](https://github.com/OpenSTFoundation/brandedtoken-contracts/pull/118))
