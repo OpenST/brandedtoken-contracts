@@ -17,3 +17,6 @@ build/
 
 contracts/abi/
 contracts/bin/
+
+# NPM package generated files:
+dist/contracts.json
