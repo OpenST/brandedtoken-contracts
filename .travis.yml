@@ -23,5 +23,7 @@ before_script:
   - nohup sh tools/runGanacheCli.sh </dev/null >/dev/null 2>&1 &
 script:
   - npm run test
+  - npm run compile-all
+  - npm run build-package
 after_script:
   - kill $(ps aux | grep 'testrpc' | awk '{print $2}')
