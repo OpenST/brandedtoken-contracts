@@ -1,6 +1,6 @@
 {
   "name": "@openstfoundation/brandedtoken-contracts",
-  "version": "0.10.0",
+  "version": "0.10.0-beta.1",
   "description": "BrandedToken Contracts provides token and related smart contracts for token economies.",
   "keywords": [
     "OpenST",
@@ -13,7 +13,7 @@
   ],
   "homepage": "https://openst.org",
   "author": "OpenST Limited",
-  "license": "LGPL-3.0",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts.git"
@@ -22,8 +22,15 @@
     "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts/issues"
   },
   "scripts": {
-    "test": "truffle test"
+    "build-package": "node tools/build_package.js",
+    "compile-all": "truffle compile --all",
+    "test": "truffle test",
+    "prepack": "npm run compile-all && npm run build-package"
   },
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "abi-decoder": "1.2.0",
     "assert": "1.4.1",
