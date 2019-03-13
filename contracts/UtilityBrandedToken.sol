@@ -159,6 +159,9 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
             "CoGateway.utilityToken is required to be UBT address."
         );
 
+        // Registers co-gateway as an internal actor.
+        isInternalActor[coGateway] = true;
+
         emit CoGatewaySet(coGateway);
 
         success_ = true;
