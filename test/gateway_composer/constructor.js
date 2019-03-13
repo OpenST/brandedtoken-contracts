@@ -72,6 +72,28 @@ contract('GatewayComposer::constructor', async (accounts) => {
       'BrandedToken address is zero.');
     });
 
+    it('Reverts if ValueToken address is same as owner address.', async () => {
+      await utils.expectRevert(GatewayComposer.new(
+        valueToken,
+        valueToken,
+        brandedToken,
+        { from: deployer },
+      ),
+      'It should revert as valueToken address is same as owner address.',
+      'ValueToken address is same as owner address.');
+    });
+
+    it('Reverts if BrandedToken address is same as owner address.', async () => {
+      await utils.expectRevert(GatewayComposer.new(
+        brandedToken,
+        valueToken,
+        brandedToken,
+        { from: deployer },
+      ),
+      'It should revert as BrandedToken address is same as owner address.',
+      'BrandedToken address is same as owner address.');
+    });
+
     it('Reverts if ValueToken is not equal to BrandedToken.valueToken.', async () => {
       brandedToken = await BrandedToken.new(
         accountProvider.get(),
