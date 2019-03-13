@@ -19,7 +19,7 @@ const utils = require('../test_lib/utils');
 const { Event } = require('../test_lib/event_decoder');
 const InternalUtils = require('./utils');
 
-contract('Internal::registerInternalActor', async (accounts) => {
+contract('Internal::registerInternalActors', async (accounts) => {
   let internal;
   let organization;
   let accountProvider;
@@ -40,7 +40,7 @@ contract('Internal::registerInternalActor', async (accounts) => {
       internalActors.push(accountProvider.get());
       const nonWorker = accountProvider.get();
 
-      await utils.expectRevert(internal.registerInternalActor(
+      await utils.expectRevert(internal.registerInternalActors(
         internalActors,
         { from: nonWorker },
       ),
@@ -56,7 +56,7 @@ contract('Internal::registerInternalActor', async (accounts) => {
       internalActors.push(accountProvider.get());
       internalActors.push(accountProvider.get());
 
-      const transactionResponse = await internal.registerInternalActor(
+      const transactionResponse = await internal.registerInternalActors(
         internalActors,
         { from: worker },
       );
@@ -96,12 +96,12 @@ contract('Internal::registerInternalActor', async (accounts) => {
       const internalActors = [];
       internalActors.push(accountProvider.get());
 
-      await internal.registerInternalActor(
+      await internal.registerInternalActors(
         internalActors,
         { from: worker },
       );
 
-      const transactionResponse = await internal.registerInternalActor(
+      const transactionResponse = await internal.registerInternalActors(
         internalActors,
         { from: worker },
       );
@@ -124,7 +124,7 @@ contract('Internal::registerInternalActor', async (accounts) => {
       internalActors.push(accountProvider.get());
       internalActors.push(accountProvider.get());
 
-      await internal.registerInternalActor(
+      await internal.registerInternalActors(
         internalActors,
         { from: worker },
       );

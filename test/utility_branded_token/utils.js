@@ -50,7 +50,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
     { from: organization },
   );
 
-  await testUtilityBrandedToken.registerInternalActor(
+  await testUtilityBrandedToken.registerInternalActors(
     internalActor,
     { from: worker },
   );
