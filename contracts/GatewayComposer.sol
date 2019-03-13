@@ -57,7 +57,7 @@ contract GatewayComposer {
     mapping (bytes32 => StakeRequest) public stakeRequests;
 
     /* Mutex lock status. */
-    bool private isMutexLock;
+    bool private isMutex;
 
 
     /* Modifiers */
@@ -71,11 +71,11 @@ contract GatewayComposer {
         _;
     }
 
-    /** Checks that mutex lock is acquired or not. */
-    modifier isMutexLockAcquired() {
+    /** Checks that mutex is acquired or not. */
+    modifier isMutexAcquired() {
         require(
-            isMutexLock == false,
-            "Mutex lock is already acquired."
+            isMutex == false,
+            "Mutex is already acquired."
         );
         _;
     }
@@ -184,10 +184,10 @@ contract GatewayComposer {
     )
         external
         onlyOwner
-        isMutexLockAcquired
+        isMutexAcquired
         returns (bytes32 stakeRequestHash_)
     {
-        acquireLock();
+        acquireMutex();
 
         require(
             _stakeVT > uint256(0),
@@ -229,7 +229,7 @@ contract GatewayComposer {
             nonce: _nonce
         });
 
-        releaseLock();
+        releaseMutex();
     }
 
     /**
@@ -521,18 +521,18 @@ contract GatewayComposer {
     /**
      * @notice This acquires mutex lock.
      */
-    function acquireLock()
+    function acquireMutex()
         private
     {
-        isMutexLock = true;
+        isMutex = true;
     }
 
     /**
      * @notice This releases the mutex lock.
      */
-    function releaseLock()
+    function releaseMutex()
         private
     {
-        isMutexLock = false;
+        isMutex = false;
     }
 }
