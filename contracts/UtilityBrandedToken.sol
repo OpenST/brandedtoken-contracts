@@ -123,6 +123,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
             isInternalActor[_beneficiary],
             "Beneficiary is not an internal actor."
         );
+
         success_ = increaseSupplyInternal(_beneficiary, _amount);
     }
 
@@ -250,10 +251,6 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      *          number of tokens to beneficiary balance and increases the total
      *          token supply.
      *
-     * @dev Function requires:
-     *          - _beneficiary address should not be zero
-     *          - _amount should be greater than zero
-     *
      * @param _beneficiary Account address for which the balance will be increased.
      * @param _amount Amount of tokens.
      *
@@ -266,24 +263,12 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         internal
         returns (bool success_)
     {
-        require(
-            _beneficiary != address(0),
-            "Beneficiary address should not be zero."
-        );
-
-        require(
-            _amount > 0,
-            "Amount should be greater than zero."
-        );
-
         // Increase the balance of the _account
         balances[_beneficiary] = balances[_beneficiary].add(_amount);
         totalTokenSupply = totalTokenSupply.add(_amount);
 
-        /*
-         * Creation of the new tokens should trigger a Transfer event with
-         * _from as 0x0.
-         */
+        // Creation of the new tokens should trigger a Transfer event with
+        // _from as 0x0.
         emit Transfer(address(0), _beneficiary, _amount);
 
         success_ = true;
@@ -293,9 +278,6 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      * @notice Internal function to decreases the token supply. Decreases the
      *         token balance from the msg.sender address and decreases the
      *         total token supply count.
-     *
-     * @dev Function requires:
-     *          - _amount should be greater than zero
      *
      * @param _amount Amount of tokens.
      *
@@ -308,26 +290,17 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         returns (bool success_)
     {
         require(
-            _amount > 0,
-            "Amount should be greater than zero."
-        );
-
-        address sender = msg.sender;
-
-        require(
-            balances[sender] >= _amount,
+            balances[msg.sender] >= _amount,
             "Insufficient balance."
         );
 
         // Decrease the balance of the msg.sender account.
-        balances[sender] = balances[sender].sub(_amount);
+        balances[msg.sender] = balances[msg.sender].sub(_amount);
         totalTokenSupply = totalTokenSupply.sub(_amount);
 
-        /*
-         * Burning of the tokens should trigger a Transfer event with _to
-         * as 0x0.
-         */
-        emit Transfer(sender, address(0), _amount);
+        // Burning of the tokens should trigger a Transfer event with _to
+        // as 0x0.
+        emit Transfer(msg.sender, address(0), _amount);
 
         success_ = true;
     }
