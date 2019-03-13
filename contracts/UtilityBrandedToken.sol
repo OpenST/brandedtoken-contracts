@@ -242,31 +242,6 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         return super.transferFrom(_from, _to, _value);
     }
 
-    /**
-     * @notice Public function approve.
-     *
-     * @dev It only allows approval to internal actors.
-     *
-     * @param _spender Address to which msg.sender is approving.
-     * @param _value Number of BTs to be approved.
-     *
-     * @return Success/failure status of approve.
-     */
-    function approve(
-        address _spender,
-        uint256 _value
-    )
-        public
-        returns (bool)
-    {
-        require(
-            isInternalActor[_spender],
-            "Spender is not an internal actor."
-        );
-
-        return super.approve(_spender, _value);
-    }
-
 
     /* Internal functions. */
 
