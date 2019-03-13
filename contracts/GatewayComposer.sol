@@ -90,8 +90,8 @@ contract GatewayComposer {
      *          - owner address should not be zero
      *          - ValueToken address should not be zero
      *          - BrandedToken address should not be zero
-     *          - owner address should not be equal to valueToken
-     *          - owner address should not be equal to brandedToken
+     *          - ValueToken address should not be equal to owner address
+     *          - BrandedToken address should not be equal to owner address
      *          - ValueToken address should be equal to BrandedToken.valueToken()
      *
      * @param _owner Address of the staker on the value chain.
@@ -147,7 +147,7 @@ contract GatewayComposer {
      *          - stakeVT can't be 0
      *          - mintBT amount and converted stakeVT amount should be equal
      *          - gateway address can't be zero
-     *          - owner address should not be equal to gateway address
+     *          - Gateway address should not be equal to owner address
      *          - beneficiary address can't be zero
      *          - successful execution of ValueToken transfer
      *          - successful execution of ValueToken approve
@@ -469,7 +469,7 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - msg.sender is owner
-     *          - gateway address can't be zero
+     *          - Gateway address can't be zero
      *          - Gateway address should not be equal to owner address
      *          - successful execution of ValueToken transferFrom
      *          - successful execution of ValueToken approve
