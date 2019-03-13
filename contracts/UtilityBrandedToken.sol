@@ -151,13 +151,13 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
             "CoGateway address should not be zero."
         );
 
+        coGateway = _coGateway;
+
         require(
             CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
             address(this),
             "CoGateway.utilityToken is required to be UBT address."
         );
-
-        coGateway = _coGateway;
 
         emit CoGatewaySet(coGateway);
 
