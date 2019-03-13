@@ -48,16 +48,16 @@ contract GatewayComposer {
     EIP20Interface public valueToken;
 
     /**
-    * A BrandedToken is an EIP20Token which allows a mainstream application
-    * to create a value-backed token designed specifically for its
-    * application's context.
-    */
+     * A BrandedToken is an EIP20Token which allows a mainstream application
+     * to create a value-backed token designed specifically for its
+     * application's context.
+     */
     BrandedToken public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
 
-    /* Mutex lock status. */
-    bool private isMutex;
+    /** Mutex lock status. */
+    bool private mutexAcquired;
 
 
     /* Modifiers */
@@ -74,7 +74,7 @@ contract GatewayComposer {
     /** Checks that mutex is acquired or not. */
     modifier isMutexAcquired() {
         require(
-            isMutex == false,
+            mutexAcquired == false,
             "Mutex is already acquired."
         );
         _;
@@ -524,7 +524,7 @@ contract GatewayComposer {
     function acquireMutex()
         private
     {
-        isMutex = true;
+        mutexAcquired = true;
     }
 
     /**
@@ -533,6 +533,6 @@ contract GatewayComposer {
     function releaseMutex()
         private
     {
-        isMutex = false;
+        mutexAcquired = false;
     }
 }
