@@ -73,6 +73,27 @@ contract('GatewayComposer::revertStake', async (accounts) => {
       );
     });
 
+    it('Fails when gateway address is same as owner address', async () => {
+      const {
+        gatewayComposer,
+        owner,
+      } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+      const penalty = 0;
+      const messageHash = web3.utils.soliditySha3('hash');
+
+      await utils.expectRevert(
+        gatewayComposer.revertStake(
+          owner,
+          penalty,
+          messageHash,
+          { from: owner },
+        ),
+        'Should revert as gateway address and owner address are same.',
+        'Gateway address is same as owner address.',
+      );
+    });
+
     it('Fails if valueToken transferFrom returns false', async () => {
       const {
         gatewayComposer,
