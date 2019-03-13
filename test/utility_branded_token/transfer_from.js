@@ -50,7 +50,7 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
       accountProvider, internalActors,
     ));
 
-    await testUtilityBrandedToken.registerInternalActor(
+    await testUtilityBrandedToken.registerInternalActors(
       internalActors,
       { from: worker },
     );
@@ -80,7 +80,7 @@ contract('UtilityBrandedToken::transferFrom', async (accounts) => {
   describe('Storage', async () => {
     it('Successfully transfers to internal actor', async () => {
       internalActors.push(tokenHolder2);
-      await testUtilityBrandedToken.registerInternalActor(
+      await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );
