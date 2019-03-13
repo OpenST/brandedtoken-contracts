@@ -71,13 +71,19 @@ contract GatewayComposer {
         _;
     }
 
-    /** Checks that mutex is acquired or not. */
-    modifier isMutexAcquired() {
+    /**
+     *  Checks that mutex is acquired or not. If mutex is not acquired,
+     *  mutexAcquired is set to true. At the end of function execution,
+     *  mutexAcquired is set to false.
+     */
+    modifier mutex() {
         require(
-            mutexAcquired == false,
+            !mutexAcquired,
             "Mutex is already acquired."
         );
+        mutexAcquired = true;
         _;
+        mutexAcquired = false;
     }
 
 
@@ -184,11 +190,9 @@ contract GatewayComposer {
     )
         external
         onlyOwner
-        isMutexAcquired
+        mutex
         returns (bytes32 stakeRequestHash_)
     {
-        acquireMutex();
-
         require(
             _stakeVT > uint256(0),
             "Stake amount is zero."
@@ -228,8 +232,6 @@ contract GatewayComposer {
             gasLimit: _gasLimit,
             nonce: _nonce
         });
-
-        releaseMutex();
     }
 
     /**
@@ -514,25 +516,5 @@ contract GatewayComposer {
         GatewayInterface(_gateway).revertStake(_messageHash);
 
         return true;
-    }
-
-    /* Private Functions */
-
-    /**
-     * @notice This acquires mutex lock.
-     */
-    function acquireMutex()
-        private
-    {
-        mutexAcquired = true;
-    }
-
-    /**
-     * @notice This releases the mutex lock.
-     */
-    function releaseMutex()
-        private
-    {
-        mutexAcquired = false;
     }
 }
