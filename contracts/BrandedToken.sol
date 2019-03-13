@@ -227,7 +227,7 @@ contract BrandedToken is Organized, EIP20Token {
             "Mint is not equivalent to stake."
         );
         require(
-            stakeRequestHashes[msg.sender] == "",
+            stakeRequestHashes[msg.sender] == bytes32(0),
             "Staker has a stake request hash."
         );
 
@@ -289,7 +289,11 @@ contract BrandedToken is Organized, EIP20Token {
             "Stake request not found."
         );
 
-        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+        // To prevent a reentrancy the stake request is copied into the memory
+        // and deleted from the storage.
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+        delete stakeRequestHashes[stakeRequest.staker];
+        delete stakeRequests[_stakeRequestHash];
 
         require(
             verifySigner(stakeRequest, _r, _s, _v),
@@ -309,9 +313,6 @@ contract BrandedToken is Organized, EIP20Token {
 
         // Mint branded tokens
         emit Transfer(address(0), stakeRequest.staker, mint);
-
-        delete stakeRequestHashes[stakeRequest.staker];
-        delete stakeRequests[_stakeRequestHash];
 
         return true;
     }
@@ -689,7 +690,7 @@ contract BrandedToken is Organized, EIP20Token {
      * @return bool True if signer is a worker, false if not.
      */
     function verifySigner(
-        StakeRequest storage _stakeRequest,
+        StakeRequest memory _stakeRequest,
         bytes32 _r,
         bytes32 _s,
         uint8 _v
