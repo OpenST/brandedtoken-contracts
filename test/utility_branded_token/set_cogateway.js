@@ -127,6 +127,17 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
         'CoGateway address is incorrect',
       );
     });
+
+    it('Checks that coGateway is set as an internal actor.', async () => {
+      await testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: admin },
+      );
+
+      assert.isOk(
+        await testUtilityBrandedToken.isInternalActor.call(mockCoGateway.address),
+      );
+    });
   });
 
   describe('Events', async () => {

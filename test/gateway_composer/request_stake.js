@@ -165,6 +165,37 @@ contract('GatewayComposer::requestStake', async (accounts) => {
       'Gateway address is zero.');
     });
 
+    it('Fails when gateway address is same as owner address.', async () => {
+      const {
+        valueToken,
+        gatewayComposer,
+        owner,
+        brandedToken,
+      } = await gatewayComposerUtils.setupGatewayComposer(accountProvider);
+
+      const {
+        stakeAmount,
+      } = await gatewayComposerUtils.approveGatewayComposer(
+        valueToken,
+        gatewayComposer,
+        owner,
+      );
+
+      const mintAmount = await brandedToken.convertToBrandedTokens(stakeAmount);
+      await utils.expectRevert(gatewayComposer.requestStake(
+        stakeAmount,
+        mintAmount,
+        owner,
+        beneficiary,
+        gasPrice,
+        gasLimit,
+        nonce,
+        { from: owner },
+      ),
+      'Should revert because gateway address and owner address are same.',
+      'Gateway address is same as owner address.');
+    });
+
     it('Fails when beneficiary address is zero.', async () => {
       const {
         valueToken,
