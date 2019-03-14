@@ -189,7 +189,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     }
 
     /**
-     * @notice Checks if input address is internal actor or not.
+     * @notice Checks if input address is an internal actor or not.
      *
      * @param _actor Actor address.
      *
