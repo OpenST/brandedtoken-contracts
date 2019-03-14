@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-// Copyright 2018 OpenST Ltd.
+// Copyright 2019 OpenST Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ pragma solidity ^0.5.0;
 
 import "./Organized.sol";
 
-
 /**
  * @notice Contract implements internal actors interfaces.
  *
@@ -30,7 +29,6 @@ contract Internal is Organized {
     /* Events */
 
     event InternalActorRegistered(
-        address indexed _organization,
         address _actor
     );
 
@@ -46,7 +44,8 @@ contract Internal is Organized {
     constructor(OrganizationInterface _organization)
         public
         Organized(_organization)
-    {}
+    {
+    }
 
 
     /* External Functions */
@@ -57,17 +56,14 @@ contract Internal is Organized {
      * @param _internalActors Array of addresses of the internal actors
      *        to register.
      */
-    function registerInternalActor(address[] calldata _internalActors)
+    function registerInternalActors(address[] calldata _internalActors)
         external
         onlyWorker
     {
-        address org = address(organization);
-
         for (uint256 i = 0; i < _internalActors.length; i++) {
-
             if (!isInternalActor[_internalActors[i]]) {
                 isInternalActor[_internalActors[i]] = true;
-                emit InternalActorRegistered(org, _internalActors[i]);
+                emit InternalActorRegistered(_internalActors[i]);
             }
         }
     }

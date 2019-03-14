@@ -70,7 +70,7 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
     it('Reverts if beneficiary address is zero', async () => {
       const actors = [utils.NULL_ADDRESS];
-      await testUtilityBrandedToken.registerInternalActor(
+      await testUtilityBrandedToken.registerInternalActors(
         actors,
         { from: worker },
       );
