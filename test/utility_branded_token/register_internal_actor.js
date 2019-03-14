@@ -17,21 +17,24 @@
 
 const utils = require('../test_lib/utils');
 const { Event } = require('../test_lib/event_decoder');
-const InternalUtils = require('./utils');
+const UtilityBrandedTokenUtils = require('./utils');
 
 contract('Internal::registerInternalActors', async (accounts) => {
-  let internal;
   let organization;
   let accountProvider;
   let worker;
+  let testUtilityBrandedToken;
 
   beforeEach(async () => {
     accountProvider = new utils.AccountProvider(accounts);
+
     ({
-      internal,
-      worker,
+      testUtilityBrandedToken,
       organization,
-    } = await InternalUtils.setupInternal(accountProvider));
+      worker,
+    } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
+      accountProvider, [],
+    ));
   });
 
   describe('Negative Tests', async () => {
@@ -40,7 +43,7 @@ contract('Internal::registerInternalActors', async (accounts) => {
       internalActors.push(accountProvider.get());
       const nonWorker = accountProvider.get();
 
-      await utils.expectRevert(internal.registerInternalActors(
+      await utils.expectRevert(testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: nonWorker },
       ),
@@ -56,7 +59,7 @@ contract('Internal::registerInternalActors', async (accounts) => {
       internalActors.push(accountProvider.get());
       internalActors.push(accountProvider.get());
 
-      const transactionResponse = await internal.registerInternalActors(
+      const transactionResponse = await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );
@@ -96,12 +99,12 @@ contract('Internal::registerInternalActors', async (accounts) => {
       const internalActors = [];
       internalActors.push(accountProvider.get());
 
-      await internal.registerInternalActors(
+      await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );
 
-      const transactionResponse = await internal.registerInternalActors(
+      const transactionResponse = await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );
@@ -124,17 +127,17 @@ contract('Internal::registerInternalActors', async (accounts) => {
       internalActors.push(accountProvider.get());
       internalActors.push(accountProvider.get());
 
-      await internal.registerInternalActors(
+      await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );
 
       assert.strictEqual(
-        await internal.isInternalActor.call(internalActors[0]),
+        await testUtilityBrandedToken.isInternalActor.call(internalActors[0]),
         true,
       );
       assert.strictEqual(
-        await internal.isInternalActor.call(internalActors[1]),
+        await testUtilityBrandedToken.isInternalActor.call(internalActors[1]),
         true,
       );
     });

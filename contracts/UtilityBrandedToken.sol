@@ -14,9 +14,7 @@ pragma solidity ^0.5.0;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import "./UtilityTokenInterface.sol";
-import "./Internal.sol";
-import "./EIP20Token.sol";
+import "./UtilityToken.sol";
 import "./CoGatewayUtilityTokenInterface.sol";
 
 
@@ -29,36 +27,19 @@ import "./CoGatewayUtilityTokenInterface.sol";
  * @dev UtilityBrandedToken are designed to be used within a decentralised
  *      application and support increaseSupply and decreaseSupply of tokens.
  */
-contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
+contract UtilityBrandedToken is UtilityToken {
 
     /* Events */
 
-    /** Emitted whenever a CoGateway address is set. */
-    event CoGatewaySet(address _coGateway);
+    event InternalActorRegistered(
+        address _actor
+    );
 
 
     /* Storage */
 
-    /** Address of BrandedToken in origin chain. */
-    EIP20Interface public brandedToken;
-
-    /**
-     *  Address of CoGateway contract. It ensures that increaseSupply and
-     *  decreaseSupply is done from coGateway.
-     */
-    address public coGateway;
-
-
-    /* Modifiers */
-
-    /** Checks that msg.sender is coGateway address. */
-    modifier onlyCoGateway() {
-        require(
-            msg.sender == coGateway,
-            "Only CoGateway can call the function."
-        );
-        _;
-    }
+    /** Mapping stores addresses which are registered as internal actor. */
+    mapping (address /* internal actor */ => bool) public isInternalActor;
 
 
     /* Special Functions */
@@ -66,11 +47,11 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
     /**
      * @notice Contract constructor.
      *
-     * @dev Creates an EIP20Token contract with arguments passed in the
-     *      contract constructor.
+     * @dev Creates an utility branded token contract with arguments passed
+     *      in the contract constructor.
      *
      * @param _token Address of branded token on origin chain.
-     *        It acts as an identifier.
+     *               It acts as an identifier.
      * @param _symbol Symbol of the token.
      * @param _name Name of the token.
      * @param _decimals Decimal places of the token.
@@ -84,35 +65,66 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         OrganizationInterface _organization
     )
         public
-        Internal(_organization)
-        EIP20Token(_symbol, _name, _decimals)
+        UtilityToken(_token, _symbol, _name, _decimals, _organization)
     {
-        require(
-            address(_token) != address(0),
-            "Token address is null."
-        );
-        brandedToken = _token;
     }
 
 
     /* External functions */
 
     /**
-     * @notice Increases the total token supply. Also, adds the number of
-     *         tokens to the beneficiary balance.The parameters _account
-     *         and _amount should not be zero. This check is added in function
-     *         increaseSupplyInternal.
+     * @notice Registers internal actors.
+     *
+     * @param _internalActors Array of addresses of the internal actors
+     *        to register.
+     */
+    function registerInternalActors(address[] calldata _internalActors)
+        external
+        onlyWorker
+    {
+        for (uint256 i = 0; i < _internalActors.length; i++) {
+            if (!isInternalActor[_internalActors[i]]) {
+                isInternalActor[_internalActors[i]] = true;
+                emit InternalActorRegistered(_internalActors[i]);
+            }
+        }
+    }
+
+    /**
+     * @notice Sets the CoGateway contract address.
      *
      * @dev Function requires:
-     *          - it should only be called by coGateway address
+     *          - Caller is organization.
+     *          - coGateway address is not set.
+     *          - coGateway.utilityToken is equal to this contract address.
      *
-     * @param _beneficiary Account address for which the balance will be increased.
+     * @param _coGateway CoGateway contract address.
+     */
+    function setCoGateway(address _coGateway)
+        external
+        onlyOrganization
+        returns (bool success_)
+    {
+        success_ = super.setCoGatewayInternal(_coGateway);
+
+        // Registers co-gateway as an internal actor.
+        isInternalActor[coGateway] = true;
+    }
+
+    /**
+     * @notice Increases the total token supply. Also, adds the number of
+     *         tokens to the beneficiary balance.
+     *
+     * @param _beneficiary Account address for which the balance will be
+     *                     increased. This is payable so that it provides
+     *                     flexibility of transferring base token to account
+     *                     on increase supply.
      * @param _amount Amount of tokens.
      *
-     * @return True if increase supply is successful, false otherwise.
+     * @return success_ `true` if increase supply is successful, false otherwise.
      */
     function increaseSupply(
-        address _beneficiary,
+        address payable _beneficiary,
         uint256 _amount
     )
         external
@@ -123,69 +135,18 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
             isInternalActor[_beneficiary],
             "Beneficiary is not an internal actor."
         );
-        success_ = increaseSupplyInternal(_beneficiary, _amount);
+
+        success_ = super.increaseSupplyInternal(_beneficiary, _amount);
     }
 
     /**
-     * @notice Sets the CoGateway contract address.
+     * @notice Checks if an address is an internal actor.
      *
-     * @dev Function requires:
-     *          - Caller must be a whitelisted worker
-     *          - coGateway is required to be address(0)
-     *          - coGateway.utilityToken must be equal to this contract address
-     *
-     * @param _coGateway CoGateway contract address.
+     * @return exists_ `true` if the specified account is an internal actor,
+     *                 otherwise `false`.
      */
-    function setCoGateway(address _coGateway)
-        external
-        onlyOrganization
-        returns (bool success_)
-    {
-        require(
-            coGateway == address(0),
-            "CoGateway address already set."
-        );
-
-        require(
-            _coGateway != address(0),
-            "CoGateway address should not be zero."
-        );
-
-        coGateway = _coGateway;
-
-        require(
-            CoGatewayUtilityTokenInterface(_coGateway).utilityToken() ==
-            address(this),
-            "CoGateway.utilityToken is required to be UBT address."
-        );
-
-        // Registers co-gateway as an internal actor.
-        isInternalActor[coGateway] = true;
-
-        emit CoGatewaySet(coGateway);
-
-        success_ = true;
-    }
-
-    /**
-     * @notice Decreases the token supply.The parameters _amount should not be
-     *         zero. This check is added in function decreaseSupplyInternal.
-     *
-     * @dev Function requires:
-     *         - it should only be called by coGateway address
-     *
-     * @param _amount Amount of tokens.
-     *
-     * @return True if decrease supply is successful, false otherwise.
-     */
-    function decreaseSupply(
-        uint256 _amount
-    )
-        external
-        onlyCoGateway
-        returns (bool success_)
-    {
-        success_ = decreaseSupplyInternal(_amount);
+    function exists(address account) external returns (bool exists_) {
+        exists_ = isInternalActor[account];
     }
 
 
@@ -244,95 +205,4 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
 
         return super.transferFrom(_from, _to, _value);
     }
-
-
-    /* Internal functions. */
-
-    /**
-     * @notice Internal function to increases the total token supply. Adds
-     *          number of tokens to beneficiary balance and increases the total
-     *          token supply.
-     *
-     * @dev Function requires:
-     *          - _beneficiary address should not be zero
-     *          - _amount should be greater than zero
-     *
-     * @param _beneficiary Account address for which the balance will be increased.
-     * @param _amount Amount of tokens.
-     *
-     * @return success_ `true` if increase supply is successful, false otherwise.
-     */
-    function increaseSupplyInternal(
-        address _beneficiary,
-        uint256 _amount
-    )
-        internal
-        returns (bool success_)
-    {
-        require(
-            _beneficiary != address(0),
-            "Beneficiary address should not be zero."
-        );
-
-        require(
-            _amount > 0,
-            "Amount should be greater than zero."
-        );
-
-        // Increase the balance of the _account
-        balances[_beneficiary] = balances[_beneficiary].add(_amount);
-        totalTokenSupply = totalTokenSupply.add(_amount);
-
-        /*
-         * Creation of the new tokens should trigger a Transfer event with
-         * _from as 0x0.
-         */
-        emit Transfer(address(0), _beneficiary, _amount);
-
-        success_ = true;
-    }
-
-    /**
-     * @notice Internal function to decreases the token supply. Decreases the
-     *         token balance from the msg.sender address and decreases the
-     *         total token supply count.
-     *
-     * @dev Function requires:
-     *          - _amount should be greater than zero
-     *
-     * @param _amount Amount of tokens.
-     *
-     * @return success_ `true` if decrease supply is successful, false otherwise.
-     */
-    function decreaseSupplyInternal(
-        uint256 _amount
-    )
-        internal
-        returns (bool success_)
-    {
-        require(
-            _amount > 0,
-            "Amount should be greater than zero."
-        );
-
-        address sender = msg.sender;
-
-        require(
-            balances[sender] >= _amount,
-            "Insufficient balance."
-        );
-
-        // Decrease the balance of the msg.sender account.
-        balances[sender] = balances[sender].sub(_amount);
-        totalTokenSupply = totalTokenSupply.sub(_amount);
-
-        /*
-         * Burning of the tokens should trigger a Transfer event with _to
-         * as 0x0.
-         */
-        emit Transfer(sender, address(0), _amount);
-
-        success_ = true;
-    }
-
 }

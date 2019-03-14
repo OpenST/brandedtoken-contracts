@@ -110,7 +110,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
         { from: admin },
       ),
       'CoGateway is linked to other utility token',
-      'CoGateway.utilityToken is required to be UBT address.');
+      'CoGateway should be linked with this utility token.');
     });
   });
 
