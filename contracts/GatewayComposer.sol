@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-// Copyright 2018 OpenST Ltd.
+// Copyright 2019 OpenST Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,13 +48,16 @@ contract GatewayComposer {
     EIP20Interface public valueToken;
 
     /**
-    * A BrandedToken is an EIP20Token which allows a mainstream application
-    * to create a value-backed token designed specifically for its
-    * application's context.
-    */
+     * A BrandedToken is an EIP20Token which allows a mainstream application
+     * to create a value-backed token designed specifically for its
+     * application's context.
+     */
     BrandedToken public brandedToken;
 
     mapping (bytes32 => StakeRequest) public stakeRequests;
+
+    /** Mutex lock status. */
+    bool private mutexAcquired;
 
 
     /* Modifiers */
@@ -68,6 +71,21 @@ contract GatewayComposer {
         _;
     }
 
+    /**
+     *  Checks that mutex is acquired or not. If mutex is not acquired,
+     *  mutexAcquired is set to true. At the end of function execution,
+     *  mutexAcquired is set to false.
+     */
+    modifier mutex() {
+        require(
+            !mutexAcquired,
+            "Mutex is already acquired."
+        );
+        mutexAcquired = true;
+        _;
+        mutexAcquired = false;
+    }
+
 
     /* Special Functions */
 
@@ -78,6 +96,9 @@ contract GatewayComposer {
      *          - owner address should not be zero
      *          - ValueToken address should not be zero
      *          - BrandedToken address should not be zero
+     *          - ValueToken address should not be equal to owner address
+     *          - BrandedToken address should not be equal to owner address
+     *          - ValueToken address should be equal to BrandedToken.valueToken()
      *
      * @param _owner Address of the staker on the value chain.
      * @param _valueToken EIP20Token which is staked.
@@ -103,6 +124,14 @@ contract GatewayComposer {
             "BrandedToken address is zero."
         );
         require(
+            _owner != address(_valueToken),
+            "ValueToken address is same as owner address."
+        );
+        require(
+            _owner != address(_brandedToken),
+            "BrandedToken address is same as owner address."
+        );
+        require(
             address(_valueToken) == address(_brandedToken.valueToken()),
             "ValueToken should match BrandedToken.valueToken."
         );
@@ -124,6 +153,7 @@ contract GatewayComposer {
      *          - stakeVT can't be 0
      *          - mintBT amount and converted stakeVT amount should be equal
      *          - gateway address can't be zero
+     *          - Gateway address should not be equal to owner address
      *          - beneficiary address can't be zero
      *          - successful execution of ValueToken transfer
      *          - successful execution of ValueToken approve
@@ -160,6 +190,7 @@ contract GatewayComposer {
     )
         external
         onlyOwner
+        mutex
         returns (bytes32 stakeRequestHash_)
     {
         require(
@@ -173,6 +204,10 @@ contract GatewayComposer {
         require(
             _gateway != address(0),
             "Gateway address is zero."
+        );
+        require(
+            owner != _gateway,
+            "Gateway address is same as owner address."
         );
         require(
             _beneficiary != address(0),
@@ -233,7 +268,10 @@ contract GatewayComposer {
         external
         returns (bytes32 messageHash_)
     {
-        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+
+        delete stakeRequests[_stakeRequestHash];
+
         require(
             stakeRequest.stakeVT > uint256(0),
             "Stake request not found."
@@ -276,8 +314,6 @@ contract GatewayComposer {
             stakeRequest.nonce,
             _hashLock
         );
-
-        delete stakeRequests[_stakeRequestHash];
     }
 
     /**
@@ -305,7 +341,10 @@ contract GatewayComposer {
         onlyOwner
         returns (bool success_)
     {
-        StakeRequest storage stakeRequest = stakeRequests[_stakeRequestHash];
+        StakeRequest memory stakeRequest = stakeRequests[_stakeRequestHash];
+
+        delete stakeRequests[_stakeRequestHash];
+
         require(
             stakeRequest.stakeVT > uint256(0),
             "Stake request not found."
@@ -318,8 +357,6 @@ contract GatewayComposer {
             valueToken.transfer(owner, stakeRequest.stakeVT),
             "ValueToken transfer returned false."
         );
-
-        delete stakeRequests[_stakeRequestHash];
 
         success_ = true;
     }
@@ -434,7 +471,8 @@ contract GatewayComposer {
      *
      * @dev Function requires:
      *          - msg.sender is owner
-     *          - gateway address can't be zero
+     *          - Gateway address can't be zero
+     *          - Gateway address should not be equal to owner address
      *          - successful execution of ValueToken transferFrom
      *          - successful execution of ValueToken approve
      *
@@ -461,6 +499,10 @@ contract GatewayComposer {
         require(
             _gateway != address(0),
             "Gateway address is zero."
+        );
+        require(
+            owner != _gateway,
+            "Gateway address is same as owner address."
         );
         require(
             valueToken.transferFrom(msg.sender, address(this), _penalty),
