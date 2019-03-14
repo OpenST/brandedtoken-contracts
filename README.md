@@ -1,6 +1,6 @@
 <h1 align="center">Branded Tokens - Tokenizing Mainstream Applications</h1>
 
-[![Discourse: JOIN DISCUSSION](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)](https://discuss.openst.org/) [![Travis CI: DEVELOP](https://img.shields.io/travis/OpenSTFoundation/brandedtoken-contracts/develop.svg?style=flat)](https://travis-ci.org/OpenSTFoundation/brandedtoken-contracts)
+[![Discourse: JOIN DISCUSSION](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)](https://discuss.openst.org/) [![Travis CI: DEVELOP](https://img.shields.io/travis/OpenST/brandedtoken-contracts/develop.svg?style=flat)](https://travis-ci.org/OpenST/brandedtoken-contracts)
 
 A Branded Token allows a mainstream application to create a value-backed token designed specifically for its application's context. A Branded Token implements the required and optional [EIP-20 Standard Token interface](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md).
 
@@ -16,11 +16,11 @@ The complete Branded Token specification is in a draft proposal and subject to c
 
 Significant related projects are:
 
-- [brandedtoken.js](https://github.com/OpenSTFoundation/brandedtoken.js): a library for interacting with `BrandedToken` and `GatewayComposer` contracts.
-- [mosaic-contracts](https://github.com/OpenSTFoundation/mosaic-contracts): a set of meta-blockchains on top of Ethereum to scale (D)Apps
-- [mosaic.js](https://github.com/OpenSTFoundation/mosaic.js): a web3 interface to scale (D)Apps on Ethereum
-- [openst-contracts](https://github.com/OpenSTFoundation/openst-contracts): a framework for building token economies
-- [openst.js](https://github.com/OpenSTFoundation/openst.js): a library for deploying and interacting with a token economy
+- [brandedtoken.js](https://github.com/OpenST/brandedtoken.js): a library for interacting with `BrandedToken` and `GatewayComposer` contracts.
+- [mosaic-contracts](https://github.com/OpenST/mosaic-contracts): a set of meta-blockchains on top of Ethereum to scale (D)Apps
+- [mosaic.js](https://github.com/OpenST/mosaic.js): a web3 interface to scale (D)Apps on Ethereum
+- [openst-contracts](https://github.com/OpenST/openst-contracts): a framework for building token economies
+- [openst.js](https://github.com/OpenST/openst.js): a library for deploying and interacting with a token economy
 
 ## Contributing
 

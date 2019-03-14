@@ -1,6 +1,6 @@
 {
-  "name": "@openstfoundation/brandedtoken-contracts",
-  "version": "0.10.0-beta.1",
+  "name": "@openst/brandedtoken-contracts",
+  "version": "0.10.0-rc.1",
   "description": "BrandedToken Contracts provides token and related smart contracts for token economies.",
   "keywords": [
     "OpenST",
@@ -16,10 +16,10 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts.git"
+    "url": "https://github.com/OpenST/brandedtoken-contracts.git"
   },
   "bugs": {
-    "url": "https://github.com/OpenSTFoundation/brandedtoken-contracts/issues"
+    "url": "https://github.com/OpenST/brandedtoken-contracts/issues"
   },
   "scripts": {
     "build-package": "node tools/build_package.js",
