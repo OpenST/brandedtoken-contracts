@@ -188,6 +188,17 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
         success_ = decreaseSupplyInternal(_amount);
     }
 
+    /**
+     * @notice Checks if input address is an internal actor or not.
+     *
+     * @param _actor Actor address.
+     *
+     * @return True if actor is an internal actor, false otherwise.
+     */
+    function exists(address _actor) external returns (bool) {
+        return isInternalActor[_actor];
+    }
+
 
     /* Public functions */
 
