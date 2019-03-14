@@ -195,7 +195,7 @@ contract UtilityBrandedToken is EIP20Token, UtilityTokenInterface, Internal {
      *
      * @return True if actor is an internal actor, false otherwise.
      */
-    function exists(address _actor) external returns (bool) {
+    function exists(address _actor) external view returns (bool) {
         return isInternalActor[_actor];
     }
 
