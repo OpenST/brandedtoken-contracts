@@ -67,7 +67,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
       );
 
       assert.strictEqual(
-        await utilityBrandedToken.brandedToken.call(),
+        await utilityBrandedToken.token.call(),
         brandedToken.address,
         'Branded token address is incorrect',
       );

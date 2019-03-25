@@ -110,7 +110,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
         { from: admin },
       ),
       'CoGateway is linked to other utility token',
-      'CoGateway.utilityToken is required to be UBT address.');
+      'CoGateway should be linked with this utility token.');
     });
   });
 
@@ -125,6 +125,17 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
         await testUtilityBrandedToken.coGateway.call(),
         mockCoGateway.address,
         'CoGateway address is incorrect',
+      );
+    });
+
+    it('Checks that coGateway is set as an internal actor.', async () => {
+      await testUtilityBrandedToken.setCoGateway(
+        mockCoGateway.address,
+        { from: admin },
+      );
+
+      assert.isOk(
+        await testUtilityBrandedToken.isInternalActor.call(mockCoGateway.address),
       );
     });
   });

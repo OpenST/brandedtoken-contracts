@@ -64,7 +64,7 @@ contract('UtilityBrandedToken::transfer', async (accounts) => {
     it('Successfully transfers to internal actor', async () => {
       internalActors.push(tokenHolder2);
 
-      await testUtilityBrandedToken.registerInternalActor(
+      await testUtilityBrandedToken.registerInternalActors(
         internalActors,
         { from: worker },
       );

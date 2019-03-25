@@ -36,7 +36,7 @@ interface UtilityTokenInterface {
      * @return success_ `true` if increase supply is successful, false otherwise.
      */
     function increaseSupply(
-        address _account,
+        address payable _account,
         uint256 _amount
     )
         external
@@ -65,4 +65,14 @@ interface UtilityTokenInterface {
      * @param _coGateway CoGateway contract address.
      */
     function setCoGateway(address _coGateway) external returns (bool);
+
+    /**
+     * @notice Checks if an address exists.
+     *
+     * @dev For standard ethereum all account addresses exist by default,
+     *      so it returns true for all addresses.
+     *
+     * @return exists_ `true` for all given address
+     */
+    function exists(address) external returns (bool exists_);
 }
