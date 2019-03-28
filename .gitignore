@@ -1,0 +1,22 @@
+# OSX
+.DS_Store
+.idea/
+
+# VS Code
+.vscode
+
+# Vagrant
+.vagrant/
+ubuntu-xenial-16.04-cloudimg-console.log
+
+# don't commit node_modules
+node_modules
+
+package-lock.json
+build/
+
+contracts/abi/
+contracts/bin/
+
+# NPM package generated files:
+dist/contracts.json
