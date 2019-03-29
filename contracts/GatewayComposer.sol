@@ -224,6 +224,7 @@ contract GatewayComposer {
 
         stakeRequestHash_ = brandedToken.requestStake(_stakeVT, _mintBT);
 
+        // mintBT is not stored because that uses significantly more gas than recalculation
         stakeRequests[stakeRequestHash_] = StakeRequest({
             stakeVT: _stakeVT,
             gateway: _gateway,
@@ -297,6 +298,7 @@ contract GatewayComposer {
             "BrandedToken acceptStakeRequest returned false."
         );
 
+        // mintBT is recalculated because that uses significantly less gas than storage
         uint256 mintBT = brandedToken.convertToBrandedTokens(
             stakeRequest.stakeVT
         );
