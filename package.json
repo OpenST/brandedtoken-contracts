@@ -1,6 +1,6 @@
 {
   "name": "@openst/brandedtoken-contracts",
-  "version": "0.10.0-rc.1",
+  "version": "0.10.0",
   "description": "BrandedToken Contracts provides token and related smart contracts for token economies.",
   "keywords": [
     "OpenST",
