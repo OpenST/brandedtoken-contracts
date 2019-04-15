@@ -26,7 +26,7 @@
     "compile-all": "truffle compile --all",
     "test": "truffle test",
     "prepack": "npm run compile-all && npm run build-package",
-    "lint": "eslint {migrations,test,tools} -c .eslintrc --ext js"
+    "lint": "eslint migrations/*.js test/*/*.js tools/*.js -c .eslintrc"
   },
   "main": "dist/index.js",
   "files": [
