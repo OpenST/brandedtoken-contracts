@@ -25,7 +25,8 @@
     "build-package": "node tools/build_package.js",
     "compile-all": "truffle compile --all",
     "test": "truffle test",
-    "prepack": "npm run compile-all && npm run build-package"
+    "prepack": "npm run compile-all && npm run build-package",
+    "lint": "eslint {migrations,test,tools} -c .eslintrc --ext js"
   },
   "main": "dist/index.js",
   "files": [
