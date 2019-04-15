@@ -23,6 +23,7 @@ install:
 before_script:
   - nohup sh tools/runGanacheCli.sh </dev/null >/dev/null 2>&1 &
 script:
+  - npm run lint
   - npm run test
   - npm run compile-all
   - npm run build-package

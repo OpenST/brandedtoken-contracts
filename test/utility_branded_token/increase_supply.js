@@ -28,7 +28,6 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
   let tokenHolder3;
   let accountProvider;
   let coGateway;
-  let worker;
 
   const amount = 10;
   const tokenHolder1Balance = 100;
@@ -46,7 +45,6 @@ contract('UtilityBrandedToken::increaseSupply', async (accounts) => {
 
     ({
       testUtilityBrandedToken,
-      worker,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
       accountProvider, internalActors,
     ));
