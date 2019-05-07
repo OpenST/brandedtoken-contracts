@@ -16,7 +16,7 @@ pragma solidity ^0.5.0;
 
 import "../UtilityBrandedToken.sol";
 import "../EIP20Interface.sol";
-import "../OrganizationInterface.sol";
+import "../organization/contracts/OrganizationInterface.sol";
 
 
 /**

@@ -17,8 +17,8 @@ pragma solidity ^0.5.0;
 import "./UtilityTokenInterface.sol";
 import "./EIP20Token.sol";
 import "./CoGatewayUtilityTokenInterface.sol";
-import "./OrganizationInterface.sol";
-import "./Organized.sol";
+import "./organization/contracts/OrganizationInterface.sol";
+import "./organization/contracts/Organized.sol";
 
 /**
  *  @title UtilityToken is an EIP20Token and implements UtilityTokenInterface.
