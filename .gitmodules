@@ -1,0 +1,3 @@
+[submodule "contracts/organization"]
+	path = contracts/organization
+	url = https://github.com/OpenST/organization-contracts.git
