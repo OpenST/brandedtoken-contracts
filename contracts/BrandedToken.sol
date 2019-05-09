@@ -17,7 +17,7 @@ pragma solidity ^0.5.0;
 
 
 import "./EIP20Token.sol";
-import "./organization/contracts/Organized.sol";
+import "./utilitytoken/contracts/organization/contracts/Organized.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 

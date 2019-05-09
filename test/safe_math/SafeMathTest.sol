@@ -3,8 +3,8 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
-* It is used to test SafeMath contract.
-*/
+ * It is used to test SafeMath contract.
+ */
 contract SafeMathTest {
 
     /* Public Functions */

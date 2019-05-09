@@ -30,8 +30,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
   const {
     mockOrganization,
     worker,
-    organization,
-    admin,
+    organization
   } = await this.setupOrganization(accountProvider);
 
   const brandedToken = await EIP20TokenMock.new(
@@ -56,7 +55,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
   );
 
   return {
-    testUtilityBrandedToken, worker, admin, organization,
+    testUtilityBrandedToken, worker, organization
   };
 };
 
@@ -66,17 +65,13 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
 module.exports.setupOrganization = async (accountProvider) => {
   const worker = accountProvider.get();
   const organization = accountProvider.get();
-  const admin = accountProvider.get();
 
   const mockOrganization = await MockOrganization.new(
     organization,
-    admin,
-    [worker],
+    worker,
   );
 
-  await mockOrganization.setWorker(worker);
-
   return {
-    mockOrganization, worker, organization, admin,
+    mockOrganization, worker, organization,
   };
 };

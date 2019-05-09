@@ -51,6 +51,7 @@ contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
 
   describe('Storage', async () => {
     it('Correctly decreases the supply of tokens', async () => {
+      // console.log("success");
       const coGateway = tokenHolder2;
       await testUtilityBrandedToken.mockSetCoGateway(coGateway);
       await testUtilityBrandedToken.increaseSupply(
@@ -125,6 +126,7 @@ contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
           _value: new web3.utils.BN(decreasedAmount),
         },
       });
-    });
+    }
+    );
   });
 });
