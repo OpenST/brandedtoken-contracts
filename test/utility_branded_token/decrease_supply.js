@@ -126,7 +126,6 @@ contract('UtilityBrandedToken::decreaseSupply', async (accounts) => {
           _value: new web3.utils.BN(decreasedAmount),
         },
       });
-    }
-    );
+    });
   });
 });
