@@ -14,8 +14,7 @@ pragma solidity ^0.5.0;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import "./UtilityToken.sol";
-import "./CoGatewayUtilityTokenInterface.sol";
+import "./utilitytoken/contracts/UtilityToken.sol";
 
 
 /**
@@ -58,7 +57,7 @@ contract UtilityBrandedToken is UtilityToken {
      * @param _organization Address of the Organization contract.
      */
     constructor(
-        EIP20Interface _token,
+        address _token,
         string memory _symbol,
         string memory _name,
         uint8 _decimals,

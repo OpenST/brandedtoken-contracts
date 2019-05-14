@@ -18,7 +18,7 @@
 const utils = require('../test_lib/utils');
 const UtilityBrandedTokenUtils = require('./utils');
 
-contract('UtilityBrandedToken::constructor', async (accounts) => {
+contract('UtilityBrandedToken::exists', async (accounts) => {
   let accountProvider;
 
   beforeEach(async () => {

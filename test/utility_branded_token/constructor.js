@@ -43,15 +43,15 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
   describe('Negative Tests', async () => {
     it('Reverts if null address is passed as organization', async () => {
       await utils.expectRevert(UtilityBrandedToken.new(
-        utils.NULL_ADDRESS,
+        brandedToken.address,
         SYMBOL,
         NAME,
         DECIMALS,
-        organization,
+        utils.NULL_ADDRESS,
         { from: organization },
       ),
-      'Token address is null',
-      'Token address is null.');
+      'Organization contract address should not be zero',
+      'Organization contract address must not be zero.');
     });
   });
 

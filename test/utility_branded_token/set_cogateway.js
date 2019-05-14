@@ -29,7 +29,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
   let mockCoGateway;
   let testUtilityBrandedToken;
   let testUtilityBrandedToken2;
-  let admin;
+  let organization;
 
   const tokenHolder1Balance = 100;
 
@@ -44,7 +44,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
 
     ({
       testUtilityBrandedToken,
-      admin,
+      organization,
     } = await UtilityBrandedTokenUtils.setupUtilityBrandedToken(
       accountProvider, internalActor,
     ));
@@ -70,7 +70,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     it('Reverts if coGateway address is zero', async () => {
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         utils.NULL_ADDRESS,
-        { from: admin },
+        { from: organization },
       ),
       'Only organization or admin can call',
       'CoGateway address should not be zero.');
@@ -79,7 +79,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     it('Reverts if coGateway address is already set', async () => {
       await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        { from: admin },
+        { from: organization },
       );
 
       const mockCoGateway2 = await MockCoGateway.new(
@@ -88,10 +88,10 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
 
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         mockCoGateway2.address,
-        { from: admin },
+        { from: organization },
       ),
       'CoGateway address cannot be set again.',
-      'CoGateway address already set.');
+      'CoGateway address is already set.');
     });
 
     it('Reverts if CoGateway is linked to other utility token', async () => {
@@ -107,7 +107,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
 
       await utils.expectRevert(testUtilityBrandedToken.setCoGateway(
         mockCoGateway2.address,
-        { from: admin },
+        { from: organization },
       ),
       'CoGateway is linked to other utility token',
       'CoGateway should be linked with this utility token.');
@@ -118,7 +118,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     it('Successfully sets the coGateway address', async () => {
       await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        { from: admin },
+        { from: organization },
       );
 
       assert.strictEqual(
@@ -131,7 +131,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     it('Checks that coGateway is set as an internal actor.', async () => {
       await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        { from: admin },
+        { from: organization },
       );
 
       assert.isOk(
@@ -144,7 +144,7 @@ contract('UtilityBrandedToken::setCoGateway', async (accounts) => {
     it('Emits a CoGatewaySet event', async () => {
       const transactionResponse = await testUtilityBrandedToken.setCoGateway(
         mockCoGateway.address,
-        { from: admin },
+        { from: organization },
       );
 
       const events = Event.decodeTransactionResponse(transactionResponse);

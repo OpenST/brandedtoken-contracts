@@ -15,8 +15,7 @@ pragma solidity ^0.5.0;
 // limitations under the License.
 
 import "../UtilityBrandedToken.sol";
-import "../EIP20Interface.sol";
-import "../OrganizationInterface.sol";
+import "../utilitytoken/contracts/organization/contracts/OrganizationInterface.sol";
 
 
 /**
@@ -45,7 +44,7 @@ contract TestUtilityBrandedToken is UtilityBrandedToken {
      * @param _organization Address of the Organization contract.
      */
     constructor(
-        EIP20Interface _token,
+        address _token,
         string memory _symbol,
         string memory _name,
         uint8 _decimals,
