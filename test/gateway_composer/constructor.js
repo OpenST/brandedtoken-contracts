@@ -20,8 +20,23 @@ const GatewayComposer = artifacts.require('GatewayComposer');
 const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
+const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const { AccountProvider } = require('../test_lib/utils.js');
 
+/**
+ * Deploys an EIP20TokenMock contract with the provided decimals.
+ * @param {number} decimals Decimals for token.
+ * @return {string} valueToken Address of token.
+ */
+const deployValueToken = async (decimals) => {
+  const { address: valueToken } = await EIP20TokenMock.new(
+    'VT',
+    'ValueToken',
+    decimals,
+  );
+
+  return valueToken;
+};
 
 contract('GatewayComposer::constructor', async (accounts) => {
   describe('Negative Tests', async () => {
@@ -95,11 +110,14 @@ contract('GatewayComposer::constructor', async (accounts) => {
     });
 
     it('Reverts if ValueToken is not equal to BrandedToken.valueToken.', async () => {
+      const decimals = 5;
+
+      valueToken = await deployValueToken(decimals);
       brandedToken = await BrandedToken.new(
-        accountProvider.get(),
+        valueToken,
         'TST',
         'Test',
-        5,
+        decimals,
         10,
         5,
         accountProvider.get(),
@@ -107,7 +125,7 @@ contract('GatewayComposer::constructor', async (accounts) => {
       );
       await utils.expectRevert(GatewayComposer.new(
         owner,
-        valueToken,
+        accountProvider.get(),
         brandedToken.address,
         { from: deployer },
       ),
@@ -127,12 +145,14 @@ contract('GatewayComposer::constructor', async (accounts) => {
       accountProvider = new AccountProvider(accounts);
       deployer = accountProvider.get();
       owner = accountProvider.get();
-      valueToken = accountProvider.get();
+      const decimals = 5;
+
+      valueToken = await deployValueToken(decimals);
       brandedToken = await BrandedToken.new(
         valueToken,
         'TST',
         'Test',
-        5,
+        decimals,
         10,
         5,
         accountProvider.get(),

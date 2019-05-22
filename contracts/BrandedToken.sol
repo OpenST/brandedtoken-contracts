@@ -190,6 +190,19 @@ contract BrandedToken is Organized, EIP20Token {
         valueToken = _valueToken;
         conversionRate = _conversionRate;
         conversionRateDecimals = _conversionRateDecimals;
+
+        bytes memory data = abi.encodeWithSignature("decimals()");
+        (, bytes memory returnData) = address(_valueToken).call(data);
+
+        // Confirm that valueToken has an EIP20 `decimals` function
+        require(
+            returnData.length != 0,
+            'ValueToken does not have an EIP20 decimals function.'
+        );
+        require(
+            _valueToken.decimals() == _decimals,
+            "ValueToken decimals does not equal brandedToken decimals."
+        );
     }
 
 

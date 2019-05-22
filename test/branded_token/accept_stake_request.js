@@ -203,7 +203,7 @@ contract('BrandedToken::acceptStakeRequest', async () => {
 
       // Setup brandedToken
       const brandedToken = await BrandedToken.new(
-        (await EIP20TokenMockPass.new()).address,
+        (await EIP20TokenMockPass.new('VT', 'ValueToken', 18)).address,
         'BT',
         'BrandedToken',
         config.decimals,

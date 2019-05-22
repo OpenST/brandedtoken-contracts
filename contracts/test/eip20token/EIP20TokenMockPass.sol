@@ -16,12 +16,35 @@ pragma solidity ^0.5.0;
 // limitations under the License.
 
 
+import "../../EIP20TokenMock.sol";
+
+
 /**
  *  @title Mock EIP20 Token Pass.
  *
  *  @notice Mocks EIP20 token functions as passing.
  */
-contract EIP20TokenMockPass {
+contract EIP20TokenMockPass is EIP20TokenMock {
+
+    /* Constructor */
+
+    /**
+     * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
+     *                is set.
+     * @param _name The value to which tokenName, defined in EIP20Token,
+     *              is set.
+     * @param _decimals The value to which tokenDecimals, defined in EIP20Token,
+     *                  is set.
+     */
+    constructor(
+        string memory _symbol,
+        string memory _name,
+        uint8 _decimals
+    )
+        EIP20TokenMock(_symbol, _name, _decimals)
+        public
+    { }
+
 
     /* External Functions */
 
@@ -35,8 +58,7 @@ contract EIP20TokenMockPass {
         address,
         uint256
     )
-        external
-        pure
+        public
         returns (bool)
     {
         return true;
@@ -51,8 +73,7 @@ contract EIP20TokenMockPass {
         address,
         uint256
     )
-        external
-        pure
+        public
         returns (bool)
     {
         return true;
