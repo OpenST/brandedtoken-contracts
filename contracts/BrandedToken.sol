@@ -147,6 +147,8 @@ contract BrandedToken is Organized, EIP20Token {
      *          - valueToken address is not zero
      *          - conversionRate is not zero
      *          - conversionRateDecimals is not greater than 5
+     *          - valueToken has a `decimals` function
+     *          - valueToken.decimals == decimals
      *
      * @param _valueToken The value to which valueToken is set.
      * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
