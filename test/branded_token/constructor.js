@@ -68,26 +68,6 @@ contract('BrandedToken::constructor', async () => {
       );
     });
 
-    it('Reverts if valueToken does not have an EIP20 decimals function', async () => {
-      const valueToken = accountProvider.get();
-      const conversionRate = 35;
-      const conversionRateDecimals = 1;
-
-      await utils.expectRevert(
-        BrandedToken.new(
-          valueToken,
-          symbol,
-          name,
-          decimals,
-          conversionRate,
-          conversionRateDecimals,
-          organization,
-        ),
-        'Should revert as valueToken does not have an EIP20 decimals function.',
-        'ValueToken does not have an EIP20 decimals function.',
-      );
-    });
-
     it('Reverts if valueToken decimals does not equal brandedToken decimals', async () => {
       const valueToken = await deployValueToken(decimals + 1);
 
