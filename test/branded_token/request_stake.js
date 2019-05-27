@@ -22,6 +22,7 @@ const { Event } = require('../test_lib/event_decoder.js');
 const web3 = require('../test_lib/web3.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
+const config = require('../test_lib/config');
 
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockFail = artifacts.require('EIP20TokenMockFail');
@@ -87,7 +88,7 @@ contract('BrandedToken::requestStake', async () => {
         valueToken.address,
         'BT',
         'BrandedToken',
-        18,
+        config.decimals,
         35,
         1,
         await accountProvider.get(),

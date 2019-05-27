@@ -15,6 +15,7 @@
 
 'use strict';
 
+const config = require('../test_lib/config');
 const web3 = require('../test_lib/web3.js');
 
 const BrandedToken = artifacts.require('BrandedToken');
@@ -36,7 +37,7 @@ module.exports.setupBrandedToken = async (
   );
   const symbol = 'BT';
   const name = 'BrandedToken';
-  const decimals = 18;
+  const { decimals } = config;
   const conversionRate = 35;
   const conversionRateDecimals = 1;
   const organization = await (

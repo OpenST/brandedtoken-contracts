@@ -17,6 +17,8 @@
 
 const BN = require('bn.js');
 
+const config = require('../test_lib/config');
+
 const BrandedToken = artifacts.require('BrandedToken');
 const MockBrandedTokenFail = artifacts.require('MockBrandedTokenFail');
 const GatewayComposer = artifacts.require('GatewayComposer');
@@ -27,7 +29,7 @@ const MockOrganization = artifacts.require('OrganizationMockPass');
 
 const symbol = 'Test';
 const name = 'Test';
-const decimals = 18;
+const { decimals } = config;
 const conversionRate = 1;
 const conversionRateDecimals = 0;
 

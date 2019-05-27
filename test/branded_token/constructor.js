@@ -18,6 +18,7 @@
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 
+const config = require('../test_lib/config');
 const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
@@ -28,7 +29,7 @@ contract('BrandedToken::constructor', async () => {
 
     const symbol = 'BT';
     const name = 'BrandedToken';
-    const decimals = 18;
+    const { decimals } = config;
     const organization = accountProvider.get();
 
     it('Reverts if valueToken is zero', async () => {
@@ -97,7 +98,7 @@ contract('BrandedToken::constructor', async () => {
 
     const symbol = 'BT';
     const name = 'BrandedToken';
-    const decimals = 18;
+    const { decimals } = config;
     const organization = accountProvider.get();
 
     it('Successfully sets state variables', async () => {
