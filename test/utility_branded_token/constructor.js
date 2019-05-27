@@ -15,6 +15,7 @@
 
 'use strict';
 
+const config = require('../test_lib/config');
 const utils = require('../test_lib/utils');
 
 const UtilityBrandedToken = artifacts.require('UtilityBrandedToken');
@@ -27,7 +28,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
   const SYMBOL = 'MOCK';
   const NAME = 'Mock Token';
-  const DECIMALS = '5';
+  const { decimals: DECIMALS } = config;
 
   beforeEach(async () => {
     accountProvider = new utils.AccountProvider(accounts);

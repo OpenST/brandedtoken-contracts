@@ -25,6 +25,7 @@
     "build-package": "node tools/build_package.js",
     "compile-all": "truffle compile --all",
     "test": "truffle test",
+    "test:range": "./tools/test_range.sh",
     "prepack": "npm run compile-all && npm run build-package",
     "lint": "eslint migrations/*.js test/*/*.js tools/*.js -c .eslintrc"
   },

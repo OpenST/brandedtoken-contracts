@@ -15,6 +15,8 @@
 
 'use strict';
 
+const config = require('../test_lib/config');
+
 const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const MockOrganization = artifacts.require('MockOrganization');
@@ -25,7 +27,7 @@ const MockOrganization = artifacts.require('MockOrganization');
 module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor) => {
   const SYMBOL = 'MOCK';
   const NAME = 'Mock Token';
-  const DECIMALS = '5';
+  const { decimals: DECIMALS } = config;
 
   const {
     mockOrganization,
