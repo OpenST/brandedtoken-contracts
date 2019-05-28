@@ -82,7 +82,11 @@ contract('BrandedToken::requestStake', async () => {
     });
 
     it('Reverts if valueToken.transferFrom returns false', async () => {
-      const valueToken = await EIP20TokenMockFail.new();
+      const valueToken = await EIP20TokenMockFail.new(
+        'VT',
+        'ValueToken',
+        config.decimals,
+      );
 
       const brandedToken = await BrandedToken.new(
         valueToken.address,

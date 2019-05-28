@@ -32,16 +32,21 @@ module.exports.setupBrandedToken = async (
   useOrganizationMockPass = true,
   useEIP20TokenMockPass = true,
 ) => {
-  const valueToken = await (
-    useEIP20TokenMockPass ? EIP20TokenMockPass.new() : EIP20TokenMockPassFail.new()
-  );
   const symbol = 'BT';
   const name = 'BrandedToken';
   const { decimals } = config;
   const conversionRate = 35;
   const conversionRateDecimals = 1;
+
+  const valueToken = await (
+    useEIP20TokenMockPass
+      ? EIP20TokenMockPass.new('VT', 'ValueToken', decimals)
+      : EIP20TokenMockPassFail.new('VT', 'ValueToken', decimals)
+  );
   const organization = await (
-    useOrganizationMockPass ? OrganizationMockPass.new() : OrganizationMockFail.new()
+    useOrganizationMockPass
+      ? OrganizationMockPass.new()
+      : OrganizationMockFail.new()
   );
 
   const brandedToken = await BrandedToken.new(
