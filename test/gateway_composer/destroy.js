@@ -113,7 +113,7 @@ contract('GatewayComposer::destroy', async (accounts) => {
       assert.strictEqual(
         code,
         '0x',
-        `Bytecode must be 0x.`,
+        'Bytecode must be 0x.',
       );
     });
   });
