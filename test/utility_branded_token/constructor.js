@@ -15,6 +15,7 @@
 
 'use strict';
 
+const config = require('../test_lib/config');
 const utils = require('../test_lib/utils');
 
 const UtilityBrandedToken = artifacts.require('UtilityBrandedToken');
@@ -27,7 +28,7 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
 
   const SYMBOL = 'MOCK';
   const NAME = 'Mock Token';
-  const DECIMALS = '5';
+  const { decimals: DECIMALS } = config;
 
   beforeEach(async () => {
     accountProvider = new utils.AccountProvider(accounts);
@@ -43,15 +44,15 @@ contract('UtilityBrandedToken::constructor', async (accounts) => {
   describe('Negative Tests', async () => {
     it('Reverts if null address is passed as organization', async () => {
       await utils.expectRevert(UtilityBrandedToken.new(
-        utils.NULL_ADDRESS,
+        brandedToken.address,
         SYMBOL,
         NAME,
         DECIMALS,
-        organization,
+        utils.NULL_ADDRESS,
         { from: organization },
       ),
-      'Token address is null',
-      'Token address is null.');
+      'Organization contract address should not be zero',
+      'Organization contract address must not be zero.');
     });
   });
 

@@ -15,6 +15,8 @@
 
 'use strict';
 
+const config = require('../test_lib/config');
+
 const TestUtilityBrandedToken = artifacts.require('TestUtilityBrandedToken');
 const EIP20TokenMock = artifacts.require('EIP20TokenMock');
 const MockOrganization = artifacts.require('MockOrganization');
@@ -25,13 +27,12 @@ const MockOrganization = artifacts.require('MockOrganization');
 module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor) => {
   const SYMBOL = 'MOCK';
   const NAME = 'Mock Token';
-  const DECIMALS = '5';
+  const { decimals: DECIMALS } = config;
 
   const {
     mockOrganization,
     worker,
     organization,
-    admin,
   } = await this.setupOrganization(accountProvider);
 
   const brandedToken = await EIP20TokenMock.new(
@@ -56,7 +57,7 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
   );
 
   return {
-    testUtilityBrandedToken, worker, admin, organization,
+    testUtilityBrandedToken, worker, organization,
   };
 };
 
@@ -66,17 +67,13 @@ module.exports.setupUtilityBrandedToken = async (accountProvider, internalActor)
 module.exports.setupOrganization = async (accountProvider) => {
   const worker = accountProvider.get();
   const organization = accountProvider.get();
-  const admin = accountProvider.get();
 
   const mockOrganization = await MockOrganization.new(
     organization,
-    admin,
-    [worker],
+    worker,
   );
 
-  await mockOrganization.setWorker(worker);
-
   return {
-    mockOrganization, worker, organization, admin,
+    mockOrganization, worker, organization,
   };
 };

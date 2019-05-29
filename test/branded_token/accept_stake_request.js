@@ -23,6 +23,7 @@ const { Event } = require('../test_lib/event_decoder.js');
 const web3 = require('../test_lib/web3.js');
 const utils = require('../test_lib/utils');
 const brandedTokenUtils = require('./utils');
+const config = require('../test_lib/config');
 
 const BrandedToken = artifacts.require('BrandedToken');
 const EIP20TokenMockPass = artifacts.require('EIP20TokenMockPass');
@@ -197,15 +198,20 @@ contract('BrandedToken::acceptStakeRequest', async () => {
       // Setup organization
       const organization = await OrganizationMockWorker.new();
       const worker = accountProvider.get();
+      const valueToken = await EIP20TokenMockPass.new(
+        'VT',
+        'ValueToken',
+        config.decimals,
+      );
 
       await organization.setWorker(worker, 0);
 
       // Setup brandedToken
       const brandedToken = await BrandedToken.new(
-        (await EIP20TokenMockPass.new()).address,
+        valueToken.address,
         'BT',
         'BrandedToken',
-        18,
+        config.decimals,
         35,
         1,
         organization.address,

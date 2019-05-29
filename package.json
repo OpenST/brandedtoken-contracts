@@ -25,6 +25,7 @@
     "build-package": "node tools/build_package.js",
     "compile-all": "truffle compile --all",
     "test": "truffle test",
+    "test:range": "./tools/test_range.sh",
     "prepack": "npm run compile-all && npm run build-package",
     "lint": "eslint migrations/*.js test/*/*.js tools/*.js -c .eslintrc"
   },
@@ -37,7 +38,7 @@
     "assert": "1.4.1",
     "bignumber.js": "4.1.0",
     "bn.js": "4.11.8",
-    "eslint": "5.5.0",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0",
     "ethereumjs-util": "5.2.0",

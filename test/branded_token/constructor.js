@@ -18,9 +18,26 @@
 const BN = require('bn.js');
 const { AccountProvider } = require('../test_lib/utils.js');
 
+const config = require('../test_lib/config');
 const utils = require('../test_lib/utils');
 
 const BrandedToken = artifacts.require('BrandedToken');
+const EIP20TokenMock = artifacts.require('EIP20TokenMock');
+
+/**
+ * Deploys an EIP20TokenMock contract with the provided decimals.
+ * @param {number} decimals Decimals for token.
+ * @return {string} valueToken Address of token.
+ */
+const deployValueToken = async (decimals) => {
+  const { address: valueToken } = await EIP20TokenMock.new(
+    'VT',
+    'ValueToken',
+    decimals,
+  );
+
+  return valueToken;
+};
 
 contract('BrandedToken::constructor', async () => {
   contract('Negative Tests', async (accounts) => {
@@ -28,7 +45,7 @@ contract('BrandedToken::constructor', async () => {
 
     const symbol = 'BT';
     const name = 'BrandedToken';
-    const decimals = 18;
+    const { decimals } = config;
     const organization = accountProvider.get();
 
     it('Reverts if valueToken is zero', async () => {
@@ -51,8 +68,30 @@ contract('BrandedToken::constructor', async () => {
       );
     });
 
+    it('Reverts if valueToken decimals does not equal brandedToken decimals', async () => {
+      const valueToken = await deployValueToken(decimals + 1);
+
+      const conversionRate = 35;
+      const conversionRateDecimals = 1;
+
+      await utils.expectRevert(
+        BrandedToken.new(
+          valueToken,
+          symbol,
+          name,
+          decimals,
+          conversionRate,
+          conversionRateDecimals,
+          organization,
+        ),
+        'Should revert as valueToken decimals does not equal brandedToken decimals.',
+        'ValueToken decimals does not equal brandedToken decimals.',
+      );
+    });
+
     it('Reverts if conversionRate is zero', async () => {
-      const valueToken = accountProvider.get();
+      const valueToken = await deployValueToken(decimals);
+
       const conversionRate = 0;
       const conversionRateDecimals = 1;
 
@@ -72,7 +111,8 @@ contract('BrandedToken::constructor', async () => {
     });
 
     it('Reverts if conversionRateDecimals is greater than 5', async () => {
-      const valueToken = accountProvider.get();
+      const valueToken = await deployValueToken(decimals);
+
       const conversionRate = 35;
       const conversionRateDecimals = 6;
 
@@ -97,11 +137,12 @@ contract('BrandedToken::constructor', async () => {
 
     const symbol = 'BT';
     const name = 'BrandedToken';
-    const decimals = 18;
+    const { decimals } = config;
     const organization = accountProvider.get();
 
     it('Successfully sets state variables', async () => {
-      const valueToken = accountProvider.get();
+      const valueToken = await deployValueToken(decimals);
+
       const conversionRate = 35;
       const conversionRateDecimals = 1;
 

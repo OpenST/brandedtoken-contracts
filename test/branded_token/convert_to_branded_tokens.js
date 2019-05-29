@@ -87,10 +87,9 @@ contract('BrandedToken::convertToBrandedTokens', async () => {
         0,
       );
 
-      // N.B.: values above are miniscule, because the
-      //       decimals for the test tokens are 18; consequently,
-      //       the potential for and degree of loss
-      //       as indicated above is considered acceptable
+      // N.B.: the potential for and degree of loss
+      //       as indicated above is considered acceptable,
+      //       depending on the number of decimal places (e.g., 18)
     });
   });
 });
