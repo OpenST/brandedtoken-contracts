@@ -110,7 +110,11 @@ contract('GatewayComposer::destroy', async (accounts) => {
       await gatewayComposer.destroy({ from: owner });
 
       const code = await web3.eth.getCode(gatewayComposer.address);
-      assert.equal(code, '0x');
+      assert.strictEqual(
+        code,
+        '0x',
+        `Incorrect code returned for ${gatewayComposer.address} address.`,
+      );
     });
   });
 });
