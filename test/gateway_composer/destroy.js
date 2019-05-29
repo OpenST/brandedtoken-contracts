@@ -110,7 +110,11 @@ contract('GatewayComposer::destroy', async (accounts) => {
       await gatewayComposer.destroy({ from: owner });
 
       const code = await web3.eth.getCode(gatewayComposer.address);
-      assert.equal(code, 0x0);
+      assert.strictEqual(
+        code,
+        '0x',
+        'Bytecode must be 0x.',
+      );
     });
   });
 });
