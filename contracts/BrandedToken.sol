@@ -143,10 +143,13 @@ contract BrandedToken is Organized, EIP20Token {
      *      tokens (1:3.5), _conversionRate == 35 and
      *      _conversionRateDecimals == 1.
      *
+     *      The value token is expected to have a `decimals` function.
+     *
      *      Constructor requires:
      *          - valueToken address is not zero
      *          - conversionRate is not zero
      *          - conversionRateDecimals is not greater than 5
+     *          - valueToken.decimals == decimals
      *
      * @param _valueToken The value to which valueToken is set.
      * @param _symbol The value to which tokenSymbol, defined in EIP20Token,
@@ -190,6 +193,11 @@ contract BrandedToken is Organized, EIP20Token {
         valueToken = _valueToken;
         conversionRate = _conversionRate;
         conversionRateDecimals = _conversionRateDecimals;
+
+        require(
+            _valueToken.decimals() == _decimals,
+            "ValueToken decimals does not equal brandedToken decimals."
+        );
     }
 
 

@@ -25,6 +25,7 @@
     "build-package": "node tools/build_package.js",
     "compile-all": "./node_modules/.bin/truffle compile --all",
     "test": "./node_modules/.bin/truffle test",
+    "test:range": "./tools/test_range.sh",
     "prepack": "npm run compile-all && npm run build-package",
     "lint": "eslint migrations/*.js test/*/*.js tools/*.js -c .eslintrc"
   },
@@ -41,9 +42,9 @@
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.14.0",
     "ethereumjs-util": "5.2.0",
-    "ganache-cli": "6.1.8",
+    "ganache-cli": "6.4.3",
     "solidity-coverage": "0.5.11",
-    "truffle": "5.0.1",
+    "truffle": "5.0.19",
     "web3": "1.0.0-beta.36",
     "openzeppelin-solidity": "2.1.1"
   }
