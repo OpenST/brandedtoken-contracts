@@ -23,8 +23,8 @@
   },
   "scripts": {
     "build-package": "node tools/build_package.js",
-    "compile-all": "truffle compile --all",
-    "test": "truffle test",
+    "compile-all": "./node_modules/.bin/truffle compile --all",
+    "test": "./node_modules/.bin/truffle test",
     "prepack": "npm run compile-all && npm run build-package",
     "lint": "eslint migrations/*.js test/*/*.js tools/*.js -c .eslintrc"
   },
